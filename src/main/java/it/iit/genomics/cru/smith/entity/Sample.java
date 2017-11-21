@@ -45,7 +45,7 @@ public class Sample implements Serializable {
     @Column(name = "sam_id", nullable = false, columnDefinition = "serial")    
     private Integer id; 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id")
     private Application application;
 
@@ -53,7 +53,7 @@ public class Sample implements Serializable {
     @JoinColumn(name = "requester_user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sequencingIndexId")
     private SequencingIndex sequencingIndexes;
     

@@ -14,6 +14,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
+    <repositories>
+        <repository>
+            <id>prime-repo</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>http://repository.primefaces.org</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -88,16 +97,26 @@
             <artifactId>jldap</artifactId>
             <version>4.3</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>at.ac.oeaw.cemm.bsf.barcode</groupId>
             <artifactId>IlluminaBarcodes</artifactId>
             <version>1.0</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
             <version>4.3.1.Final</version>
-        </dependency>        
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.31</version>
+        </dependency>
     </dependencies>
 
     <build>

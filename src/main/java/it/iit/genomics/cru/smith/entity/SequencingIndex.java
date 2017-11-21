@@ -23,7 +23,7 @@ public class SequencingIndex implements java.io.Serializable {
     @Column(name = "index")
     private String index = "none";//default value for index sequence.
 
-    @OneToMany(mappedBy = "sequencingIndexes", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sequencingIndexes", fetch = FetchType.LAZY)
 //	@JoinColumn(name = "idsequencingindexes")
     private Set<Sample> samples = new HashSet<Sample>(0);
 
