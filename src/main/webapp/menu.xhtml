@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"> 
+
+<h:body>
+
+
+	<p:growl id="messages" autoUpdate="true" />
+
+
+	<p:menu>
+
+
+		<p:menuitem value="#{bundle['menu.home']}" url="/index.jsf"
+			icon="ui-icon ui-icon-home" />
+
+		<p:menuitem value="#{bundle['menu.samples']}"
+			url="/Sample/samplesSearch.jsf" icon="ui-icon ui-icon-search" />
+		<p:menuitem value="#{bundle['menu.projects']}"
+			url="/Project/projectsSearch.jsf" icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.runs']}" url="/Run/runsSearch.jsf"
+			icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.flowcell']}"
+			url="/Flowcell/confirmFlowcell.jsf" icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.sample.sheet']}"
+			url="/SamplesSheet/samplesSheet.jsf" icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.data']}"
+			url="/Data/rawDataSearch.jsf" icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.users']}" url="/usersSearch.jsf"
+			icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.reagents']}"
+			url="/Reagent/reagentsSearch.jsf" icon="ui-icon ui-icon-search" />
+
+		<p:menuitem value="#{bundle['menu.logout']}" url="/logout.jsf"
+			icon="ui-icon ui-icon-arrowreturnthick-1-w"
+			action="#{navigationBean.doLogout}" />
+
+	</p:menu>
+</h:body>
+</html>

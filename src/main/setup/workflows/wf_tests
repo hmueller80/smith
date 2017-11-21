@@ -1,0 +1,57 @@
+#!/bin/bash     
+rm -r ./tests/dna/out/*
+rm -r ./tests/chip/out/*
+rm -r ./tests/rna/out/*
+
+echo SIGNLE READS TEST DNA
+mkdir /home/yvaskin/galaxy/tests/dna/out/BAM/single
+mkdir /home/yvaskin/galaxy/tests/dna/out/BED/single
+mkdir /home/yvaskin/galaxy/tests/dna/out/BIGWIG/single
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/dna/reads_single/ --bam=/home/yvaskin/galaxy/tests/dna/out/BAM/single/bam --bigWig=/home/yvaskin/galaxy/tests/dna/out/BIGWIG/single/bigwig --genome=mm9 --workflow=DNA-Seq
+
+echo PAIRED READS TEST DNA
+
+mkdir /home/yvaskin/galaxy/tests/dna/out/BAM/paired
+mkdir /home/yvaskin/galaxy/tests/dna/out/BED/paired
+mkdir /home/yvaskin/galaxy/tests/dna/out/BIGWIG/paired
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/dna/reads_paired/ --bam=/home/yvaskin/galaxy/tests/dna/out/BAM/paired/bam --bigWig=/home/yvaskin/galaxy/tests/dna/out/BIGWIG/paired/bigwig --genome=mm9 --workflow=DNA-Seq
+
+
+echo SIGNLE READS TEST CHIP
+mkdir /home/yvaskin/galaxy/tests/chip/out/BAM/single
+mkdir /home/yvaskin/galaxy/tests/chip/out/BED/single
+mkdir /home/yvaskin/galaxy/tests/chip/out/BIGWIG/single
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/chip/reads_single/ --bam=/home/yvaskin/galaxy/tests/chip/out/BAM/single/bam --bigWig=/home/yvaskin/galaxy/tests/chip/out/BIGWIG/single/bigwig --bed=/home/yvaskin/galaxy/tests/chip/out/BED/single/bed --genome=hg19 --workflow=ChIP-Seq
+
+echo PAIRED READS TEST CHIP
+
+mkdir /home/yvaskin/galaxy/tests/chip/out/BAM/paired
+mkdir /home/yvaskin/galaxy/tests/chip/out/BED/paired
+mkdir /home/yvaskin/galaxy/tests/chip/out/BIGWIG/paired
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/chip/reads_paired/ --bam=/home/yvaskin/galaxy/tests/chip/out/BAM/paired/bam --bigWig=/home/yvaskin/galaxy/tests/chip/out/BIGWIG/paired/bigwig  --bed=/home/yvaskin/galaxy/tests/chip/out/BED/paired/bed --genome=hg19 --workflow=ChIP-Seq
+
+
+echo SIGNLE READS TEST RNA
+mkdir /home/yvaskin/galaxy/tests/rna/out/BAM/single
+mkdir /home/yvaskin/galaxy/tests/rna/out/BED/single
+mkdir /home/yvaskin/galaxy/tests/rna/out/BIGWIG/single
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/rna/reads_single/ --bam=/home/yvaskin/galaxy/tests/rna/out/BAM/single/bam --bigWig=/home/yvaskin/galaxy/tests/rna/out/BIGWIG/single/bigwig --genome=test --workflow=RNA-Seq
+
+echo PAIRED READS TEST RNA
+mkdir /home/yvaskin/galaxy/tests/rna/out/BAM/paired
+mkdir /home/yvaskin/galaxy/tests/rna/out/BED/paired
+mkdir /home/yvaskin/galaxy/tests/rna/out/BIGWIG/paired
+
+python smith_run_workflow.py --folder=/home/yvaskin/galaxy/tests/rna/reads_paired/ --bam=/home/yvaskin/galaxy/tests/rna/out/BAM/paired/bam --bigWig=/home/yvaskin/galaxy/tests/rna/out/BIGWIG/paired/bigwig --genome=test --workflow=RNA-Seq
+
+
+ls -lR ./tests/dna/out     
+ls -lR ./tests/chip/out     
+ls -lR ./tests/rna/out     
+
+echo Done

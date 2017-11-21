@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="usersAdd">
+  
+    <h:form>
+        
+        <p:panel id="AddUserForm" header="#{bundle['user.add.form.text']}">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    
+
+                    <h:outputLabel for="userName" value="#{bundle['user.add.name']}: * " />
+                    <p:inputMask style="width:300px;"  required="true" id="userName" value="#{addUserBean.userName}" mask="" immediate="true"/>
+                    <p:message for="userName" />       
+                    
+                    <h:outputLabel for="userLogin" value="#{bundle['user.add.login']}: * " />
+                    <p:inputMask style="width:300px;"  required="true" id="userLogin" value="#{addUserBean.userLogin}" mask="" immediate="true"/>
+                    <p:message for="userLogin" /> 
+                    
+                    <h:outputLabel for="userEmail" value="#{bundle['user.add.email']}: * " />
+                    <p:inputMask style="width:300px;"  required="true" id="userEmail" value="#{addUserBean.userEmail}" mask="" immediate="true"/>
+                    <p:message for="userEmail" /> 
+                    
+                    <h:outputLabel for="userPhone" value="#{bundle['user.add.phone']}: * " />
+                    <p:inputMask style="width:300px;"  required="true" id="userPhone" value="#{addUserBean.userPhone}" mask="" immediate="true"/>
+                    <p:message for="userPhone" /> 
+                    
+                    <h:outputLabel for="userRole" value="#{bundle['user.add.role']}: * " />                    
+                    <h:selectOneMenu style="width:300px;" required="true" value="#{addUserBean.userRole}" immediate="true" >
+                        <f:selectItems id="userRole" value="#{preferences.roleList}"/>                                
+                    </h:selectOneMenu>
+                    <p:message for="userRole" /> 
+                    
+                    <h:outputLabel for="PIList" value="#{bundle['user.add.pi']}: * " />                    
+                    <h:selectOneMenu style="width:300px;" required="true" value="#{addUserBean.userPIName}" immediate="true" >
+                        <f:selectItems id="PIList" value="#{addUserBean.getPIList()}"/>                                
+                    </h:selectOneMenu>
+                    <p:message for="PIList" /> 
+
+
+                    
+                    
+                    </h:panelGrid>
+
+            
+
+            </p:panel>
+        <h:panelGrid columns="2" cellpadding="5">        
+            <p:commandButton id="saveUserButton" value="#{bundle['user.add.button.text']}" actionListener="#{addUserBean.addUser()}" rendered="#{loggedUserBean.isAdmin}"/>
+            <p:message for="saveUserButton" /> 
+        </h:panelGrid>
+            
+    </h:form>
+                          
+    </ui:define>
+
+</ui:composition>

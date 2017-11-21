@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="samplerunDetails" >      
+         
+         <h:form id="SamplerundetailsForm">
+            
+             <p:panel id="samplerunDetailsPanel" header="#{bundle['runs.run.details.for']} #{sampleRunFormBean.sample.name}">
+                 
+                 <h:panelGrid columns="3" cellpadding="5">
+                     
+                            <p:separator id="customSeparator1" style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['runs.id.info']}"/>
+                            <p:separator id="customSeparator2" style="width:300px;height:5px" />
+                     
+                            <h:outputLabel for="runId" value="#{bundle['runs.run.id']}:  "  />
+                            <h:link  id="runId"  value="#{modSampleRunFormBean.id.runId}"  outcome="runDetails.jsf">
+                                <f:param name="rid" value="#{modSampleRunFormBean.id.runId}"/>
+                            </h:link>
+                            <p:message for="runId"/>
+                            
+                            <h:outputLabel for="sampleId" value="#{bundle['runs.sample.id']}:  "  />
+                            <h:link  id="sampleId"  value="#{modSampleRunFormBean.id.samId}"  outcome="/Sample/sampleDetails" target="_blank" >
+                                <f:param name="sid" value="#{modSampleRunFormBean.id.samId}"/>
+                            </h:link>
+                            <p:message for="sampleId"/>
+                            
+                            <p:separator id="customSeparator30" style="width:300px;height:5px" /> 
+                            <h:outputText value="#{bundle['runs.operator.info']}"/>
+                            <p:separator id="customSeparator32" style="width:300px;height:5px" /> 
+
+                            <h:outputLabel for="userLogin" value="#{bundle['runs.user.login']}:  " />
+                            <h:outputText  style="width:300px;" id="userLogin" value="#{modSampleRunFormBean.user.login}"/>
+                            <p:message for="userLogin" />
+
+                            <h:outputLabel for="userName" value="#{bundle['runs.user.name']}:  " />
+                            <h:outputText  style="width:300px;" id="userName" value="#{modSampleRunFormBean.user.userName}"/>
+                            <p:message for="userName" />
+
+                            <h:outputLabel for="userEmail" value="#{bundle['runs.user.email']}:  " />
+                            <h:outputText  style="width:300px;" id="userEmail" value="#{modSampleRunFormBean.user.mailAddress}"/>
+                            <p:message for="userEmail" />
+
+                            <h:outputLabel for="userTel" value="#{bundle['runs.user.tel']}:  " />
+                            <h:outputText  style="width:300px;" id="userTel" value="#{modSampleRunFormBean.user.phone}"/>
+                            <p:message for="userTel" />
+                                         
+                            
+                            <p:separator id="customSeparator40" style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['runs.run.details']}"/>
+                            <p:separator id="customSeparator42" style="width:300px;height:5px" />
+                            
+                            
+                            <h:outputLabel for="preparationReag" value="#{bundle['runs.sampleprep.ragent']}:  " /> 
+                            <p:autoComplete  id="preparationReag" style="width:300px;" required="false" 
+                                             value="#{modSampleRunFormBean.preparationBarcode}"
+                                             completeMethod="#{modSampleRunFormBean.completePreparation}"
+                                             dropdown="true" queryDelay="300"  minQueryLength="2" maxResults="10"/>
+                            <p:message for="preparationReag" />                           
+                            
+                            
+                            <h:outputLabel for="sequencingReag" value="#{bundle['runs.sequencing.reagent']}:  " />
+                            <p:autoComplete  id="sequencingReag" style="width:300px;" required="false" 
+                                             value="#{modSampleRunFormBean.sequencingBarcode}"
+                                             completeMethod="#{modSampleRunFormBean.completeSequencing}"
+                                             dropdown="true" queryDelay="300"  minQueryLength="2" maxResults="10"/>
+                            <p:message for="sequencingReag" />
+                            
+                            
+                            <h:outputLabel for="clusterReag" value="#{bundle['runs.cluster.reagent']}:  " />
+                            <p:autoComplete  id="clusterReag" style="width:300px;" required="false" 
+                                             value="#{modSampleRunFormBean.clusterBarcode}"
+                                             completeMethod="#{modSampleRunFormBean.completeCluster}"
+                                             dropdown="true" queryDelay="300"  minQueryLength="2" maxResults="10"/>
+                            <p:message for="clusterReag" /> 
+                     
+                            
+                            
+                            <h:outputLabel for="lane" value="#{bundle['runs.lane']}:  " />
+                            <p:inputTextarea id="lane" value="#{modSampleRunFormBean.lane}" rows="#{modSampleRunFormBean.laneRows}"  style="width:300px;"/>
+                            <p:message for="lane" />
+                            
+                            <h:outputLabel for="flowcell" value="#{bundle['runs.flowcell']}:  " />
+                            <p:inputMask id="flowcell" value="#{modSampleRunFormBean.flowcell}" mask="" style="width:300px;" />
+                            <p:message for="flowcell" />
+                            
+                            <h:outputLabel for="sequencingindex" value="#{bundle['runs.sequencing.index']}:  " />
+                            <h:selectOneMenu style="width:300px;" required="false" value="#{modSampleRunFormBean.sequencingindex}">
+                                <f:selectItems id="sequencingindex" value="#{modSampleRunFormBean.possibleIndexes}"/>
+                            </h:selectOneMenu>                            
+                            <p:message for="sequencingindex" />
+                            
+                            <h:outputLabel for="runfolder" value="#{bundle['runs.run.folder']}:  " />
+                            <p:inputMask id="runfolder" value="#{modSampleRunFormBean.runfolder}" mask="" style="width:300px;" />
+                            <p:message for="runfolder" />
+                            
+                            <h:outputLabel for="iscontrol" value="#{bundle['runs.is.control']}:  " /> 
+                            <h:selectOneMenu style="width:300px;" required="false" value="#{modSampleRunFormBean.iscontrol}">
+                                <f:selectItems id="iscontrol" value="#{preferences.bools}"/>
+                            </h:selectOneMenu>
+                            <p:message for="iscontrol" />
+                            
+                            
+                            <p:commandButton action="#{modSampleRunFormBean.delete()}" id="delete"
+                                             value="#{bundle['button.text.delete']}"  type="submit" update="SamplerundetailsForm" disabled="#{!modSampleRunFormBean.userHasUpdatePermission}">
+                                <f:param name="sid" value="#{modSampleRunFormBean.sampleID}" />
+                                <f:param name="rid" value="#{modSampleRunFormBean.runID}" />
+                            </p:commandButton> 
+                            <p:commandButton actionListener="#{modSampleRunFormBean.save()}" id="save"
+                                             value="#{bundle['button.text.save']}"  type="submit" update="SamplerundetailsForm" disabled="#{!modSampleRunFormBean.userHasUpdatePermission}">
+                                <f:param name="sid" value="#{modSampleRunFormBean.sampleID}" />
+                                <f:param name="rid" value="#{modSampleRunFormBean.runID}" />
+                            </p:commandButton>
+                            <p:message for="save" />
+                 
+                 </h:panelGrid>
+             
+             </p:panel>
+             
+             
+         </h:form>
+               
+    </ui:define>
+
+</ui:composition>

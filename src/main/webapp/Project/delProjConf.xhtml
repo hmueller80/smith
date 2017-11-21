@@ -1,0 +1,27 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="delProjConf">
+
+        <h:form id="ProjectDetailsForm" >
+            
+            <p:panel header="#{bundle['project.delete.title']} #{projectDetailsBean.projectId} ?" >
+               <p:commandButton id="deleteConfirmation" value="#{bundle['button.text.yes']}" disabled="#{!projectDetailsBean.hasDeletePermission()}"
+                                 action="#{projectDetailsBean.delete()}">
+                   <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+               </p:commandButton>
+               <p:button id="back" value="#{bundle['button.text.no']}" outcome="projectDetails.jsf">
+                     <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+               </p:button>
+            </p:panel>
+             
+         </h:form>
+        
+    </ui:define>
+
+</ui:composition>
+

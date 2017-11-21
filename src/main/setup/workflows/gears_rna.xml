@@ -1,0 +1,23 @@
+<tool id="gears_tool_rna" name="gears_rna"><command>mkdir gears ; if [ "None" = "$in_path_mate" ] ; then  /home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/ugene --task=/home/yvaskin/galaxy/galaxy-dist/tools/gears/rnaseq_single.uwl --in=$in_path --idx_dir=$reference_genome --idx_name=$genome_assembly --log-level-details --gc_genome=/home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/data/genome_lengths/${genome_assembly}.genome --bg_genome=/home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/data/genome_lengths/${genome_assembly}.genome  &gt;&gt; $ugene_workflow_run_log 2&gt;&amp;1 ; fi ; if [ "None" != "$in_path_mate" ] ; then  /home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/ugene --task=/home/yvaskin/galaxy/galaxy-dist/tools/gears/rnaseq_paired.uwl --in=$in_path --in_mate=$in_path_mate --idx_dir=$reference_genome --idx_name=$genome_assembly  --log-level-details --gc_genome=/home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/data/genome_lengths/${genome_assembly}.genome --bg_genome=/home/yvaskin/tools/ugene_snapshot/ugene-1.14.0-rc1/data/genome_lengths/${genome_assembly}.genome  &gt;&gt; $ugene_workflow_run_log 2&gt;&amp;1 ; fi
+</command>
+<inputs>
+<param name="in" type="data" format="text" label="Input file" optional ="false"/>
+  
+<param name="reference_genome" type="text" format="text" label="Reference genome path"/>
+<param name="genome_assembly" type="text" format="text" label="Genome assembly"/>
+<param name="in_path" type="text" format="text" label="Input file(s) path"/>
+<param name="in_path_mate" type="text" format="text" label="Input mate file(s) path"/>
+</inputs>
+<outputs>
+<data format="txt" name="ugene_workflow_run_log" label="ugene_workflow_run_log"/>
+<data format="bigWig" from_work_dir="gears/tophat_out/accepted_hits.bam.sorted.bam.bed.gc.bigWig" name="bigWigfile" label="bigWigfile"/>
+<data format="bam1" from_work_dir="gears/tophat_out/accepted_hits.bam.sorted.bam" name="bamfile" label="bamfile"/>
+<data format="bai" from_work_dir="gears/tophat_out/accepted_hits.bam.sorted.bam.bai" name="baifile" label="baifile"/>
+
+</outputs><help>
+**Description**
+
+
+
+
+</help></tool>

@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="newsWriter">
+
+        
+
+        <h:form  id="newsWriterForm">
+            <p:panel id="NGSRequestsspanel" header="#{bundle['news.publishHere']}">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    
+
+                    <h:outputLabel for="header" value="#{bundle['news.header']}: " />
+                    <p:inputMask style="width:300px;"  required="true" id="header" value="#{newsBean.header}" mask="" immediate="true"/>
+                    <p:message for="header" />   
+                    
+                    <h:outputLabel for="body" value="#{bundle['news.body']}: " />
+                    <p:inputTextarea  id="body" style="width:300px;height:100px;" value="#{newsBean.body}" immediate="true" required="true"/>
+                    <p:message for="body" />   
+                  
+                    <p:commandButton actionListener="#{newsBean.submit()}"
+                                     title="#{bundle['news.submit']}"
+                                     id="NewsPublishButton" value="#{bundle['news.submit']}"                                
+                                     rendered="#{navigationBean.userHasAddPermission}" action="/index.jsf"/>
+                    <p:message id="mbutton" for="NewsPublishButton" />
+
+                </h:panelGrid>
+
+            
+
+            </p:panel>
+           
+        </h:form>
+
+
+
+    </ui:define>
+
+</ui:composition>

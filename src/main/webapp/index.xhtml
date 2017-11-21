@@ -1,0 +1,147 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="home">
+
+        <h:form>
+
+
+            <p:tabView>
+                <p:tab title="#{bundle['home.tab3.news.header']}">
+                                                
+                    <p:fieldset legend="#{newsBean.getNewsItem(0).date}" toggleable="true" toggleSpeed="500" collapsed="false" >          
+                                <h:panelGrid columns="1" cellpadding="3">  
+                                    
+                                    <h:outputText value="#{newsBean.getNewsItem(0).header}" style="font-weight: bold"/> 
+                                    <h:outputText value="#{newsBean.getNewsItem(0).body}"/> 
+                                </h:panelGrid>  
+                    </p:fieldset> 
+                            <br/>
+                            
+                    <p:fieldset legend="#{newsBean.getNewsItem(1).date}" toggleable="true" toggleSpeed="500" collapsed="true">          
+                        <h:panelGrid columns="1" cellpadding="3">  
+
+                            <h:outputText value="#{newsBean.getNewsItem(1).header}" style="font-weight: bold"/> 
+                            <h:outputText value="#{newsBean.getNewsItem(1).body}"/> 
+                        </h:panelGrid>  
+                    </p:fieldset> 
+                    <br/>
+                    <p:fieldset legend="#{newsBean.getNewsItem(2).date}" toggleable="true" toggleSpeed="500" collapsed="true">          
+                        <h:panelGrid columns="1" cellpadding="3">  
+
+                            <h:outputText value="#{newsBean.getNewsItem(2).header}" style="font-weight: bold"/> 
+                            <h:outputText value="#{newsBean.getNewsItem(2).body}"/> 
+                        </h:panelGrid>  
+                    </p:fieldset> 
+                    <br/>
+                    <p:fieldset legend="#{newsBean.getNewsItem(3).date}" toggleable="true" toggleSpeed="500" collapsed="true">          
+                        <h:panelGrid columns="1" cellpadding="3">  
+
+                            <h:outputText value="#{newsBean.getNewsItem(3).header}" style="font-weight: bold"/> 
+                            <h:outputText value="#{newsBean.getNewsItem(3).body}"/> 
+                        </h:panelGrid>  
+                    </p:fieldset> 
+                    <br/>
+                    <p:fieldset legend="#{newsBean.getNewsItem(4).date}" toggleable="true" toggleSpeed="500" collapsed="true">          
+                        <h:panelGrid columns="1" cellpadding="3">  
+
+                            <h:outputText value="#{newsBean.getNewsItem(4).header}" style="font-weight: bold"/> 
+                            <h:outputText value="#{newsBean.getNewsItem(4).body}"/> 
+                        </h:panelGrid>  
+                    </p:fieldset> 
+                    <br/>
+                    <p:button rendered="#{navigationBean.userHasAddPermission}" target="/index.jsf" value="#{bundle['news.newswriter']}" outcome="/News/newsWriter.xhtml"></p:button>
+
+                </p:tab>
+
+                <p:tab title="#{bundle['home.tab1.title']}">
+
+                            
+                            
+                            <h2>#{bundle['home.tab1.user.information.header']}</h2>
+                            <p>#{bundle['home.tab1.user.information.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.filter.header']}</h2>
+                            <p>#{bundle['home.tab1.filter.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.sample.samples.view.header']}</h2>                    
+                            <p>#{bundle['home.tab1.sample.samples.view.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.sample.submission.header']}</h2>                            
+                            <p>#{bundle['home.tab1.sample.samples.submit.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.project.header']}</h2>                            
+                            <p>#{bundle['home.tab1.project.text1']}</p>
+                            <p>#{bundle['home.tab1.project.text2']}</p>
+                            <p>#{bundle['home.tab1.project.text3']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.run.header']}</h2>                            
+                            <p>#{bundle['home.tab1.run.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.flowcell.header']}</h2>                            
+                            <p>#{bundle['home.tab1.flowcell.text1']}</p>                            
+                            
+                            
+                            <h2>#{bundle['home.tab1.samplesheet.header']}</h2>                            
+                            <p>#{bundle['home.tab1.samplesheet.text1']}</p>                            
+                            
+                            
+                            <h2>#{bundle['home.tab1.data.header']}</h2>                            
+                            <p>#{bundle['home.tab1.data.text1']}</p>     
+                            <p>#{bundle['home.tab1.data.text2']}</p>     
+                            
+                            
+                            <h2>#{bundle['home.tab1.user.header']}</h2>                            
+                            <p>#{bundle['home.tab1.user.text1']}</p> 
+                            
+                            
+                            <h2>#{bundle['home.tab1.reagent.header']}</h2>                            
+                            <p>#{bundle['home.tab1.reagent.text1']}</p>
+                            
+                            
+                            <h2>#{bundle['home.tab1.logout.header']}</h2>                            
+                            <p>#{bundle['home.tab1.logout.text1']}</p>   
+                            
+
+                            
+                            
+
+                        </p:tab>
+                        
+                        
+
+                        <p:tab title="#{bundle['home.tab2.about.header']}">
+                            <h2>#{bundle['home.tab2.about.text1']}</h2> 
+                            
+                            <p>#{bundle['home.tab2.about.text2']}</p>  
+                            
+                            <p>#{bundle['home.tab2.about.text3']}</p>
+                            
+                            <p>#{bundle['home.tab2.about.text4']}</p>  
+                            
+                            <p>#{bundle['home.tab2.about.text5']}</p>  
+                            
+                            <p>#{bundle['home.tab2.about.text6']}</p> 
+                            
+                            
+                            
+                        </p:tab>
+
+
+                    </p:tabView>
+
+            </h:form>
+        
+    </ui:define>
+
+</ui:composition>

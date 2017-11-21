@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="newProjectForm">
+
+        <h:form id="NewProjectDetailsForm">
+            
+             <p:panel id="projectDetailPanel" header="#{bundle['project.new.project']}">
+                 
+                 <h:panelGrid columns="3" cellpadding="5">
+                     
+                            <p:separator id="customSeparator1" style="width:300px;height:5px" /> 
+                            <h:outputText value="#{bundle['project.info']}"/>
+                            <p:separator id="customSeparator2" style="width:300px;height:5px" />
+                            
+                            <h:outputLabel for="name" value="#{bundle['project.name']}:  " />
+                            <h:inputText style="width:300px;"  id="name" value="#{newProjectBean.name}" />
+                            <p:message for="name" />
+                            
+                            <h:outputLabel for="user" value="#{bundle['project.leader']}:  " />
+                            <h:outputText style="width:300px;"  id="user" value="#{newProjectBean.userName}" />
+                            <p:message for="user" />
+                            
+                            <h:outputLabel for="description" value="#{bundle['project.description']}:  " />
+                            <p:inputTextarea rows="20" cols="60" counter="counter" maxlength="1000"                                             
+                                             counterTemplate="{0} #{bundle['project.characters.remaining']}." autoResize="false"                                             
+                                             id="description" value="#{newProjectBean.description}" />
+                            <h:outputText id="counter" />
+                            
+                            <h:outputLabel for="save" value="" />
+                            <p:commandButton id="save" value="#{bundle['button.text.save']}" action="#{newProjectBean.save()}" update="NewProjectDetailsForm">                                
+                            </p:commandButton>
+                            <p:message for="save" />                            
+                 
+                 </h:panelGrid>
+                             
+                 
+             </p:panel>
+             
+                    
+           
+             
+         </h:form>
+        
+        
+    </ui:define>
+
+</ui:composition>

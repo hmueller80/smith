@@ -1,0 +1,271 @@
+#@UGENE_WORKFLOW
+
+
+
+workflow hg19_base{
+
+    CASAVAFilter {
+        type:CASAVAFilter;
+        name:"CASAVA FASTQ Filter";
+        custom-dir:gears;
+        out-mode:2;
+    }
+    QualityTrim {
+        type:QualityTrim;
+        name:"FASTQ Quality Trimmer";
+        custom-dir:gears;
+        len-id:1;
+        out-mode:2;
+        qual-id:20;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"File List";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    bwamem-id {
+        type:bwamem-id;
+        name:"Align reads with BWA MEM";
+        output-dir:gears;
+    }
+    files-conversion {
+        type:files-conversion;
+        name:"File Format Conversion";
+        document-format:bam;
+    }
+    merge-bam {
+        type:merge-bam;
+        name:"Merge BAM files";
+    }
+    filter-bam {
+        type:filter-bam;
+        name:"Filter BAM/SAM files";
+        flag:"The read is unmapped";
+        mapq:1;
+        region:"chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 hr19 chr20 chr21 chr22 chrX chrY";
+    }
+    rmdup-bam {
+        type:rmdup-bam;
+        name:"Remove Duplicates in BAM Files";
+        remove-single-end:true;
+    }
+    files-conversion-1 {
+        type:files-conversion;
+        name:"File Format Conversion 1";
+        document-format:bed;
+    }
+    slopbed {
+        type:slopbed;
+        name:Slopbed;
+        genome-id:/home/yvaskin/tools/ugene_clear/data/genome_lengths/human.hg19.genome;
+        r-id:160;
+        s-id:true;
+    }
+    genomecov {
+        type:genomecov;
+        name:"Genome Coverage";
+        genome-id:/home/yvaskin/tools/ugene_clear/data/genome_lengths/human.hg19.genome;
+        mode-id:3;
+    }
+    Sort-bam {
+        type:Sort-bam;
+        name:"Sort BAM Files";
+    }
+    bgtbw-bam {
+        type:bgtbw-bam;
+        name:"Convert bedGraph Files to bigWig";
+        genome:/home/yvaskin/tools/ugene_clear/data/genome_lengths/human.hg19.genome;
+    }
+    Sort-bam-1 {
+        type:Sort-bam;
+        name:"Sort BAM Files 1";
+    }
+
+    .actor-bindings {
+        get-file-list.out-url->CASAVAFilter.in-file
+        Sort-bam-1.out-file->rmdup-bam.in-file
+        QualityTrim.out-file->bwamem-id.in-data
+        CASAVAFilter.out-file->QualityTrim.in-file
+        bwamem-id.out-data->files-conversion.in-file
+        files-conversion.out-file->merge-bam.in-file
+        merge-bam.out-file->filter-bam.in-file
+        filter-bam.out-file->Sort-bam-1.in-file
+        rmdup-bam.out-file->Sort-bam.in-file
+        files-conversion-1.out-file->slopbed.in-file
+        slopbed.out-file->genomecov.in-file
+        genomecov.out-file->bgtbw-bam.in-file
+        Sort-bam.out-file->files-conversion-1.in-file
+    }
+
+    get-file-list.url->CASAVAFilter.in-file.url
+    CASAVAFilter.url->QualityTrim.in-file.url
+    QualityTrim.url->bwamem-id.in-data.readsurl
+    bwamem-id.assembly-out->files-conversion.in-file.url
+    files-conversion.url->merge-bam.in-file.url
+    merge-bam.url->filter-bam.in-file.url
+    Sort-bam-1.url->rmdup-bam.in-file.url
+    Sort-bam.url->files-conversion-1.in-file.url
+    files-conversion-1.url->slopbed.in-file.url
+    slopbed.url->genomecov.in-file.url
+    rmdup-bam.url->Sort-bam.in-file.url
+    genomecov.url->bgtbw-bam.in-file.url
+    filter-bam.url->Sort-bam-1.in-file.url
+
+    .meta {
+        parameter-aliases {
+            get-file-list.url-in {
+                alias:in;
+            }
+            bwamem-id.output-dir {
+                alias:dir;
+            }
+            bwamem-id.reference {
+                alias:idx;
+            }
+            bwamem-id.threads {
+                alias:bwa_t;
+            }
+        }
+        visual {
+            CASAVAFilter {
+                pos:"-635 -533";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            QualityTrim {
+                pos:"-371 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            Sort-bam {
+                pos:"1070 -308";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            Sort-bam-1 {
+                pos:"776 -355";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            bgtbw-bam {
+                pos:"1856.75 -535";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            bwamem-id {
+                pos:"-114 -535";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-data.angle:180;
+                out-data.angle:360;
+            }
+            files-conversion {
+                pos:"137 -533";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            files-conversion-1 {
+                pos:"1197 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            filter-bam {
+                pos:"636 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            genomecov {
+                pos:"1625 -535";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            get-file-list {
+                pos:"-834 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-url.angle:360;
+            }
+            merge-bam {
+                pos:"401 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            rmdup-bam {
+                pos:"907 -533";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            slopbed {
+                pos:"1398 -535";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            CASAVAFilter.out-file->QualityTrim.in-file {
+                text-pos:"-35.75 -24";
+            }
+            QualityTrim.out-file->bwamem-id.in-data {
+                text-pos:"-35.75 -24";
+            }
+            Sort-bam-1.out-file->rmdup-bam.in-file {
+                text-pos:"-45 -37";
+            }
+            Sort-bam.out-file->files-conversion-1.in-file {
+                text-pos:"-45 -37";
+            }
+            bwamem-id.out-data->files-conversion.in-file {
+                text-pos:"-45 -37";
+            }
+            files-conversion-1.out-file->slopbed.in-file {
+                text-pos:"-14.4531 -24";
+            }
+            files-conversion.out-file->merge-bam.in-file {
+                text-pos:"-14.4531 -24";
+            }
+            filter-bam.out-file->Sort-bam-1.in-file {
+                text-pos:"-45 -50";
+            }
+            genomecov.out-file->bgtbw-bam.in-file {
+                text-pos:"-35.75 -24";
+            }
+            get-file-list.out-url->CASAVAFilter.in-file {
+                text-pos:"-35.7578 -24";
+            }
+            merge-bam.out-file->filter-bam.in-file {
+                text-pos:"-45 -37";
+            }
+            rmdup-bam.out-file->Sort-bam.in-file {
+                text-pos:"-45 -37";
+            }
+            slopbed.out-file->genomecov.in-file {
+                text-pos:"-35.75 -24";
+            }
+        }
+    }
+}
+

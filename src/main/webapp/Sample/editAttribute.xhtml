@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="editAttribute">
+        <h:form id="EditAttributeForm"> 
+            
+            <p:panel id="sampleDetailPanel" header="#{editAttributeBean.sampleID} #{bundle['samples.rich.information']}" >
+            <h:outputLabel value="#{bundle['samples.modify.value']}" />
+            <p></p>    
+            <p:autoComplete  id="nameField" style="width:300px;" immediate="true"
+                                             value="#{editAttributeBean.loadedAttributeName}"
+                                             completeMethod="#{editAttributeBean.completeName}"
+                                             dropdown="true" queryDelay="300"  minQueryLength="2" maxResults="10"/>
+            
+            <h:inputText value="#{editAttributeBean.loadedAttributeValue}" 
+                         style="width:300px"/>
+            <p></p>
+            
+            <p:button outcome="sampleAttributes.jsf" id="backButton" value="#{bundle['button.text.back']}" >
+                             <f:param name="sid" value="#{editAttributeBean.sampleID}"/>                            
+            </p:button>
+            
+            <p:commandButton actionListener="#{editAttributeBean.saveAttributeValue()}"
+                             id="saveButton" value="#{bundle['button.text.save']}" update="EditAttributeForm">
+                             <f:param name="sid" value="#{editAttributeBean.sampleID}"/>
+                             <f:param name="selAtId" value="#{editAttributeBean.selectedAttributeId}" />
+            </p:commandButton>
+            
+            <p:commandButton actionListener="#{editAttributeBean.delete()}"
+                             id="delButton" value="#{bundle['button.text.delete']}" update="EditAttributeForm">
+                             <f:param name="sid" value="#{editAttributeBean.sampleID}"/>
+                             <f:param name="selAtId" value="#{editAttributeBean.selectedAttributeId}"/>
+            </p:commandButton>
+            
+            <p:message for="saveButton" />
+            
+            </p:panel>
+            
+           
+        
+            
+            
+        </h:form>
+        
+              
+        
+    </ui:define>
+
+</ui:composition>

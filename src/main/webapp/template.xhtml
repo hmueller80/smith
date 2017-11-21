@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:p="http://primefaces.org/ui"> 
+
+
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="./resources/css/default.css" rel="stylesheet" type="text/css" />    
+        <link rel="shortcut icon" href="#{request.contextPath}/img/favicon.ico" type="image/x-icon"/>
+        <link rel="icon" href="#{request.contextPath}/img/favicon.ico" type="image/x-icon" />
+        <title>#{bundle['unit.name']}</title>
+
+
+
+        <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript" ></script>
+
+
+    </h:head>
+
+    <h:body >
+
+        <p:layout  fullPage="true">
+
+            <p:layoutUnit position="north" minSize="80" maxSize="150" resizable="false" closable="false" collapsible="false" >
+
+                <f:facet name="header">
+                    <h:form>
+                        <h:outputLink value="#{request.contextPath}/index.xhtml"  > 
+                            <h:graphicImage value="/img/instituteLogo.png"></h:graphicImage>
+                        </h:outputLink>
+
+
+                        <h:outputText value=" #{bundle['unit.name']}. " />
+                        <h:outputText rendered="#{not navigationBean.isLoggedIn}" value="#{bundle['unit.welcome']}" />
+                        <h:outputText rendered="#{navigationBean.isLoggedIn}" value="#{bundle['user.login.message']} " />                    
+                        <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/loggedUserInfo.xhtml" > #{navigationBean.loginName} </h:outputLink>
+                    </h:form>
+                </f:facet>
+
+
+            </p:layoutUnit>
+
+            <p:layoutUnit position="west" maxSize="200" header="Menu" resizable="false" closable="false" collapsible="false">
+
+                <h:form>
+
+                    <ui:include src="menu.xhtml"></ui:include>                          
+
+                </h:form>
+
+            </p:layoutUnit>
+
+
+
+            <p:layoutUnit  position="center" id="ui-layout-center"  styleClass="ui-layout-center" >
+
+                
+                <ui:insert name="home"></ui:insert>
+                <ui:insert name="sampleSearch"></ui:insert>
+                <ui:insert name="samplesSearchIndexes"></ui:insert>
+                <ui:insert name="editSampleIndex"></ui:insert>
+                <ui:insert name="reagentsSearch"></ui:insert>
+                <ui:insert name="usersSearch"></ui:insert>    
+                <ui:insert name="usersAdd"></ui:insert>    
+                <ui:insert name="loggedUserInfo"></ui:insert>
+                <ui:insert name="newSampleForm"></ui:insert>
+                <ui:insert name="sampleDetails"></ui:insert>
+                <ui:insert name="runsSearch"></ui:insert>
+                <ui:insert name="samplerunDetails"></ui:insert>
+                <ui:insert name="newSampleRunForm"></ui:insert>
+                <ui:insert name="newProjectForm"></ui:insert>
+                <ui:insert name="selectSample"></ui:insert>
+                <ui:insert name="selectSample2"></ui:insert>
+                <ui:insert name="selectSampleForProject"></ui:insert>
+                <ui:insert name="runDetails"></ui:insert>
+                <ui:insert name="reagentDetails"></ui:insert>
+                <ui:insert name="newReagentForm"></ui:insert>
+                <ui:insert name="projectsSearch"></ui:insert>
+                <ui:insert name="flowcellSearch"></ui:insert>
+                <ui:insert name="selectSamplesForProject"></ui:insert>
+                <ui:insert name="projectDetails"></ui:insert>
+                <ui:insert name="modProjectText"></ui:insert>
+                <ui:insert name="samplesSheet"></ui:insert>
+                <ui:insert name="rawDataSearch"></ui:insert>
+                <ui:insert name="alignedDataSearch"></ui:insert>
+                <ui:insert name="annotatedDataSearch"></ui:insert>
+                <ui:insert name="sampleAttributes"></ui:insert>
+                <ui:insert name="editAttribute"></ui:insert>
+                <ui:insert name="testPage"></ui:insert>
+                <ui:insert name="confirmFlowcell"></ui:insert>
+                <ui:insert name="delProjConf"></ui:insert>
+                <ui:insert name="addCollaborator"></ui:insert>
+                <ui:insert name="samplesCreated"></ui:insert>
+                <ui:insert name="sampleDeleted"></ui:insert>
+                <ui:insert name="newDraggableRunForm"></ui:insert>
+                <ui:insert name="newsWriter"></ui:insert>
+                <ui:insert name="userDetails"></ui:insert>
+
+            </p:layoutUnit>
+        </p:layout>
+    </h:body>
+
+</html>

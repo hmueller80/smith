@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="selectSample">
+
+
+        <h:form id="sampleRunTableForm">
+
+            <h3> #{bundle['runs.hint2']} #{sampleSearchBean.selectedRun} </h3>
+
+
+            <p:dataTable id="sampleTable" var="sample" value="#{sampleSearchBean.sampleList}" widgetVar="samplesTable"
+                         style="font-size: x-small;" paginator="true" rows="20"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                         {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         emptyMessage="#{bundle['data.emptymessage']}" selection="" >
+
+
+                <p:column id="selButton" >
+                    <p:button outcome="newSampleRunForm.jsf" icon=".ui-icon-wrench"  disabled="#{!runsSearchBean.userHasAddPermission}">
+                        <f:param name="sid" value="#{sample.id}"/>
+                        <f:param name="rid" value="#{sampleSearchBean.selectedRun}"/>
+                    </p:button>
+                </p:column>
+
+                <p:column id="idSamColumn" filterBy="#{sample.idd}"                     
+                          headerText="#{bundle['runs.sample.id']}"
+                          filterMatchMode="contains"
+                          sortBy="#{sample.id}">
+
+                    <h:link outcome="newSampleRunForm.jsf">
+                        <f:param name="sid" value="#{sample.id}"/>
+                        <f:param name="rid" value="#{sampleSearchBean.selectedRun}"/>
+                        <h:outputText value="#{sample.id}"/>  
+                    </h:link>   
+
+
+                </p:column>
+
+                <p:column id="nameColumn" filterBy="#{sample.name}"                      
+                          headerText="#{bundle['runs.sample.name']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.name}" />
+                </p:column>
+
+                <p:column id="userColumn" filterBy="#{sample.user.login}"                      
+                          headerText="#{bundle['runs.requester']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.user.login}" />
+                </p:column>
+
+                <p:column id="statusColumn" filterBy="#{sample.status}"                     
+                          headerText="#{bundle['runs.status']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.status}" />
+                </p:column>
+
+                <p:column id="organismColumn" filterBy="#{sample.organism}"                    
+                          headerText="#{bundle['runs.organism']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.organism}" />
+                </p:column>
+
+                <p:column id="typeColumn" filterBy="#{sample.type}"                    
+                          headerText="#{bundle['runs.type']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.type}" />
+                </p:column>
+
+                <p:column id="antibodyColumn" filterBy="#{sample.antibody}"                  
+                          headerText="#{bundle['runs.antibody']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.antibody}" />
+                </p:column>
+
+                <p:column id="costCenterColumn" filterBy="#{sample.costCenter}"                    
+                          headerText="#{bundle['runs.cost.center']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.costCenter}" />
+                </p:column>
+
+                <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
+                          headerText="#{bundle['runs.description']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.description}" />
+                </p:column>
+
+
+
+            </p:dataTable>
+
+
+        </h:form>
+
+
+
+    </ui:define>
+
+</ui:composition>

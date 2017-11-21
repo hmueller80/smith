@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="sampleAttributes">
+        <h:form id="SampleAttributesForm"> 
+            
+            
+            <p:panel id="sampleDetailPanel" header="#{sampleRichDataBean.sampleName} #{bundle['samples.rich.information']}" >
+            
+             <h:panelGrid columns="3" cellpadding="5"  >
+                 
+                 
+                           <h:outputLabel for="sampleID" value="#{bundle['samples.sample.id']}: "  />
+                           <h:link  id="sampleID"  value="#{sampleRichDataBean.sampleID}"  outcome="sampleDetails.jsf" >
+                                <f:param name="sid" value="#{sampleRichDataBean.sampleID}"/>
+                            </h:link>
+                            <p:message for="sampleID" />
+                            
+                            <p:separator style="width:300px;height:5px" /> 
+                            <h:outputText value="#{bundle['samples.experiment.information']}"/>
+                            <p:separator style="width:300px;height:5px" /> 
+                            
+                            <h:outputLabel for="experiment" value="#{bundle['samples.experiment.name']}: " />
+                            <p:inputMask style="width:300px;"  id="experiment" value="#{sampleRichDataBean.experiment}" mask=""/>
+                            <p:message for="experiment" />
+                            
+                            <h:outputLabel for="timestep" value="#{bundle['samples.time.series.step']}: " />
+                            <p:inputMask style="width:300px;"  id="timestep" mask="99-99-9999 99-99-99" value="#{sampleRichDataBean.timestep}"/>
+                            <p:message for="timestep" />
+                            
+                            <h:outputLabel for="projects" value="#{bundle['samples.projects.involved']}: " />
+                            <h:outputText style="width:300px;"  id="projects" value="#{sampleRichDataBean.projectsInvolvedList}"/>
+                            <p:message for="projects" />
+                            
+                            <h:outputText value=""/>
+                            <p:commandButton action="#{sampleRichDataBean.saveExperimentInfo()}"
+                                             id="ExperimentSaveButton" value="#{bundle['button.text.save']}" 
+                                             update="SampleAttributesForm"
+                                             disabled="#{!sampleRichDataBean.hasModifyPermission}">
+                                             <f:param name="sid" value="#{sampleRichDataBean.sampleID}"/>                            
+                            </p:commandButton>
+                            <p:message for="ExperimentSaveButton"/>
+                            
+                            <p:separator style="width:300px;height:5px" /> 
+                            <h:outputText value="#{bundle['samples.custom.info']}"/>
+                            <p:separator style="width:300px;height:5px" />
+                            
+                            
+            
+             </h:panelGrid>
+            </p:panel>
+            
+            <p:dataList id="attributesList" value="#{sampleRichDataBean.attributevalues}" var="atvals" itemType="disc">              
+            <p:column>
+                                    
+            <h:inputText value="#{atvals.attribute.name}" style="width:300px" 
+                         readonly="true"/>
+            <h:inputText value="#{sampleRichDataBean.getValue(atvals)}" style="width:300px" 
+                         readonly="true"/>
+            <p:button id="selectAttribute" icon="ui-icon ui-icon-pencil" disabled="#{!sampleRichDataBean.hasModifyPermission}"
+                         outcome="editAttribute.jsf" title="select attribute" style="width:25px;height:25px">
+                 <f:param name="sid" value="#{sampleRichDataBean.sampleID}" />
+                 <f:param name="selAtId" value="#{atvals.attrValid}" />
+            </p:button>
+            
+            </p:column>
+            </p:dataList>
+            
+            <p:button id="addAttribute" icon="ui-icon ui-icon-pencil" value="#{bundle['button.add.new']}"
+                         outcome="editAttribute.jsf" title="#{bundle['button.add.new.tip']}"
+                         disabled="#{!sampleRichDataBean.hasModifyPermission}">
+                 <f:param name="sid" value="#{sampleRichDataBean.sampleID}" />                
+            </p:button>
+            
+            
+        </h:form>
+        
+              
+        
+    </ui:define>
+
+</ui:composition>

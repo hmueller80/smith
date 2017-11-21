@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="runsSearch">
+
+
+        <h:form id="runsTableForm">
+    
+        
+        <p:dataTable id="runsTable" var="runs" value="#{runsSearchBean.runsList}" widgetVar="samplesTable"
+                     style="font-size: x-small;" paginator="true" rows="20"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                                        {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                     emptyMessage="#{bundle['runs.emptymessage']}" filteredValue="#{filterBean.sampleRun}"  >
+          
+            <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all SampleRun fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('samplesTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+            <p:column id="idRunsColumn" filterBy="#{runs.id.runId}"                     
+                      headerText="#{bundle['runs.run.id']}"
+                      filterMatchMode="contains"
+                      sortBy="#{runs.id.runId}">
+                <h:link  outcome="runDetails.jsf" value="#{runs.id.runId}">
+                        <f:param name="rid" value="#{runs.id.runId}"/>
+                                                
+                 </h:link> 
+            </p:column>
+             
+            <p:column id="idSamColumn" filterBy="#{runs.id.samId}"                      
+                      headerText="#{bundle['runs.sample.id']}"
+                      filterMatchMode="contains">
+                 <h:commandLink value="#{runs.id.samId}" target="_blank" action="#{modSampleFormBean.loadid(runs.id.samId)}" >
+                          
+                 </h:commandLink>   
+            </p:column>
+            
+            <p:column id="operatorColumn" filterBy="#{runs.user.login}"                      
+                      headerText="#{bundle['runs.operator.header']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.user.login}" />
+            </p:column>
+            
+            <p:column id="requesterColumn" filterBy="#{runs.sample.user.login}"                      
+                      headerText="#{bundle['runs.requester']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.sample.user.login}" />
+            </p:column>
+                     
+            <p:column id="seqColumn" filterBy="#{runs.reagentBySequencingReagentCode.reagentBarCode}"                      
+                      headerText="#{bundle['runs.sequencing.reagent']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.reagentBySequencingReagentCode.reagentBarCode}" />
+            </p:column>
+            
+            <p:column id="clusterGenColumn" filterBy="#{runs.reagentByClustergenerationReagentCode.reagentBarCode}"                      
+                      headerText="#{bundle['runs.cluster.reagent']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.reagentByClustergenerationReagentCode.reagentBarCode}" />
+            </p:column>
+            
+            <p:column id="prepColumn" filterBy="#{runs.reagentBySamplePrepReagentCode.reagentBarCode}"                      
+                      headerText="#{bundle['runs.sampleprep.ragent']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.reagentBySamplePrepReagentCode.reagentBarCode}" />
+            </p:column>
+            
+            <p:column id="flowcellColumn" filterBy="#{runs.flowcell}"                      
+                      headerText="#{bundle['runs.flowcell']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.flowcell}" />
+            </p:column>
+            
+            <p:column id="laneColumn" filterBy="#{runs.allLanesToString}"                      
+                      headerText="#{bundle['runs.lane']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.allLanesToString}" />
+            </p:column>
+            
+            <p:column id="seqindexColumn" filterBy="#{runs.sample.sequencingIndexes.index}"                      
+                      headerText="#{bundle['runs.sequencing.index']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.sample.sequencingIndexes.index}" />
+            </p:column>
+            
+            <p:column id="isControlColumn" filterBy="#{runs.isControl}"                      
+                      headerText="#{bundle['runs.is.control']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{runs.isControl}" />
+            </p:column>
+            
+            <p:column id="runFolderColumn" filterBy="#{runs.runFolder}"                      
+                      headerText="#{bundle['runs.run.folder']}"
+                      filterMatchMode="contains">                 
+                <h:outputLink target="_blank" value="#{runs.runFolder}" >
+                        <h:outputText value="#{runs.runFolder}" />
+                 </h:outputLink>   
+            </p:column>
+                        
+            
+        </p:dataTable>
+        <h:panelGrid columns="2">
+                <p:panel header="#{bundle['export.All']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
+                    </h:commandLink>
+
+                </p:panel>
+            <p:panel header="#{bundle['export.Page']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="true" />
+                    </h:commandLink>
+
+                </p:panel>
+
+            </h:panelGrid>    
+     
+           <h3> #{bundle['runs.hint']} </h3>
+          
+           
+           
+           
+           <p:button outcome="selectSample.jsf"  value="#{bundle['button.text.new.run']}" disabled="#{!runsSearchBean.userHasAddPermission}">
+                <f:param name="specifySamples" value="requested"/>
+                <f:param name="rid" value="#{runsSearchBean.newRunId}" />
+            </p:button>
+           
+           
+           
+           <p:button outcome="newDraggableRunForm.jsf"  value="Mindex" disabled="#{!runsSearchBean.userHasAddPermission}" rendered="true">
+                <f:param name="specifySamples" value="requested"/>
+                <f:param name="rid" value="#{runsSearchBean.newRunId}" />
+            </p:button>
+           
+            </h:form>
+           
+           
+           <p:separator/>
+            
+        <h2>Upload Run Form</h2>
+        <h:outputLink rendered="#{navigationBean.userHasAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
+                <h:outputText value="#{bundle['runs.exampleform']}" />
+            </h:outputLink>
+        
+        <h:form id="runTableUploadForm" >
+            
+            <p:panelGrid columns="3">
+                <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" fileUploadListener="#{uploadRunFormBean.handleFileUpload}"  
+                              sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/" mode="advanced"  update="ufilename">
+                </p:fileUpload>
+
+                <h:outputText id="ufilename"  value="#{uploadRunFormBean.filename}" ></h:outputText>
+                
+
+
+            </p:panelGrid>
+        </h:form>
+        
+        <h:form  id="runTableUploadProcessForm">
+            <p:panelGrid columns="2">
+                <p:commandButton id="RunUploadProcessButton" action="#{uploadRunFormBean.submitSampleRun()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
+                </p:commandButton>
+                <p:progressBar  widgetVar="progressBar" style="width: 150px;" ajax="true" value="#{uploadRunFormBean.progress}" labelTemplate="{value}%" styleClass="animated">
+                    <p:ajax event="complete" onsuccess="PF('progressBar').stop();"/>
+                </p:progressBar>
+                
+            </p:panelGrid>
+        </h:form>
+           
+           
+        
+    </ui:define>
+
+</ui:composition>

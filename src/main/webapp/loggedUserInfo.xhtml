@@ -1,0 +1,57 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="loggedUserInfo">
+        <h:form id="loggedUserForm">
+            
+            <h3>#{bundle['general.info']}</h3>
+            <table border="0" cellspadding="50"  >
+            <tr>
+            <td>#{bundle['user.login']}:</td>
+            <td>#{loggedUserBean.loggedUser.login}</td>
+            </tr>
+            <tr>
+            <td>#{bundle['user.name']}:</td>
+            <td>#{loggedUserBean.loggedUser.userName}</td>
+            </tr>
+            <tr>
+            <td>#{bundle['user.tel']}:</td>
+            <td>#{loggedUserBean.loggedUser.phone}</td>
+            </tr>
+            <tr>
+            <td>#{bundle['user.email']}:</td>
+            <td>#{loggedUserBean.loggedUser.mailAddress}</td>
+            </tr>
+            <tr>
+            <td>#{bundle['user.role']}:</td>
+            <td>#{loggedUserBean.loggedUser.userRole}</td>
+            </tr>
+               
+            <tr>
+            <td>Group ID :</td>
+            <td>#{loggedUserBean.loggedUser.pi}</td>
+            </tr>   
+            <tr>
+            <td>#{bundle['user.groupleader']}:</td>
+            <td>#{loggedUserBean.loggedUserPIName}</td>
+            </tr>             
+            </table>
+            
+            
+            <h3>#{bundle['general.collaborations']}</h3>
+            <p:dataList value="#{loggedUserBean.collaborations}" var="col" itemType="disc">                     
+            #{bundle['project.project']} #{col.project.name}    
+            </p:dataList>
+            
+            </h:form>     
+            
+            
+        
+    </ui:define>
+
+</ui:composition>
+

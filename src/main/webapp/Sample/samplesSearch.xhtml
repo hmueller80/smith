@@ -1,0 +1,173 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="sampleSearch">
+
+        <h:form id="sampleTableForm">
+
+            <p:dataTable id="sampleTable" var="sample" value="#{sampleSearchBean.sampleList}" widgetVar="samplesTable"
+                         style="font-size: x-small;" paginator="true" rows="20"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                         {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         emptyMessage="#{bundle['sample.emptymessage']}" filteredValue="#{filterBean.sample}">
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all Sample fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('samplesTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column id="idSamColumn" filterBy="#{sample.id}"                     
+                          headerText="#{bundle['samples.sample.id']}"
+                          filterMatchMode="contains"
+                          sortBy="#{sample.id}">                 
+
+                    <h:commandLink target="_blank" action="#{sampleFormBean.loadid}" >
+                        <f:param name="sid" value="#{sample.id}"/>
+                        <h:outputText value="#{sample.id}"/>  
+                        <h:outputLink value="sampleDetails.jsf"/>  
+                    </h:commandLink>   
+
+
+                </p:column>
+
+                <p:column id="nameColumn" filterBy="#{sample.name}"                      
+                          headerText="#{bundle['samples.sample.name']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.name}" />
+                </p:column>
+
+                <p:column id="libNameColumn" filterBy="#{sample.libraryName}"                      
+                          headerText=""
+                          filterMatchMode="in">
+                    <f:facet name="filter">
+                        <p:selectCheckboxMenu label="Libraries" onchange="PF('samplesTable').filter()" panelStyle="width:300px" scrollHeight="200">
+                            <f:selectItems value="#{sampleSearchBean.libraries}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+                    <h:outputText value="#{sample.libraryName}" />
+                </p:column>
+                <!--headerText="" {bundle['newDraggableRunForm.libraryName']}-->
+                <p:column id="userColumn" filterBy="#{sample.user.login}"                      
+                          headerText="#{bundle['samples.requester']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.user.login}" />
+                </p:column>
+
+                <p:column id="statusColumn" filterBy="#{sample.status}"                     
+                          headerText="#{bundle['samples.status']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.status}" />
+                </p:column>
+
+                <p:column id="organismColumn" filterBy="#{sample.organism}"                    
+                          headerText="#{bundle['samples.organism']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.organism}" />
+                </p:column>
+
+                <p:column id="typeColumn" filterBy="#{sample.experimentName}"                    
+                          headerText="#{bundle['samples.application']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.experimentName}" />
+                </p:column>
+
+                <p:column id="antibodyColumn" filterBy="#{sample.submissionId}"                  
+                          headerText="#{bundle['samples.annotation']}"
+                          filterMatchMode="contains">
+
+                    <h:outputLink  value="../SampleAnnotationSheets/#{sample.submissionId}.xlsx">#{sample.submissionId}</h:outputLink>
+                </p:column>
+                
+                <!--
+                <p:column id="antibodyColumn" filterBy="_{sample.submissionId}"                           
+                          filterMatchMode="contains">
+			<f:facet name="filter">
+                        <p:selectCheckboxMenu label="SubmissionID" onchange="PF('samplesTable').filter()" panelStyle="width:300px" scrollHeight="200">
+                            <f:selectItems value="_{sampleSearchBean.submissions}" />
+                        </p:selectCheckboxMenu>
+                    </f:facet>
+
+                    <h:outputLink  value="../SampleAnnotationSheets/_{sample.submissionId}.xlsx">_{sample.submissionId}</h:outputLink>
+                </p:column>
+                -->
+
+                <p:column id="costCenterColumn" filterBy="#{sample.costCenter}"                    
+                          headerText="#{bundle['samples.cost.center']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.costCenter}" />
+                </p:column>
+
+                <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
+                          headerText="#{bundle['samples.description']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{sample.description}" />
+                </p:column>
+
+
+
+            </p:dataTable>
+
+
+            <h:panelGrid columns="2">
+                <p:panel header="#{bundle['export.All']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="false" />
+                    </h:commandLink>
+
+                </p:panel>
+                <p:panel header="#{bundle['export.Page']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="true" />
+                    </h:commandLink>
+
+                </p:panel>
+
+            </h:panelGrid>    
+
+            <p:button outcome="newSampleForm.jsf" value="#{bundle['button.text.new.sample']}" rendered="#{sampleSearchBean.newSamplePermission}"></p:button>
+            <p:separator/>
+
+            <h2>Upload request form</h2>
+            <h:outputLink id="requestform" value="../downloads/example.csv">
+                <h:outputText value="Example request form" />
+            </h:outputLink>
+        </h:form>
+        <h:form id="sampleTableUploadForm"  enctype="multipart/form-data">
+
+            <p:panelGrid columns="3">
+                <p:fileUpload immediate="true"  id="fu2"  style="margin-top: 10px" fileUploadListener="#{uploadSampleRequestBean.handleFileUpload}"  
+                              sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/" mode="advanced"  update="sampleTableUploadForm">
+                </p:fileUpload>
+
+                <h:outputText id="i22"  value="#{uploadSampleRequestBean.filename}" ></h:outputText>
+
+
+
+            </p:panelGrid>
+        </h:form>
+
+        <h:form  id="sampleTableUploadProcessForm">
+            <p:panelGrid columns="2">
+                <p:commandButton id="RequestUploadProcessButton" actionListener="#{uploadSampleRequestBean.submitRequest()}" value="#{bundle['button.text.new.sample.upload']}"  update="@all" onclick="PF('progressBar').start();">
+                </p:commandButton>
+              
+                <p:progressBar  widgetVar="progressBar" style="width: 150px;" ajax="true" value="#{uploadSampleRequestBean.progress}" labelTemplate="{value}%" styleClass="animated">
+                    <p:ajax event="complete" onsuccess="PF('progressBar').stop();"/>
+                </p:progressBar>
+            </p:panelGrid>
+                                
+        </h:form>
+        
+
+
+    </ui:define>
+
+</ui:composition>

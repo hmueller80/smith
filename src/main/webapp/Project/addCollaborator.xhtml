@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui" 
+                template="/template.xhtml">
+
+    <ui:define name="addCollaborator">
+
+        <h:form>
+
+            <p:dataTable id="dataTable" var="user" value="#{addCollaboratorBean.usList}" widgetVar="usersTable" 
+                         emptyMessage="#{bundle['data.emptymessage']}"
+                         style="font-size: x-small;" paginator="true" rows="20"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                         {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         selection="#{addCollaboratorBean.selectedCollaborators}" selectionMode="multiple">
+
+                <p:column id="idColumn" filterBy="#{user.id}" 
+                          headerText="#{bundle['user.id']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.id}" />
+                </p:column>
+
+                <p:column id="nameColumn" filterBy="#{user.userName}" 
+                          headerText="#{bundle['user.user.name']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.userName}" />
+                </p:column>
+
+                <p:column id="loginColumn" filterBy="#{user.login}" 
+                          headerText="#{bundle['user.login']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.login}" />
+                </p:column>
+
+                <p:column id="roleColumn" filterBy="#{user.userRole}" 
+                          headerText="#{bundle['user.role']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.userRole}" />
+                </p:column>
+
+                <p:column id="mailColumn" filterBy="#{user.mailAddress}" 
+                          headerText="#{bundle['user.email']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.mailAddress}" />
+                </p:column>
+
+                <p:column id="teleColumn" filterBy="#{user.phone}" 
+                          headerText="#{bundle['user.phone']}"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.phone}" />
+                </p:column>
+
+                <p:column id="piColumn" filterBy="#{user.pi}" 
+                          headerText="#{bundle['user.pi']}"
+                          filterMatchMode="exact">
+                    <h:outputText value="#{user.pi}" />
+                </p:column>
+
+
+            </p:dataTable>
+
+            <p:commandButton value="#{bundle['button.text.add.selected']}" action="#{addCollaboratorBean.addSelected()}"
+                             type="update"                     
+                             disabled="false" update="@form">
+                <f:param name="pid" value="#{v.projectId}"/>
+            </p:commandButton>
+
+            <p:button value="#{bundle['button.text.back']}" outcome="projectDetails.jsf">
+                <f:param name="pid" value="#{addCollaboratorBean.projectId}"/>
+            </p:button>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

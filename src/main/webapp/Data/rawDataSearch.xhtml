@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="rawDataSearch">
+        <h:form>
+
+    <p:tabMenu activeIndex="0">
+    <p:menuitem value="#{bundle['nav.rawdata']}" url="/Data/rawDataSearch.jsf" icon="ui-icon-search"/>
+    <p:menuitem value="#{bundle['nav.aligneddata']}" url="/Data/alignedDataSearch.jsf" icon="ui-icon-search" />
+    <p:menuitem value="#{bundle['nav.annotateddata']}" url="/Data/annotatedDataSearch.jsf" icon="ui-icon-search"/>   
+    </p:tabMenu>
+        
+        <p:dataTable id="rawDataTable" var="data" value="#{rawDataSearchBean.rawDataList}" widgetVar="rawDataTable"
+                     style="font-size: x-small;" paginator="true" rows="20"
+                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                                        {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                     emptyMessage="#{bundle['data.emptymessage']}"   >
+          
+
+            <p:column id="idColumn" filterBy="#{data.rawId}"                      
+                      headerText="#{bundle['table.header.rawdataid']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{data.rawId}" />
+            </p:column> 
+            
+            <p:column id="idSamColumn" filterBy="#{data.samplerun.sample.name}"                     
+                      headerText="#{bundle['table.header.sample']}"
+                      filterMatchMode="contains"> 
+                <h:commandLink target="_blank" action="../Sample/sampleDetails.jsf">
+                        <f:param name="sid" value="#{data.samplerun.sample.id}"/>
+                        <h:outputText value="#{data.samplerun.sample.id}"/>  
+                        <h:outputLink value="../Sample/sampleDetails.jsf"/>  
+                 </h:commandLink> 
+            </p:column>
+            
+            <p:column id="idRunColumn" filterBy="#{data.samplerun.id.runId}"                     
+                      headerText="#{bundle['table.header.run']}"
+                      filterMatchMode="contains"> 
+                <h:commandLink target="_blank" action="../Run/runDetails.jsf">
+                        <f:param name="rid" value="#{data.samplerun.id.runId}"/>
+                        <h:outputText value="#{data.samplerun.id.runId}"/>  
+                        <h:outputLink value="../Run/runDetails.jsf"/>  
+                 </h:commandLink> 
+                
+            </p:column>
+            
+            <p:column id="folderColumn" filterBy="#{data.folderUrl}"                      
+                      headerText="#{bundle['table.header.folderurl']}"
+                      filterMatchMode="contains">
+                 <h:outputLink
+                    value="#{data.folderUrl}">
+                    <h:outputText value="#{data.folderUrl}" />
+                </h:outputLink>
+            </p:column>
+            
+            <p:column id="commandColumn" filterBy="#{data.bcltofastqcommnad}"                      
+                      headerText="#{bundle['table.header.bcltofastqcommnad']}"
+                      filterMatchMode="contains">
+                 <h:outputText value="#{data.bcltofastqcommnad}" />
+            </p:column>
+            
+            <p:column id="ref1Column" filterBy="#{data.fastqcreferencer1}"                      
+                      headerText="#{bundle['table.header.fastqreference1']}"
+                      filterMatchMode="contains">
+                <h:outputLink
+                    value="#{data.fastqcreferencer1}">
+                    <h:outputText value="#{data.fastqcreferencer1}" />
+                </h:outputLink>
+            </p:column>
+            
+            <p:column id="ref2Column" filterBy="#{data.fastqcreferencer2}"                      
+                      headerText="#{bundle['table.header.fastqreference2']}"
+                      filterMatchMode="contains">
+                
+                <h:outputLink
+                    value="#{data.fastqcreferencer2}">
+                    <h:outputText value="#{data.fastqcreferencer2}" />
+                </h:outputLink>
+            </p:column>
+            
+        </p:dataTable>
+   		<p:commandButton value="#{bundle['button.text.update.data']}" 
+                             action="#{dataUpdaterBean.updateData()}">                
+            </p:commandButton>
+        </h:form>
+    </ui:define> 
+    
+</ui:composition>

@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
+
+    <ui:define name="reagentDetails" >
+        
+        <h:form id="ReagentDetailsForm"  >
+            
+             <p:panel id="detailPanel" header="#{reagentFormBean.reagentbarcode} #{bundle['reagents.details']}">
+                 
+              <h:panelGrid columns="3" cellpadding="5">
+            
+                            <p:separator style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['reagents.application.info']}"/>
+                            <p:separator style="width:300px;height:5px" />
+                            
+                            <h:outputLabel for="barCode" value="#{bundle['reagents.barcode']}:  " />
+                            <h:outputText  style="width:300px;" id="barCode" value="#{reagentFormBean.reagentbarcode}"/>
+                            <p:message for="barCode" />
+                            
+                            <h:outputLabel for="supportedreactions" value="#{bundle['reagents.reactions.supported']}:  " />
+                            <p:inputText  style="width:300px;" id="supportedreactions" value="#{reagentFormBean.supportedreactions}"/>
+                            <p:message for="supportedreactions" />
+                            
+                            <h:outputLabel for="remainingreactions" value="#{bundle['reagents.reactions.remaining']}:  " />
+                            <h:outputText  style="width:300px;" id="remainingreactions" value="#{reagentFormBean.remainingReactions}"/>
+                            <p:message for="remainingreactions" />
+                            
+                            <h:outputLabel for="application" value="#{bundle['reagents.application']}:  " />
+                            <h:selectOneMenu style="width:300px;" required="false" value="#{reagentFormBean.application}">
+                                <f:selectItems id="application" value="#{preferences.application}"/>
+                            </h:selectOneMenu> 
+                            <p:message for="application" />
+                            
+                            <h:outputLabel for="receptiondate" value="#{bundle['reagents.reception.date']}:  " />  
+                            <p:calendar style="width:300px;" required="false" id="receptiondate" value="#{reagentFormBean.receptiondate}" 
+                                         pattern="dd-MM-yyyy" immediate="true"/>
+                            <p:message for="receptiondate" />
+                            
+                            <h:outputLabel for="expirationdate" value="#{bundle['reagents.expiration.date']}:  " />  
+                            <p:calendar style="width:300px;" required="false" id="expirationdate" value="#{reagentFormBean.expirationdate}" 
+                                         pattern="dd-MM-yyyy" immediate="true"/>
+                            <p:message for="expirationdate" />
+                            
+                            <p:separator style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['reagents.administration.info']}"/>
+                            <p:separator style="width:300px;height:5px" />
+                            
+                            <h:outputLabel for="operator" value="#{bundle['reagents.operator']}:  " />
+                            <h:outputText  style="width:300px;" id="operator" value="#{reagentFormBean.operatorLogin}"/>
+                            <p:message for="operator" />
+                            
+                            <h:outputLabel for="owner" value="#{bundle['reagents.owner']}:  " />
+                            <h:selectOneMenu style="width:300px;" required="false" value="#{reagentFormBean.ownerLogin}">
+                                <f:selectItems id="owner" value="#{reagentFormBean.userNames}"/>
+                            </h:selectOneMenu>
+                            <p:message for="owner" />
+                            
+                            <h:outputLabel for="cataloguenumber" value="#{bundle['reagents.catalogue.number']}: " />
+                            <p:inputText  style="width:300px;" id="cataloguenumber" value="#{reagentFormBean.cataloguenumber}"/>
+                            <p:message for="cataloguenumber" />
+                            
+                            <h:outputLabel for="price" value="#{bundle['reagents.price']}: " />
+                            <p:inputText  style="width:300px;" id="price" value="#{reagentFormBean.price}"/>
+                            <p:message for="price" />
+                            
+                            <h:outputLabel for="institute" value="#{bundle['reagents.institute']}: " />
+                            <p:inputText  style="width:300px;" id="institute" value="#{reagentFormBean.institute}"/>
+                            <p:message for="institute" />
+                            
+                            <h:outputLabel for="costcenter" value="#{bundle['reagents.cost.center']}: " />
+                            <p:inputText  style="width:300px;" id="costcenter" value="#{reagentFormBean.costcenter}"/>
+                            <p:message for="costcenter" />
+                            
+                            <p:separator style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['reagents.comments']}"/>
+                            <p:separator style="width:300px;height:5px" />
+                            
+                            <h:outputLabel for="comments" value="" />
+                            <p:inputTextarea  style="width:300px;height:100px;" id="comments" value="#{reagentFormBean.comments}"/>
+                            <p:message for="comments" />
+                            
+                            <p:separator style="width:300px;height:5px" />
+                            <h:outputText value="#{bundle['reagents.options']}"/>
+                            <p:separator style="width:300px;height:5px" />
+                            
+                            <p:commandButton  update="ReagentDetailsForm" actionListener="#{reagentFormBean.delete()}"
+                                              id="ReagentDelbutton" value="#{bundle['button.text.delete']}" disabled="#{!reagentFormBean.hasDeletePermission()}">
+                               <f:param name="barcode" value="#{reagentFormBean.reagentbarcode}"/>                    
+                            </p:commandButton>
+                           
+                            <p:commandButton  update="ReagentDetailsForm" actionListener="#{reagentFormBean.save()}"
+                                              id="ReagentModbutton" value="#{bundle['button.text.save']}" disabled="#{!reagentFormBean.hasModifyPermission()}">
+                               <f:param name="barcode" value="#{reagentFormBean.reagentbarcode}"/>                    
+                            </p:commandButton>
+                            <p:message for="ReagentModbutton"/>      
+        
+                 </h:panelGrid>
+             
+             </p:panel>
+            
+        </h:form>
+               
+    </ui:define>
+
+</ui:composition>

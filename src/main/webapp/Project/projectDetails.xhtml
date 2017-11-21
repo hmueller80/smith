@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="projectDetails">
+
+        <h:form id="ProjectDetailsForm">
+
+            <p:panel id="projectDetailPanel" header="#{projectDetailsBean.name} details">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <p:separator id="customSeparator1" style="width:300px;height:5px" /> 
+                    <h:outputText value="#{bundle['project.info']}" style="width:900px;"/>
+                    <p:separator id="customSeparator2" style="width:300px;height:5px" /> 
+
+                    <h:outputLabel for="projectID" value="#{bundle['project.id']}:  " />
+                    <h:outputText style="width:300px;"  id="projectID" value="#{projectDetailsBean.projectId}" />
+                    <p:message for="projectID" />
+
+                    <h:outputLabel for="name" value="#{bundle['project.name']}:  " />
+                    <h:outputText style="width:300px;"  id="name" value="#{projectDetailsBean.name}" />
+                    <p:message for="name" />
+
+                    <h:outputLabel for="user" value="#{bundle['project.leader']}:  " />
+                    <h:outputText style="width:300px;"  id="user" value="#{projectDetailsBean.userName}" />
+                    <p:message for="user" />
+
+                    <h:outputLabel for="description" value="#{bundle['project.description']}:  " />
+                    <h:inputTextarea style="width:300px;" rows="10"  id="description" value="#{projectDetailsBean.description}" disabled="true"/>
+                    <p:message for="description" />
+
+                    <h:outputLabel for="modifyText" value="" />
+                    <p:button id="modifyText" value="#{bundle['button.text.modify.info']}" outcome="modProjectText.jsf">
+                        <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+                    </p:button>
+                    <p:message for="modifyText" />
+
+                    <h:outputLabel for="delete" value="" />
+                    <p:button id="delete" value="#{bundle['button.text.delete.project']}" outcome="delProjConf.jsf" 
+                              disabled="#{!projectDetailsBean.hasDeletePermission()}">
+                        <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+                    </p:button>
+                    <p:message for="delete" />
+
+                </h:panelGrid>
+
+            </p:panel>
+
+            <p:panel id="sampleTablePanel" >
+                <p:dataTable id="sampleProjectTable" var="samples" value="#{projectDetailsBean.projectSamplesDM}"
+                             widgetVar="samplesTable"
+                             style="font-size: small; width:900px;" paginator="true" rows="20"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                             {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                             selectionMode="multiple"
+                             selection="#{projectDetailsBean.selectedSamples}"
+                             emptyMessage="#{bundle['data.emptymessage']}"   >
+
+                    <f:facet name="header">
+                        #{bundle['project.samples.involved']}
+                    </f:facet>
+
+
+                    <p:column id="idSamColumn" filterBy="#{samples.samId}"                     
+                              headerText="#{bundle['samples.sample.id']}"
+                              filterMatchMode="contains"
+                              sortBy="#{samples.id}">
+                        <h:link target="_blank" outcome="./Sample/sampleDetails" >
+                            <f:param name="sid" value="#{samples.id}"/>
+                            <h:outputText value="#{samples.id}"/>  
+                        </h:link>  
+                    </p:column>
+
+                    <p:column id="nameColumn" filterBy="#{samples.name}"                      
+                              headerText="#{bundle['samples.sample.name']}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{samples.name}" />
+                    </p:column>
+
+                    <p:column id="userColumn" filterBy="#{samples.user.login}"                      
+                              headerText="#{bundle['samples.requester']}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{samples.user.login}" />
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:button id="addSample" value="#{bundle['button.text.add.samples']}" outcome="selectSamplesForProject">
+                            <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+                        </p:button>
+                        <p:commandButton id="removeSamples" value="#{bundle['button.text.remove.samples']}" 
+                                         action="#{projectDetailsBean.removeSelectedSamples()}"
+                                         update="sampleProjectTable"
+                                         disabled="#{!projectDetailsBean.hasDeletePermission()}">
+                            <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+                        </p:commandButton>
+                    </f:facet>
+
+                </p:dataTable>
+
+            </p:panel>
+
+            <h></h>
+            <h></h>
+            <h></h>
+
+            <p:panel>
+
+                <p:dataTable id="collDataTable" var="coll" value="#{projectDetailsBean.collaborations}" widgetVar="usersTable"
+                             style="font-size: small; width:900px;"
+                             emptyMessage="#{bundle['data.emptymessage']}" 
+                             selection="#{projectDetailsBean.selectedCollaboration}" selectionMode="single">
+
+                    <f:facet name="header">
+                        #{bundle['project.users.involved']}
+                    </f:facet>
+
+                    <p:column id="loginColumn" filterBy="#{coll.user.login}" 
+                              headerText="#{bundle['user.login']}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{coll.user.login}" />
+                    </p:column>
+
+                    <p:column id="nameColumn" filterBy="#{coll.user.userName}" 
+                              headerText="#{bundle['user.user.name']}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{coll.user.userName}" />
+                    </p:column>
+
+                    <p:column id="permissionColumn" filterBy="#{projectDetailsBean.getPermissionForUser(coll)}" 
+                              headerText="#{bundle['user.permission']}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{projectDetailsBean.getPermissionForUser(coll)}" />
+                    </p:column>
+
+                    <f:facet name="footer">
+
+                        <p:button id="addCollaboration" value="#{bundle['button.text.add.collaborator']}" 
+                                  outcome="addCollaborator.jsf"
+                                  disabled="#{!projectDetailsBean.hasDeletePermission()}">
+                            <f:param name="pid" value="#{projectDetailsBean.projectId}" />
+                        </p:button>
+                        <p:commandButton id="changeCol" value="#{bundle['button.text.change.permission']}" 
+                                         action="#{projectDetailsBean.changePermissionForSelectedCollaboration()}"
+                                         update="collDataTable"
+                                         disabled="#{!projectDetailsBean.hasDeletePermission()}">                        
+                        </p:commandButton>
+                        <p:commandButton id="delCol" value="#{bundle['button.text.delete.collaboration']}" 
+                                         action="#{projectDetailsBean.deleteCollaboration()}"
+                                         update="@all"
+                                         disabled="#{!projectDetailsBean.hasDeletePermission()}">                        
+                        </p:commandButton>
+                    </f:facet>
+
+                </p:dataTable>
+            </p:panel>
+
+
+
+
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

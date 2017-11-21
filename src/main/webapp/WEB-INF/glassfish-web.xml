@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
+<glassfish-web-app error-url="">
+  <security-role-mapping>
+    <role-name>User</role-name>
+    <principal-name>u1g1</principal-name>
+    <principal-name>u2g1</principal-name>
+    <principal-name>u3g1</principal-name>
+    <principal-name>u1g2</principal-name>
+    <principal-name>u2g2</principal-name>
+    <principal-name>u3g2</principal-name>
+    <principal-name>u1g3</principal-name>
+    <principal-name>u2g3</principal-name>
+    <principal-name>u3g3</principal-name>  
+    <principal-name>g1leader</principal-name>
+    <principal-name>g2leader</principal-name>
+    <principal-name>g3leader</principal-name>  
+  </security-role-mapping>
+  <class-loader delegate="true"/>
+  <jsp-config>
+    <property name="keepgenerated" value="true">
+      <description>Keep a copy of the generated servlet class' java code.</description>
+    </property>
+  </jsp-config>
+  <security-role-mapping>
+    <role-name>admin</role-name>
+    <principal-name>admin</principal-name>
+    <principal-name>hmueller</principal-name> 
+    <principal-name>dbarreca</principal-name> 
+    <group-name>admin</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>user</role-name>
+    <principal-name>u1g1</principal-name>
+    <principal-name>u2g1</principal-name>
+    <principal-name>u3g1</principal-name>
+    <principal-name>u1g2</principal-name>
+    <principal-name>u2g2</principal-name>
+    <principal-name>u3g2</principal-name>
+    <principal-name>u1g3</principal-name>
+    <principal-name>u2g3</principal-name>
+    <principal-name>u3g3</principal-name>   
+    <principal-name>g1leader</principal-name>
+    <principal-name>g2leader</principal-name>
+    <principal-name>g3leader</principal-name> 
+    <principal-name>hmueller</principal-name> 
+    <principal-name>dbarreca</principal-name>    
+    <group-name>user</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>guest</role-name>
+    <principal-name>guest</principal-name>
+    <group-name>guest</group-name>
+  </security-role-mapping>
+  <parameter-encoding default-charset="UTF-8"/>
+</glassfish-web-app>

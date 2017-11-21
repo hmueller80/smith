@@ -1,0 +1,287 @@
+#@UGENE_WORKFLOW
+
+
+
+workflow rnaseq_paired{
+
+    CASAVAFilter {
+        type:CASAVAFilter;
+        name:"CASAVA FASTQ Filter";
+        custom-dir:gears;
+        out-mode:2;
+    }
+    QualityTrim {
+        type:QualityTrim;
+        name:"FASTQ Quality Trimmer";
+        custom-dir:gears;
+        len-id:10;
+        out-mode:2;
+        qual-id:20;
+    }
+    get-file-list {
+        type:get-file-list;
+        name:"File List";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    MergeFastq {
+        type:MergeFastq;
+        name:"FASTQ Merger";
+        custom-dir:gears;
+        out-mode:2;
+        out-name:in_1.fq;
+    }
+    tophat {
+        type:tophat;
+        name:"Find Splice Junctions with TopHat";
+        bowtie-version:1;
+        mate-inner-distance:170;
+        no-novel-junctions:true;
+        out-dir:gears;
+        temp-dir:gears;
+    }
+    genomecov {
+        type:genomecov;
+        name:"Genome Coverage";
+        mode-id:3;
+    }
+    bgtbw-bam {
+        type:bgtbw-bam;
+        name:"Convert bedGraph Files to bigWig";
+    }
+    Sort-bam {
+        type:Sort-bam;
+        name:"Sort BAM Files";
+    }
+    files-conversion {
+        type:files-conversion;
+        name:"File Format Conversion";
+        document-format:bed;
+    }
+    get-file-list-1 {
+        type:get-file-list;
+        name:"File List 1";
+        url-in {
+            dataset:"Dataset 1";
+        }
+    }
+    CASAVAFilter-1 {
+        type:CASAVAFilter;
+        name:"CASAVA FASTQ Filter 1";
+        custom-dir:gears;
+        out-mode:2;
+    }
+    QualityTrim-1 {
+        type:QualityTrim;
+        name:"FASTQ Quality Trimmer 1";
+        custom-dir:gears;
+        len-id:10;
+        out-mode:2;
+        qual-id:20;
+    }
+    MergeFastq-1 {
+        type:MergeFastq;
+        name:"FASTQ Merger 1";
+        custom-dir:gears;
+        out-mode:2;
+        out-name:in_2.fq;
+    }
+    multiplexer {
+        type:multiplexer;
+        name:Multiplexer;
+    }
+
+    .actor-bindings {
+        Sort-bam.out-file->files-conversion.in-file
+        multiplexer.output-data->tophat.in-sequence
+        tophat.out-assembly->Sort-bam.in-file
+        QualityTrim-1.out-file->MergeFastq-1.in-file
+        MergeFastq.out-file->multiplexer.input-data-1
+        MergeFastq-1.out-file->multiplexer.input-data-2
+        CASAVAFilter.out-file->QualityTrim.in-file
+        genomecov.out-file->bgtbw-bam.in-file
+        QualityTrim.out-file->MergeFastq.in-file
+        files-conversion.out-file->genomecov.in-file
+        CASAVAFilter-1.out-file->QualityTrim-1.in-file
+        get-file-list-1.out-url->CASAVAFilter-1.in-file
+        get-file-list.out-url->CASAVAFilter.in-file
+    }
+
+    get-file-list.url->CASAVAFilter.in-file.url
+    CASAVAFilter.url->QualityTrim.in-file.url
+    QualityTrim.url->MergeFastq.in-file.url
+    get-file-list-1.dataset->tophat.in-sequence.dataset
+    MergeFastq.url->tophat.in-sequence.in-url
+    MergeFastq-1.url->tophat.in-sequence.paired-url
+    files-conversion.url->genomecov.in-file.url
+    genomecov.url->bgtbw-bam.in-file.url
+    tophat.hits-url->Sort-bam.in-file.url
+    Sort-bam.url->files-conversion.in-file.url
+    get-file-list-1.url->CASAVAFilter-1.in-file.url
+    CASAVAFilter-1.url->QualityTrim-1.in-file.url
+    QualityTrim-1.url->MergeFastq-1.in-file.url
+
+    .meta {
+        parameter-aliases {
+            get-file-list.url-in {
+                alias:in;
+            }
+            tophat.bowtie-index-basename {
+                alias:idx_name;
+            }
+            tophat.bowtie-index-dir {
+                alias:idx_dir;
+            }
+            genomecov.genome-id {
+                alias:gc_genome;
+            }
+            bgtbw-bam.genome {
+                alias:bg_genome;
+            }
+            get-file-list-1.url-in {
+                alias:in_mate;
+            }
+        }
+        visual {
+            CASAVAFilter {
+                pos:"-635 -533";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            CASAVAFilter-1 {
+                pos:"-631 -360";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            MergeFastq {
+                pos:"-94 -529";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            MergeFastq-1 {
+                pos:"-87 -360";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            QualityTrim {
+                pos:"-371 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            QualityTrim-1 {
+                pos:"-372 -360";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            Sort-bam {
+                pos:"651 -437";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            bgtbw-bam {
+                pos:"1450 -436";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            files-conversion {
+                pos:"923 -436";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            genomecov {
+                pos:"1167 -436";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                in-file.angle:180;
+                out-file.angle:360;
+            }
+            get-file-list {
+                pos:"-834 -534";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-url.angle:360;
+            }
+            get-file-list-1 {
+                pos:"-829 -359";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                out-url.angle:360;
+            }
+            multiplexer {
+                pos:"85 -439";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                input-data-1.angle:150;
+                input-data-2.angle:210;
+                output-data.angle:360;
+            }
+            tophat {
+                pos:"362 -437";
+                style:ext;
+                bg-color-ext:"0 128 128 64";
+                bounds:"-30 -30 135.375 66";
+                in-sequence.angle:180;
+                out-assembly.angle:0.33703;
+            }
+            CASAVAFilter-1.out-file->QualityTrim-1.in-file {
+                text-pos:"-35.75 -24";
+            }
+            CASAVAFilter.out-file->QualityTrim.in-file {
+                text-pos:"-35.75 -24";
+            }
+            MergeFastq-1.out-file->multiplexer.input-data-2 {
+                text-pos:"-35.75 -24";
+            }
+            MergeFastq.out-file->multiplexer.input-data-1 {
+                text-pos:"-35.75 -24";
+            }
+            QualityTrim-1.out-file->MergeFastq-1.in-file {
+                text-pos:"-35.75 -24";
+            }
+            QualityTrim.out-file->MergeFastq.in-file {
+                text-pos:"-35.75 -24";
+            }
+            Sort-bam.out-file->files-conversion.in-file {
+                text-pos:"-45 -37";
+            }
+            files-conversion.out-file->genomecov.in-file {
+                text-pos:"-14.4531 -24";
+            }
+            genomecov.out-file->bgtbw-bam.in-file {
+                text-pos:"-35.75 -24";
+            }
+            get-file-list-1.out-url->CASAVAFilter-1.in-file {
+                text-pos:"-35.7578 -24";
+            }
+            get-file-list.out-url->CASAVAFilter.in-file {
+                text-pos:"-35.7578 -24";
+            }
+            multiplexer.output-data->tophat.in-sequence {
+                text-pos:"-45 -50";
+            }
+            tophat.out-assembly->Sort-bam.in-file {
+                text-pos:"-44.4219 -24";
+            }
+        }
+    }
+}
+
