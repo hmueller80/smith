@@ -39,4 +39,22 @@ public class UserService {
 
         return user;
     }
+    
+      public User getUserByID(final Integer Id) {
+        User user = null;
+
+        try {
+            user = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<User>() {
+                @Override
+                public User execute() throws Exception {
+                    return userDAO.getUserByID(Id);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
 }

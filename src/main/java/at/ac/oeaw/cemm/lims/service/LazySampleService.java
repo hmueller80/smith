@@ -9,16 +9,14 @@ import at.ac.oeaw.cemm.lims.service.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.service.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.service.dao.LibraryDAO;
 import at.ac.oeaw.cemm.lims.service.dao.SampleDAO;
-import it.iit.genomics.cru.smith.entity.Application;
-import it.iit.genomics.cru.smith.entity.Library;
 import it.iit.genomics.cru.smith.entity.Sample;
-import it.iit.genomics.cru.smith.entity.SequencingIndex;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
 import javax.inject.Inject;
+import org.hibernate.Hibernate;
 import org.primefaces.model.SortOrder;
 
 /**
@@ -55,11 +53,33 @@ public class LazySampleService {
 
         return sample;
     }
+    
+     public Sample getFullSampleById(final int sampleId) {
+        Sample sample = null;
 
+        try {
+            sample = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Sample>() {
+                @Override
+                public Sample execute() throws Exception {
+                    Sample sample = sampleDAO.getSampleById(sampleId);
+                    Hibernate.initialize(sample.getApplication());
+                    Hibernate.initialize(sample.getSequencingIndexes());
+                    return sample;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sample;
+    }
+    
     public int getSamplesCount(final int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters) {
         Integer samples = null;
 
         try {
+            Long currentTime = System.currentTimeMillis();
             samples = TransactionManager.doInTransaction(
                     new TransactionManager.TransactionCallable<Integer>() {
                 @Override
@@ -67,6 +87,7 @@ public class LazySampleService {
                     return sampleDAO.getSamplesCount(first, pageSize, sortField, sortOrder, filters);
                 }
             });
+            System.out.println("Samples count took "+(System.currentTimeMillis()-currentTime));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,6 +99,7 @@ public class LazySampleService {
         List<Sample> samples = null;
 
         try {
+            Long currentTime = System.currentTimeMillis();
             samples = TransactionManager.doInTransaction(
                     new TransactionManager.TransactionCallable<List<Sample>>() {
                 @Override
@@ -85,6 +107,7 @@ public class LazySampleService {
                     return sampleDAO.getSamples(first, pageSize, sortField, sortOrder, filters);
                 }
             });
+            System.out.println("Samples retrieval took "+(System.currentTimeMillis()-currentTime));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,4 +133,21 @@ public class LazySampleService {
         return result;
     }
 
+    public List<String> getAllIndexes() {
+        List<String> result = new LinkedList<String>();
+        try {
+            result = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<List<String>>() {
+                @Override
+                public List<String> execute() throws Exception {
+                    return indexDAO.getAllIndexes();
+                }
+            }
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 }

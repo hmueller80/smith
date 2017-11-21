@@ -5,11 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.service.dao;
 
-import it.iit.genomics.cru.smith.entity.Application;
-import it.iit.genomics.cru.smith.entity.Library;
 import it.iit.genomics.cru.smith.entity.Sample;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
-import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +15,6 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;

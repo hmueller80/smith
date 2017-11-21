@@ -7,7 +7,6 @@ package at.ac.oeaw.cemm.lims.model;
 
 import it.iit.genomics.cru.smith.entity.Sample;
 import at.ac.oeaw.cemm.lims.service.LazySampleService;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.primefaces.model.LazyDataModel;

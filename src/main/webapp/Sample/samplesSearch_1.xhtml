@@ -27,7 +27,12 @@
                 <p:column id="idSamColumn" filterBy="#{sample.id}"                     
                           headerText="#{bundle['samples.sample.id']}"
                           sortBy="#{sample.id}">                 
-                    <h:outputText value="#{sample.id}"/>  
+
+                    <h:commandLink action="#{singleSampleBean.loadId}" value="#{sample.id}" >
+                        <f:param name="sid" value="#{sample.id}"/>
+                    </h:commandLink>   
+
+
                 </p:column>
 
                 <p:column id="nameColumn" filterBy="#{sample.name}"                      

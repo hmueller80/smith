@@ -5,12 +5,14 @@
  */
 package at.ac.oeaw.cemm.lims.service.dao;
 
+import it.iit.genomics.cru.smith.entity.Library;
 import it.iit.genomics.cru.smith.entity.SequencingIndex;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
 import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -29,5 +31,11 @@ public class IndexDAO {
             return null;
         }
 
+    }
+     
+    public List<String> getAllIndexes() throws HibernateException {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria indexCriteria = session.createCriteria(SequencingIndex.class).setProjection(Projections.distinct(Projections.property("index")));
+        return indexCriteria.list();
     }
 }

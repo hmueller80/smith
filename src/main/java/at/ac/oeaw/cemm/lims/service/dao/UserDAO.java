@@ -25,4 +25,8 @@ public class UserDAO {
         return user;
     }
 
+     public User getUserByID(Integer id) throws HibernateException {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        return (User) session.get(User.class, id);
+    }
 }
