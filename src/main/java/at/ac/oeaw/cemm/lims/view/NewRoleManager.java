@@ -4,7 +4,6 @@
  */
 package at.ac.oeaw.cemm.lims.view;
 
-import it.iit.genomics.cru.smith.dataBean.DataBean;
 import it.iit.genomics.cru.smith.defaults.Preferences;
 import it.iit.genomics.cru.smith.entity.Collaboration;
 import it.iit.genomics.cru.smith.entity.Project;
@@ -123,6 +122,10 @@ public class NewRoleManager implements Serializable {
     public String getLoginName() {
         return loginName;
     }
+    
+    public boolean hasSampleLoadPermission(){
+        return (!Technician && !Guest);
+    } 
 
     public boolean hasLoadPermission(Sample sample){ 
         //dump();

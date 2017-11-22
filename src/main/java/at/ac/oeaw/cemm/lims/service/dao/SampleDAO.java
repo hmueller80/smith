@@ -152,10 +152,22 @@ public class SampleDAO {
     
     public void persistSample(Sample sample) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Integer sampleId = this.getMaxSampleId() + 1;
+        sample.setId(sampleId);
         session.save(sample);
         String sampleName = sample.getName()+"_S"+sample.getId();
         sample.setName(sampleName);
         session.update(sample);
+    }
+    
+    public void updateSample(Sample sample) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.update(sample);
+    }
+
+    public void deleteSampleWithId(Sample sample) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.delete(sample);    
     }
 
     

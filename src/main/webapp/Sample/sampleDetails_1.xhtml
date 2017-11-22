@@ -6,182 +6,202 @@
                 template="/template.xhtml"> 
 
     <ui:define name="sampleDetails">
-      
-   
 
-         <h:form id="SampledetailsForm">
-             
-            
-             <p:panel id="sampleDetailPanel" header="#{singleSampleBean.sampleName} #{bundle['samples.details']}">
-                 
-                 <h:panelGrid columns="3" cellpadding="5">
-                                                             
-                            <h:outputLabel for="sampleID" value="#{bundle['samples.sample.id']}: * " />
-                            <h:outputText style="width:300px;"  id="sampleID" value="#{singleSampleBean.sampleID}" />
-                            <p:message for="sampleID" />
-                     
-                            
-                            <p:separator id="customSeparator30" style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['samples.user.info']}"/>
-                            <p:separator id="customSeparator32" style="width:300px;height:5px" /> 
+        <h:form id="SampledetailsForm">
 
-                            <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
-                            <h:outputText  style="width:300px;" id="userLogin" value="#{singleSampleBean.userLogin}"/>
-                            <p:message for="userLogin" />
+            <p:panel id="sampleDetailPanel" header="#{singleSampleBean.sampleName} #{bundle['samples.details']}">
 
-                            <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
-                            <h:outputText  style="width:300px;" id="userName" value="#{singleSampleBean.userName}"/>
-                            <p:message for="userName" />
+                <h:panelGrid columns="3" cellpadding="5">
 
-                            <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
-                            <h:outputText  style="width:300px;" id="userEmail" value="#{singleSampleBean.userEmail}"/>
-                            <p:message for="userEmail" />
+                    <h:outputLabel for="sampleID" value="#{bundle['samples.sample.id']}: * " />
+                    <h:outputText style="width:300px;"  id="sampleID" value="#{singleSampleBean.sampleID}" />
+                    <p:message for="sampleID" />
 
-                            <h:outputLabel for="userTel" value="#{bundle['user.tel']}:  " />
-                            <h:outputText  style="width:300px;" id="userTel" value="#{singleSampleBean.userTel}"/>
-                            <p:message for="userTel" />
 
-                            <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
-                            <h:outputText  style="width:300px;" id="pi" value="#{singleSampleBean.piLogin}"/>
-                            <p:message for="pi" />
+                    <p:separator id="customSeparator30" style="width:300px;height:5px" /> 
+                    <h:outputText value="#{bundle['samples.user.info']}"/>
+                    <p:separator id="customSeparator32" style="width:300px;height:5px" /> 
 
-                            <h:outputLabel for="costCenter" value="#{bundle['samples.cost.center']}:  " />
-                            <p:inputMask style="width:300px;" required="false" id="costCenter" 
-                                         value="#{singleSampleBean.costCenter}" mask="" immediate="true"/>
-                            <p:message for="costCenter"/>
-                                         
-                            
-                            <p:separator id="customSeparator40" style="width:300px;height:5px" />
-                            <h:outputText value="#{bundle['samples.application.info']}:  "/>
-                            <p:separator id="customSeparator42" style="width:300px;height:5px" />
-                           
-                            
-                            <h:outputLabel for="application" value="#{bundle['samples.application.application']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.applicationName}" immediate="true" >
-                                <f:selectItems id="application" value="#{preferences.ngsapplication}" />                                
-                            </h:selectOneMenu>
-                            <p:message for="application" />
-                            
-                            <h:outputLabel for="readMode" value="#{bundle['samples.read.mode']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.readMode}">
-                                <f:selectItems id="readMode" value="#{preferences.readmode}"/>
-                                <p:ajax   event="valueChange"  update="depth" />
-                            </h:selectOneMenu>
-                            <p:message for="readMode" />
-                            
-                            <h:outputLabel rendered="true" for="readLength" value="#{bundle['samples.read.length']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" rendered="true" required="false" value="#{singleSampleBean.readLength}">
-                                <f:selectItems id="readLength" value="#{preferences.readlength}"/>                                
-                            </h:selectOneMenu>          
-                            <p:message rendered="true" for="readLength" />
-                            
-                            <h:outputLabel for="depth" value="#{bundle['samples.depth']}: " />  
-                            <h:selectOneMenu  id="depth" style="width:300px;" rendered="true" required="false" value="#{singleSampleBean.depth}">
-                                <f:selectItems  value="#{preferences.depth}"/>                                
-                            </h:selectOneMenu>                            
-                            <p:message for="depth" /> 
+                    <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
+                    <h:outputText  style="width:300px;" id="userLogin" value="#{singleSampleBean.userLogin}"/>
+                    <p:message for="userLogin" />
 
-                            <h:outputLabel for="instrument" value="#{bundle['samples.instrument']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.instrument}">
-                                <f:selectItems id="instrument" value="#{preferences.instrument}"/>
-                            </h:selectOneMenu>
-                            <p:message for="instrument" />   
-                            
-                            
-                     
-                            
-                            
-                            <p:separator id="customSeparator1" style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['samples.library.information']}"/>
-                            <p:separator id="customSeparator2" style="width:300px;height:5px" />                            
-                            
-                            <h:outputLabel for="librarySynthesis" value="#{bundle['samples.libsysthesis']}:  " /> 
-                           <p:selectBooleanCheckbox id="librarySynthesis" required="false" value="#{singleSampleBean.librarySynthesis}">
-                            </p:selectBooleanCheckbox>
-                            <p:message for="librarySynthesis" />
-                            
-                            <h:outputLabel for="sequencingindex" value="#{bundle['samples.sequencing.index']}:  " />
-                            <h:selectOneMenu style="width:300px;" id="sequencingMenu" required="false" value="#{singleSampleBean.sequencingIndex}">
-                                <f:selectItems id="sequencingindex" value="#{singleSampleBean.possibleIndexes}"/>
-                            </h:selectOneMenu>                              
-                            <p:message for="sequencingindex" />
-                            
-                            
-                            <h:outputLabel for="biodate" value="#{bundle['samples.bionalyzer.biodate']}:  " />  
-                            <p:calendar id="biodate" required="false" value="#{singleSampleBean.bioDate}" immediate="true" disabled="#{singleSampleBean.librarySynthesis}" pattern="dd-MM-yyyy"/> 
-                            <p:message for="biodate" />
-                            
-                            <h:outputLabel for="biomolarity" value="#{bundle['samples.bionalyzer.biomolarity']}  " />  
-                            <p:inputMask style="width:300px;" required="false" id="biomolarity" value="#{singleSampleBean.bioMolarity}"  mask="" />
-                            <p:message for="biomolarity" />
+                    <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
+                    <h:outputText  style="width:300px;" id="userName" value="#{singleSampleBean.userName}"/>
+                    <p:message for="userName" />
 
-                            
-                            <p:separator id="customSeparator10" style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['samples.sample.info']}"/>
-                            <p:separator id="customSeparator12" style="width:300px;height:5px" /> 
-                            
-                            <h:outputLabel for="sampleName" value="#{bundle['samples.sample.name']}:  " />
-                            <p:inputMask style="width:300px;" required="false" id="sampleName" value="#{singleSampleBean.sampleName}" mask="" immediate="true"/>
-                            <p:message for="sampleName" />
-                            
+                    <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
+                    <h:outputText  style="width:300px;" id="userEmail" value="#{singleSampleBean.userEmail}"/>
+                    <p:message for="userEmail" />
 
-                            <h:outputLabel for="sampleType" value="#{bundle['samples.type']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.sampleType}">
-                                <f:selectItems id="sampleType" value="#{preferences.sampletype}"/>
-                            </h:selectOneMenu>
-                            <p:message for="sampleType" />
+                    <h:outputLabel for="userTel" value="#{bundle['user.tel']}:  " />
+                    <h:outputText  style="width:300px;" id="userTel" value="#{singleSampleBean.userTel}"/>
+                    <p:message for="userTel" />
 
-                            <h:outputLabel for="organism" value="#{bundle['samples.organism']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.organism}">
-                                <f:selectItems id="organism" value="#{preferences.organisms}"/>
-                            </h:selectOneMenu>
-                            <p:message for="organism" />
+                    <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
+                    <h:outputText  style="width:300px;" id="pi" value="#{singleSampleBean.piLogin}"/>
+                    <p:message for="pi" />
 
-                            <h:outputLabel for="sampleConcentration" value="#{bundle['samples.concentration']}:  " />
-                            <p:inputMask style="width:300px;" required="false" id="sampleConcentration" value="#{singleSampleBean.sampleConcentration}" mask="" immediate="true"/>
-                            <p:message for="sampleConcentration" />
+                    <h:outputLabel for="costCenter" value="#{bundle['samples.cost.center']}:  " />
+                    <p:inputMask style="width:300px;" required="false" id="costCenter" 
+                                 value="#{singleSampleBean.costCenter}" mask="" immediate="true"  disabled = "#{singleSampleBean.isNewForm}"/>
+                    <p:message for="costCenter"/>
 
-                            <h:outputLabel for="totalAmount" value="#{bundle['samples.total.amount']}:  " />
-                            <p:inputMask style="width:300px;" required="false" id="totalAmount" value="#{singleSampleBean.totalAmount}" mask="" immediate="true"/>
-                            <p:message for="totalAmount" />
 
-                            <h:outputLabel for="bulkFragmentSize" value="#{bundle['samples.bulk.fragment.size']}:  " />
-                            <p:inputMask style="width:300px;" required="false" id="bulkFragmentSize" value="#{singleSampleBean.bulkFragmentSize}" mask="" immediate="true"/>
-                            <p:message for="bulkFragmentSize" />
+                    <p:separator id="customSeparator40" style="width:300px;height:5px" />
+                    <h:outputText value="#{bundle['samples.application.info']}:  "/>
+                    <p:separator id="customSeparator42" style="width:300px;height:5px" />
 
-                            <h:outputLabel for="antibody" value="#{bundle['samples.antibody']}: " />
-                            <p:inputMask style="width:300px;"  id="antibody" value="#{singleSampleBean.antibody}" mask="" immediate="true"/>                                
-                            <p:message for="antibody" /> 
-                            
-                            <h:outputLabel for="sampleDescription" value="#{bundle['samples.description']}: " />
-                            <p:inputTextarea  id="sampleDescription" style="width:300px;height:100px;" value="#{singleSampleBean.sampleDescription}" immediate="true"/>                                
-                            <p:message for="sampleDescription" />                            
-                         
-                            <h:outputLabel for="comments" value="#{bundle['samples.comments']}: " />
-                            <p:inputTextarea  id="comments" style="width:300px;height:100px;" value="#{singleSampleBean.comments}" immediate="true"/>                            
-                            <p:message for="comments" /> 
-                            
-                            <h:outputLabel for="status" value="#{bundle['samples.status']}: " />
-                            <h:outputText id="status" value="#{singleSampleBean.status}" />                            
-                            <p:message for="status" /> 
-                            
-                            <p:separator id="customSeparator15" style="width:300px;height:5px" /> 
-                            <h:outputText value="Update"/>
-                            <p:separator id="customSeparator16" style="width:300px;height:5px" /> 
-                            
-                                                       
-                            <p:separator style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['samples.rich.information']}"/>
-                            <p:separator style="width:300px;height:5px" />
-                            
-                            <h:outputLabel  value="" />      
-     
-                 </h:panelGrid>
-             
-             </p:panel>
-             
-         </h:form>
-               
+
+                    <h:outputLabel for="application" value="#{bundle['samples.application.application']}:  " /> 
+                    <h:selectOneMenu id="application" style="width:300px;" required="false" value="#{singleSampleBean.applicationName}" immediate="true" >
+                        <f:selectItems value="#{preferences.ngsapplication}" />     
+                        <p:ajax   event="change"  update="depth readMode readLength instrument" />
+                    </h:selectOneMenu>
+                    <p:message for="application" />
+
+                    <h:outputLabel for="readMode" value="#{bundle['samples.read.mode']}:  " /> 
+                    <h:selectOneMenu id="readMode" style="width:300px;" required="false" value="#{singleSampleBean.readMode}">
+                        <f:selectItems value="#{preferences.readmode}"/>
+                        <p:ajax   event="change"  update="depth" />
+                    </h:selectOneMenu>
+                    <p:message for="readMode" />
+
+                    <h:outputLabel rendered="true" for="readLength" value="#{bundle['samples.read.length']}:  " /> 
+                    <h:selectOneMenu id="readLength" style="width:300px;" rendered="true" required="false" value="#{singleSampleBean.readLength}">
+                        <f:selectItems value="#{preferences.readlength}"/>                                
+                    </h:selectOneMenu>          
+                    <p:message rendered="true" for="readLength" />
+
+                    <h:outputLabel for="depth" value="#{bundle['samples.depth']}: " />  
+                    <h:selectOneMenu  id="depth" style="width:300px;" rendered="true" required="false" value="#{singleSampleBean.depth}">
+                        <f:selectItems  value="#{singleSampleBean.possibleDepths}"/>                                
+                    </h:selectOneMenu>                            
+                    <p:message for="depth" /> 
+
+                    <h:outputLabel for="instrument" value="#{bundle['samples.instrument']}:  " /> 
+                    <h:selectOneMenu id="instrument" style="width:300px;" required="false" value="#{singleSampleBean.instrument}">
+                        <f:selectItems value="#{preferences.instrument}"/>
+                    </h:selectOneMenu>
+                    <p:message for="instrument" />                        
+
+
+                    <p:separator id="customSeparator1" style="width:300px;height:5px" /> 
+                    <h:outputText value="#{bundle['samples.library.information']}"/>
+                    <p:separator id="customSeparator2" style="width:300px;height:5px" />                            
+
+                    <h:outputLabel for="librarySynthesis" value="#{bundle['samples.libsysthesis']}:  " /> 
+                    <p:selectBooleanCheckbox id="librarySynthesis" required="false" value="#{singleSampleBean.librarySynthesis}">
+                        <p:ajax   event="change"  update="sequencingMenu biodate biomolarity" />
+                    </p:selectBooleanCheckbox>
+                    <p:message for="librarySynthesis" />
+
+                    <h:outputLabel for="sequencingindex" value="#{bundle['samples.sequencing.index']}:  " />
+                    <h:selectOneMenu style="width:300px;" id="sequencingMenu" required="false"  disabled="#{singleSampleBean.librarySynthesis}" value="#{singleSampleBean.sequencingIndex}">
+                        <f:selectItems id="sequencingindex" value="#{singleSampleBean.possibleIndexes}"/>
+                    </h:selectOneMenu>                              
+                    <p:message for="sequencingindex" />
+
+
+                    <h:outputLabel for="biodate" value="#{bundle['samples.bionalyzer.biodate']}:  " />  
+                    <p:calendar id="biodate" required="false" value="#{singleSampleBean.bioDate}" immediate="true" disabled="#{singleSampleBean.librarySynthesis}" pattern="dd-MM-yyyy"/> 
+                    <p:message for="biodate" />
+
+                    <h:outputLabel for="biomolarity" value="#{bundle['samples.bionalyzer.biomolarity']}  " />  
+                    <p:inputMask style="width:300px;" required="false" id="biomolarity" value="#{singleSampleBean.bioMolarity}"  mask=""  disabled="#{singleSampleBean.librarySynthesis}" />
+                    <p:message for="biomolarity" />
+
+
+                    <p:separator id="customSeparator10" style="width:300px;height:5px" /> 
+                    <h:outputText value="#{bundle['samples.sample.info']}"/>
+                    <p:separator id="customSeparator12" style="width:300px;height:5px" /> 
+
+                    <h:outputLabel for="sampleName" value="#{bundle['samples.sample.name']}:  " />
+                    <p:inputMask style="width:300px;" required="false" id="sampleName" value="#{singleSampleBean.sampleName}" mask="" immediate="true"/>
+                    <p:message for="sampleName" />
+
+
+                    <h:outputLabel for="sampleType" value="#{bundle['samples.type']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.sampleType}">
+                        <f:selectItems id="sampleType" value="#{preferences.sampletype}"/>
+                    </h:selectOneMenu>
+                    <p:message for="sampleType" />
+
+                    <h:outputLabel for="organism" value="#{bundle['samples.organism']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleBean.organism}">
+                        <f:selectItems id="organism" value="#{preferences.organisms}"/>
+                    </h:selectOneMenu>
+                    <p:message for="organism" />
+
+                    <h:outputLabel for="sampleConcentration" value="#{bundle['samples.concentration']}:  " />
+                    <p:inputMask style="width:300px;" required="false" id="sampleConcentration" value="#{singleSampleBean.sampleConcentration}" mask="" immediate="true"/>
+                    <p:message for="sampleConcentration" />
+
+                    <h:outputLabel for="totalAmount" value="#{bundle['samples.total.amount']}:  " />
+                    <p:inputMask style="width:300px;" required="false" id="totalAmount" value="#{singleSampleBean.totalAmount}" mask="" immediate="true"/>
+                    <p:message for="totalAmount" />
+
+                    <h:outputLabel for="bulkFragmentSize" value="#{bundle['samples.bulk.fragment.size']}:  " />
+                    <p:inputMask style="width:300px;" required="false" id="bulkFragmentSize" value="#{singleSampleBean.bulkFragmentSize}" mask="" immediate="true"/>
+                    <p:message for="bulkFragmentSize" />
+
+                    <h:outputLabel for="antibody" value="#{bundle['samples.antibody']}: " />
+                    <p:inputMask style="width:300px;"  id="antibody" value="#{singleSampleBean.antibody}" mask="" immediate="true"/>                                
+                    <p:message for="antibody" /> 
+
+                    <h:outputLabel for="sampleDescription" value="#{bundle['samples.description']}: " />
+                    <p:inputTextarea  id="sampleDescription" style="width:300px;height:100px;" value="#{singleSampleBean.sampleDescription}" immediate="true"/>                                
+                    <p:message for="sampleDescription" />                            
+
+                    <h:outputLabel for="comments" value="#{bundle['samples.comments']}: " />
+                    <p:inputTextarea  id="comments" style="width:300px;height:100px;" value="#{singleSampleBean.comments}" immediate="true"/>                            
+                    <p:message for="comments" /> 
+
+                    <h:outputLabel for="status" value="#{bundle['samples.status']}: " />
+                    <h:outputText id="status" value="#{singleSampleBean.status}" />                            
+                    <p:message for="status" /> 
+
+                    <p:separator id="customSeparator15" style="width:300px;height:5px" /> 
+                    <h:outputText value="Update"/>
+                    <p:separator id="customSeparator16" style="width:300px;height:5px" /> 
+                </h:panelGrid>
+
+                <p:commandButton action="#{singleSampleBean.delete}" 
+                                 disabled="#{!singleSampleBean.modifyPermission}" 
+                                 id="SampleDeletionButton" 
+                                 value="#{bundle['button.text.delete']}" 
+                                 update="SampledetailsForm" 
+                                 immediate="true"
+                                 rendered = "#{!singleSampleBean.isNewForm}">                                             
+                </p:commandButton>
+                <p:commandButton actionListener="#{singleSampleBean.modify}" 
+                                 disabled="#{!singleSampleBean.modifyPermission}" 
+                                 id="SampleModbutton" 
+                                 value="#{bundle['button.text.save']}" 
+                                 update="SampledetailsForm"
+                                 rendered = "#{!singleSampleBean.isNewForm}">
+                </p:commandButton>
+
+                <p:commandButton action="#{singleSampleBean.loadNew}" 
+                                 id="SampleResetButton" 
+                                 value="#{bundle['button.text.reset']}" 
+                                 update="SampledetailsForm" 
+                                 immediate="true"
+                                 rendered = "#{singleSampleBean.isNewForm}">                                             
+                </p:commandButton>
+                <p:commandButton action="#{singleSampleBean.save}" 
+                                 disabled="#{!singleSampleBean.addPermission}" 
+                                 id="SampleAddbutton" 
+                                 value="#{bundle['button.text.save']}" 
+                                 update="SampledetailsForm"
+                                 rendered = "#{singleSampleBean.isNewForm}">
+                </p:commandButton>
+
+
+            </p:panel>
+
+        </h:form>
+
     </ui:define>
 
 </ui:composition>

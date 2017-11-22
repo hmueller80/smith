@@ -72,7 +72,7 @@
 
                 <p:column id="antibodyColumn" filterBy="#{sample.submissionId}"                  
                           headerText="#{bundle['samples.annotation']}">
-                    <h:outputText value="#{sample.submissionId}" />
+                     <h:outputLink  value="../SampleAnnotationSheets/#{sample.submissionId}.xlsx">#{sample.submissionId}</h:outputLink>
                 </p:column>
 
                 <p:column id="costCenterColumn" filterBy="#{sample.costCenter}"                    
@@ -101,8 +101,11 @@
                     </h:commandLink>
                 </p:panel>
             </h:panelGrid>
-        </h:form>
+            <p:commandButton action="#{singleSampleBean.loadNew}" 
+                             value="#{bundle['button.text.new.sample']}" 
+                             rendered="#{singleSampleBean.addPermission}" />
 
+        </h:form>
 
         <p:separator/>
 

@@ -9,7 +9,9 @@ import at.ac.oeaw.cemm.lims.service.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.service.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.service.dao.LibraryDAO;
 import at.ac.oeaw.cemm.lims.service.dao.SampleDAO;
+import it.iit.genomics.cru.smith.entity.Application;
 import it.iit.genomics.cru.smith.entity.Sample;
+import it.iit.genomics.cru.smith.entity.SequencingIndex;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -150,4 +152,63 @@ public class LazySampleService {
 
         return result;
     }
+    
+    public PersistedSampleReceipt saveOrUpdateSample(final Sample sample, final boolean isNew) throws Exception {
+        
+        PersistedSampleReceipt receipt = TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<PersistedSampleReceipt>() {
+            @Override
+            public PersistedSampleReceipt execute() throws Exception {
+         
+                SequencingIndex seqIndexEntity = indexDAO.getIdxBySequence(sample.getSequencingIndexes().getIndex());
+                if (seqIndexEntity == null) {
+                    throw new Exception("Index with sequence " + sample.getSequencingIndexes().getIndex() + " not found in DB");
+                }
+                sample.setSequencingIndexes(seqIndexEntity);
+                Application existingApplicationEntity = applicationDAO.getApplicationByParams(
+                                sample.getApplication().getReadlength(),
+                                sample.getApplication().getReadmode(),
+                                sample.getApplication().getInstrument(),
+                                sample.getApplication().getApplicationname(),
+                                sample.getApplication().getDepth());
+              
+                if (existingApplicationEntity != null) {
+                    sample.setApplication(existingApplicationEntity);
+                } else {
+                    try {
+                        applicationDAO.persistApplication(sample.getApplication());
+                    } catch (Exception e) {
+                        throw new Exception("Error while persisting application " + sample.getApplication().getApplicationname());
+                    }
+                }
+                
+                try {
+                    if (isNew){
+                        sampleDAO.persistSample(sample);
+                    }else{
+                        sampleDAO.updateSample(sample);
+                    }
+                    return new PersistedSampleReceipt(sample.getId(), sample.getName());
+                } catch (Exception e) {
+                    throw new Exception("Error while persisting sample " + sample.getName());
+                }
+             
+            }
+        });
+        
+        return receipt;
+    }
+    
+    public void deleteSample(final Sample sample) throws Exception {
+        TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+            @Override
+            public Void execute() throws Exception {
+                Integer sampleId = sample.getId();
+                if (sampleId!=null){
+                    sampleDAO.deleteSampleWithId(sample);
+                }
+                return null;
+            }
+        });
+    }
+
 }

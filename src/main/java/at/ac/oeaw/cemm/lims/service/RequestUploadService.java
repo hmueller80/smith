@@ -83,9 +83,7 @@ public class RequestUploadService {
                     String finalLibraryName = library.getName() + "_L" + libraryId;
 
                     for (SampleDTO sample : library.getSamples()) {
-                        Integer sampleId = sampleDAO.getMaxSampleId() + 1;
                         Sample sampleEntity = new Sample();
-                        sampleEntity.setId(sampleId);
                         sampleEntity.setUser(user);
 
                         SequencingIndex seqIndexEntity = indexDAO.getIdxBySequence(sample.getIndex().getIndex());

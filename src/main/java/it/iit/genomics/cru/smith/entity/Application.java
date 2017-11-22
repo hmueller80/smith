@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,8 +15,13 @@ import javax.persistence.Table;
 @Table(name = "application")
 public class Application implements java.io.Serializable {
 
-    private static final long serialVersionUID = 1L;
-
+    public static final long serialVersionUID = 1L;
+    public static final String CHIP_SEQ = "ChIP-Seq";
+    public static final String DNA_SEQ = "DNA-Seq";
+    public static final String EXO_SEQ = "ExomeSeq";
+    public static final String MRNA_SEQ = "mRNA-Seq";
+    public static final String RNA_SEQ = "RNA-Seq";
+       
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "application_id")
@@ -53,6 +57,51 @@ public class Application implements java.io.Serializable {
         this.applicationName = applicationname;
         this.depth = depth;
         this.samples = samples;
+    }
+    
+    public Application(String appName) {
+        this(appName,null);
+    }
+    
+    public Application(String appName,String instrument) {
+        this.applicationName = appName ==null ? "undefined" : appName;
+        this.instrument = instrument == null ? "HiSeq2000" : instrument;
+        
+        if (CHIP_SEQ.equals(applicationName)) {
+            //"Single read : 30 mio reads : one fiths of a lane : 50 bases"
+            this.readMode = "SR";
+            this.setDepth(30);
+            this.setReadlength(50);
+        } else if (DNA_SEQ.equals(applicationName)) {
+            //"Paired end : 70 mio reads : half a lane : 100 bases";
+            this.readMode = "PE";
+            this.setDepth(70);
+            this.setReadlength(100);
+
+        } else if (EXO_SEQ.equals(applicationName)) {
+            //"Paired end : 70 mio reads : half a lane : 100 bases";
+            this.readMode = "PE";
+            this.setDepth(70);
+            this.setReadlength(100);
+
+        } else if (MRNA_SEQ.equals(applicationName)) {
+            //"Paired end : 70 mio reads : half a lane : 50 bases";
+            this.readMode = "PE";
+            this.setDepth(70);
+            this.setReadlength(50);
+
+        } else if (RNA_SEQ.equals(applicationName)) {
+            //"Paired end : 35 mio reads : one fourth of a lane : 50 bases";
+            this.readMode = "PE";
+            this.setDepth(35);
+            this.setReadlength(50);
+
+        } else {
+            //"Single read : 30 mio reads : one fiths of a lane : 50 bases";
+            this.readMode = "SR";
+            this.setDepth(30);
+            this.setReadlength(50);
+        }
     }
 
     public Integer getApplicationId() {
@@ -117,6 +166,17 @@ public class Application implements java.io.Serializable {
         }else{            
             return false;
         }
+    }
+    
+    public Application createCopy(){
+       Application newApp = new Application();
+       newApp.setApplicationname(applicationName!=null ? applicationName : "undefined");
+       newApp.setReadlength(readLength);
+       newApp.setDepth(depth);
+       newApp.setInstrument(instrument!=null ? instrument: "HiSeq2000");
+       newApp.setReadmode(readMode!=null ? readMode : "SR");
+       
+       return newApp;
     }
 
 }
