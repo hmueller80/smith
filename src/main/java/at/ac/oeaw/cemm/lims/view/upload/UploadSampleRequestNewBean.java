@@ -45,54 +45,57 @@ import org.primefaces.model.UploadedFile;
 @ManagedBean(name = "uploadSampleRequestNewBean")
 @SessionScoped
 public class UploadSampleRequestNewBean implements Serializable {
-    private final static String FORM_ID="sampleTableUploadProcessForm";
-    private final static String COMPONENT="RequestUploadProcessButton";
 
-    private final static Set<String> ALLOWED_ROLES  = new HashSet<String>() {{
-       add(Preferences.ROLE_ADMIN); 
-       add(Preferences.ROLE_TECHNICIAN); 
-       add(Preferences.ROLE_GROUPLEADER); 
-    }};
-                
+    private final static String FORM_ID = "sampleTableUploadProcessForm";
+    private final static String COMPONENT = "RequestUploadProcessButton";
+
+    private final static Set<String> ALLOWED_ROLES = new HashSet<String>() {
+        {
+            add(Preferences.ROLE_ADMIN);
+            add(Preferences.ROLE_TECHNICIAN);
+            add(Preferences.ROLE_GROUPLEADER);
+        }
+    };
+
     protected User loggeduser;
     protected String userLogin;
     private String destination;
 
     private String filename = "test";
-    
+
     @ManagedProperty("#{newRoleManager}")
     protected NewRoleManager roleManager;
-    
+
     @ManagedProperty("#{mailBean}")
     private MailBean mailBean;
 
     @ManagedProperty("#{userService}")
     private UserService userService;
-    
+
     @ManagedProperty("#{requestUploadService}")
     private RequestUploadService uploadService;
-    
+
     int progress;
-      
+
     @PostConstruct
     public void init() {
-        if(Preferences.getVerbose()){
+        if (Preferences.getVerbose()) {
             System.out.println("init UploadSampleRequestBean");
         }
-        
+
         FacesContext context = FacesContext.getCurrentInstance();
         loggeduser = roleManager.getLoggedUser();
         userLogin = this.loggeduser.getLogin();
         try {
             String applicationPath = context.getExternalContext().getRealPath("/");
             destination = applicationPath + "upload" + File.separator;
-            if(Preferences.getVerbose()){
+            if (Preferences.getVerbose()) {
                 System.out.println(destination);
             }
-            
+
         } catch (UnsupportedOperationException uoe) {
             uoe.printStackTrace();
-        }  
+        }
     }
 
     /**
@@ -122,69 +125,72 @@ public class UploadSampleRequestNewBean implements Serializable {
      * @since 1.0
      */
     public void submitRequest() {
-        
-        ValidatedRequest request = RequestBuilder.buildRequestFromCSV(new File(destination+filename));
-        
-        System.out.println("---------Parsed file "+filename+"----------");
-        System.out.println("Is Valid: "+!request.getValidationStatus().isIsFailed());
+
+        ValidatedRequest request = RequestBuilder.buildRequestFromCSV(new File(destination + filename));
+
+        System.out.println("---------Parsed file " + filename + "----------");
+        System.out.println("Is Valid: " + !request.getValidationStatus().isIsFailed());
         System.out.println("Errors");
-        for (ParsingMessage message: request.getValidationStatus().getFailMessages()){
-            System.out.println(message.getSummary()+":"+message.getMessage());
-        }    
-        System.out.println("Warnings");
-        for (ParsingMessage message: request.getValidationStatus().getWarningMessages()){
-            System.out.println(message.getSummary()+":"+message.getMessage());
-        }   
-        
-        
-        if (request.getValidationStatus().isIsFailed()){
-            for (ParsingMessage message: request.getValidationStatus().getFailMessages()){
-                NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(),message.getMessage());
-            }
-        }else{
-            RequestDTO requestObj = request.getRequestObj();
-            for (ParsingMessage message: request.getValidationStatus().getWarningMessages()){
-                NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(),message.getMessage());
-            }
-            User requestor = checkPermission(requestObj.getRequestor());
-            if (requestor!=null){
-                try{
-                    Set<PersistedSampleReceipt> receipts = uploadService.uploadRequest(requestObj);
-                    sendMailWithReceipts(requestor,receipts);
-                }catch(Exception e){
-                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request",e.getMessage());
-                }
-            }
-            
+        for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
+            System.out.println(message.getSummary() + ":" + message.getMessage());
         }
+        System.out.println("Warnings");
+        for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
+            System.out.println(message.getSummary() + ":" + message.getMessage());
+        }
+
+        if (request.getValidationStatus().isIsFailed()) {
+            for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
+                NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
+                System.out.println("Failed validation");
+            }
+        } else {
+            RequestDTO requestObj = request.getRequestObj();
+            User requestor = checkPermission(requestObj.getRequestor());
+            if (requestor != null) {
+                try {
+                    for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
+                        NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
+                    }
+                    Set<PersistedSampleReceipt> receipts = uploadService.uploadRequest(requestObj);
+                    sendMailWithReceipts(requestor, receipts);
+                } catch (Exception e) {
+                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request", e.getMessage());
+                    System.out.println("Failed upload to DB");
+
+                }
+            } else {
+                System.out.println("Failed user verification");
+            }
+        }
+
     }
-    
+
     private User checkPermission(String userInCSV) {
 
         User u = userService.getUserByLogin(userInCSV);
-        if (u==null){
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "User "+userInCSV+" not found in DB");
+        if (u == null) {
+            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "User " + userInCSV + " not found in DB");
             return null;
         }
-        
+
         String userRole = u.getUserRole();
-        if (userRole.equals(Preferences.ROLE_GUEST)){
+        if (userRole.equals(Preferences.ROLE_GUEST)) {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "Guest cannot submit samples");
             return null;
         }
-        
-        if(u.getLogin().equals(userLogin)){
+
+        if (u.getLogin().equals(userLogin)) {
             //TODO: double check if this is valid: This means that the user is able to upload its own data!!!!
             return u;
-        }else if(ALLOWED_ROLES.contains(userRole)){
+        } else if (ALLOWED_ROLES.contains(this.loggeduser.getUserRole())) {
             return u;
-        }else{
+        } else {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User role error", "You do not have permission to submit samples for this user.");
             return null;
         }
     }
- 
-   
+
     /**
      * Copies uploaded file to local disk.
      *
@@ -213,9 +219,9 @@ public class UploadSampleRequestNewBean implements Serializable {
             System.out.println(e.getMessage());
         }
     }
-    
+
     private void sendMailWithReceipts(User user, Set<PersistedSampleReceipt> receipts) {
-  
+
         StringBuilder sb = new StringBuilder("");
         for (PersistedSampleReceipt receipt : receipts) {
             sb.append("<tr><td>" + receipt.getId() + "</td><td>" + receipt.getSampleName() + "</td></tr>");
@@ -237,7 +243,7 @@ public class UploadSampleRequestNewBean implements Serializable {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Email error", "Sending email acknowledgement failed: UnsupportedEncodingException");
         }
     }
-    
+
     /**
      * Getter for filename.
      *
@@ -248,11 +254,10 @@ public class UploadSampleRequestNewBean implements Serializable {
     public String getFilename() {
         return filename;
     }
-    
-    public int getProgress(){
+
+    public int getProgress() {
         return progress;
     }
-
 
     public NewRoleManager getRoleManager() {
         return roleManager;
@@ -285,7 +290,5 @@ public class UploadSampleRequestNewBean implements Serializable {
     public void setMailBean(MailBean mailBean) {
         this.mailBean = mailBean;
     }
-    
-    
 
 }
