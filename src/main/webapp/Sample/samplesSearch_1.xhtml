@@ -14,7 +14,7 @@
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['sample.emptymessage']}"
-                         filteredValue="#{filterDTOBean.sample}"
+                         sortBy="#{sample.id}" sortOrder="descending"
                          lazy="true">
 
                 <f:facet name="header">

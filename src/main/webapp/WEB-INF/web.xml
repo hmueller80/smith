@@ -206,7 +206,7 @@
     </context-param>
     <context-param>
         <param-name>localmonitoringcutoffdate</param-name>
-        <param-value>171101</param-value>
+        <param-value>171201</param-value>
         <!--
          
         -->
