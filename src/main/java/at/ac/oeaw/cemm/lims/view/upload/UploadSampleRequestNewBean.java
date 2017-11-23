@@ -1,16 +1,15 @@
 package at.ac.oeaw.cemm.lims.view.upload;
 
-import at.ac.oeaw.cemm.lims.model.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.model.dto.parser.ParsingMessage;
-import at.ac.oeaw.cemm.lims.model.dto.parser.sampleCSV.RequestBuilder;
-import at.ac.oeaw.cemm.lims.model.dto.parser.sampleCSV.ValidatedRequest;
-import at.ac.oeaw.cemm.lims.service.PersistedSampleReceipt;
-import at.ac.oeaw.cemm.lims.service.RequestUploadService;
-import at.ac.oeaw.cemm.lims.service.UserService;
+import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
+import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
+import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.ValidatedRequest;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
 import it.iit.genomics.cru.smith.defaults.Preferences;
-import it.iit.genomics.cru.smith.entity.*;
 import it.iit.genomics.cru.smith.mail.MailBean;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +56,7 @@ public class UploadSampleRequestNewBean implements Serializable {
         }
     };
 
-    protected User loggeduser;
+    protected UserDTO loggeduser;
     protected String userLogin;
     private String destination;
 
@@ -68,23 +67,22 @@ public class UploadSampleRequestNewBean implements Serializable {
 
     @ManagedProperty("#{mailBean}")
     private MailBean mailBean;
-
-    @ManagedProperty("#{userService}")
-    private UserService userService;
-
-    @ManagedProperty("#{requestUploadService}")
-    private RequestUploadService uploadService;
+ 
+    @ManagedProperty(value = "#{hibernateServiceFactory}")
+    private ServiceFactory services;
 
     int progress;
-
+    
+    public UploadSampleRequestNewBean() {
+        System.out.println("Initializing UploadSampleRequestNewBean");
+    }
+    
     @PostConstruct
     public void init() {
-        if (Preferences.getVerbose()) {
-            System.out.println("init UploadSampleRequestBean");
-        }
+        System.out.println("UploadSampleRequestNewBean post construct");
 
         FacesContext context = FacesContext.getCurrentInstance();
-        loggeduser = roleManager.getLoggedUser();
+        loggeduser = roleManager.getCurrentUser();
         userLogin = this.loggeduser.getLogin();
         try {
             String applicationPath = context.getExternalContext().getRealPath("/");
@@ -146,13 +144,13 @@ public class UploadSampleRequestNewBean implements Serializable {
             }
         } else {
             RequestDTO requestObj = request.getRequestObj();
-            User requestor = checkPermission(requestObj.getRequestor());
+            UserDTO requestor = checkPermission(requestObj.getRequestor());
             if (requestor != null) {
                 try {
                     for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
                         NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
                     }
-                    Set<PersistedSampleReceipt> receipts = uploadService.uploadRequest(requestObj);
+                    Set<PersistedSampleReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
                     sendMailWithReceipts(requestor, receipts);
                 } catch (Exception e) {
                     NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request", e.getMessage());
@@ -166,9 +164,9 @@ public class UploadSampleRequestNewBean implements Serializable {
 
     }
 
-    private User checkPermission(String userInCSV) {
+    private UserDTO checkPermission(String userInCSV) {
 
-        User u = userService.getUserByLogin(userInCSV);
+        UserDTO u = services.getUserService().getUserByLogin(userInCSV);
         if (u == null) {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "User " + userInCSV + " not found in DB");
             return null;
@@ -220,7 +218,7 @@ public class UploadSampleRequestNewBean implements Serializable {
         }
     }
 
-    private void sendMailWithReceipts(User user, Set<PersistedSampleReceipt> receipts) {
+    private void sendMailWithReceipts(UserDTO user, Set<PersistedSampleReceipt> receipts) {
 
         StringBuilder sb = new StringBuilder("");
         for (PersistedSampleReceipt receipt : receipts) {
@@ -267,21 +265,14 @@ public class UploadSampleRequestNewBean implements Serializable {
         this.roleManager = roleManager;
     }
 
-    public UserService getUserService() {
-        return userService;
+    public ServiceFactory getServices() {
+        return services;
     }
 
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setServices(ServiceFactory services) {
+        this.services = services;
     }
 
-    public RequestUploadService getUploadService() {
-        return uploadService;
-    }
-
-    public void setUploadService(RequestUploadService uploadService) {
-        this.uploadService = uploadService;
-    }
 
     public MailBean getMailBean() {
         return mailBean;

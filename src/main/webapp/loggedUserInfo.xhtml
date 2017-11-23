@@ -12,40 +12,34 @@
             <table border="0" cellspadding="50"  >
             <tr>
             <td>#{bundle['user.login']}:</td>
-            <td>#{loggedUserBean.loggedUser.login}</td>
+            <td>#{newLoggedUser.loggedUser.login}</td>
             </tr>
             <tr>
             <td>#{bundle['user.name']}:</td>
-            <td>#{loggedUserBean.loggedUser.userName}</td>
+            <td>#{newLoggedUser.loggedUser.userName}</td>
             </tr>
             <tr>
             <td>#{bundle['user.tel']}:</td>
-            <td>#{loggedUserBean.loggedUser.phone}</td>
+            <td>#{newLoggedUser.loggedUser.phone}</td>
             </tr>
             <tr>
             <td>#{bundle['user.email']}:</td>
-            <td>#{loggedUserBean.loggedUser.mailAddress}</td>
+            <td>#{newLoggedUser.loggedUser.mailAddress}</td>
             </tr>
             <tr>
             <td>#{bundle['user.role']}:</td>
-            <td>#{loggedUserBean.loggedUser.userRole}</td>
+            <td>#{newLoggedUser.loggedUser.userRole}</td>
             </tr>
                
             <tr>
             <td>Group ID :</td>
-            <td>#{loggedUserBean.loggedUser.pi}</td>
+            <td>#{newLoggedUser.loggedUser.pi}</td>
             </tr>   
             <tr>
             <td>#{bundle['user.groupleader']}:</td>
-            <td>#{loggedUserBean.loggedUserPIName}</td>
+            <td>#{newLoggedUser.loggedUserPIName}</td>
             </tr>             
             </table>
-            
-            
-            <h3>#{bundle['general.collaborations']}</h3>
-            <p:dataList value="#{loggedUserBean.collaborations}" var="col" itemType="disc">                     
-            #{bundle['project.project']} #{col.project.name}    
-            </p:dataList>
             
             </h:form>     
             

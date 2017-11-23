@@ -5,21 +5,20 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
+import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.entity.ApplicationValidator;
-import at.ac.oeaw.cemm.lims.model.validator.entity.SampleValidator;
-import at.ac.oeaw.cemm.lims.service.LazySampleService;
-import at.ac.oeaw.cemm.lims.service.PersistedSampleReceipt;
-import at.ac.oeaw.cemm.lims.service.UserService;
+import at.ac.oeaw.cemm.lims.model.validator.dto.ApplicationValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.SampleValidator;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
 import it.iit.genomics.cru.smith.defaults.Preferences;
-import it.iit.genomics.cru.smith.entity.Application;
-import it.iit.genomics.cru.smith.entity.Sample;
-import it.iit.genomics.cru.smith.entity.SequencingIndex;
-import it.iit.genomics.cru.smith.entity.User;
 import it.iit.genomics.cru.smith.sampleBeans.SampleNameFilter;
 import java.io.Serializable;
 import java.util.Date;
@@ -38,207 +37,329 @@ import javax.faces.context.FacesContext;
 @ManagedBean
 @SessionScoped
 public class SingleSampleBean implements Serializable {
+
     private static final String FORM_ID = null;
     private static final String COMPONENT_MOD = "SampleModbutton";
     private static final String COMPONENT_DEL = "SampleDeletionButton";
 
-            
-    @ManagedProperty(value = "#{lazySampleService}")
-    private LazySampleService sampleService;
-    
-    @ManagedProperty(value = "#{userService}")
-    private UserService userService;
-    
+    @ManagedProperty(value = "#{hibernateServiceFactory}")
+    private ServiceFactory services;
+
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
 
-    private Sample currentSample = null;
-    private Application newApplication = null;
+    private SampleDTO currentSample = null;
+    private ApplicationDTO newApplication = null;
 
-    private User principalInvestigator = null;
+    private UserDTO principalInvestigator = null;
     private List<String> possibleIndexes = new LinkedList<>();
-    
+
     private boolean isNewForm = false;
     
+    public SingleSampleBean() {
+        System.out.println("Initializing SingleSampleBean");
+    }
+
     @PostConstruct
     public void init() {
-         for (String index: sampleService.getAllIndexes()){
+        System.out.println("SingleSampleBean post construct");
+        for (String index : services.getSampleService().getAllIndexes()) {
             possibleIndexes.add(index);
         }
     }
-    
+
     public String loadNew() {
-        currentSample = new Sample();
-        User currentUser = roleManager.getLoggedUser();
-        principalInvestigator = userService.getUserByID(currentUser.getPi());
+        currentSample = DTOFactory.getSampleDTO(null);
+        UserDTO currentUser = roleManager.getCurrentUser();
+        principalInvestigator = roleManager.getPi();
         currentSample.setUser(currentUser);
         currentSample.setOrganism("HUMAN");
-        currentSample.setCostCenter(principalInvestigator.getUserName());
-        currentSample.setStatus(Sample.status_queued);
+        currentSample.setCostcenter(principalInvestigator.getUserName());
+        currentSample.setStatus(SampleDTO.status_queued);
         currentSample.setRequestDate(new Date(System.currentTimeMillis()));
         currentSample.setBioanalyzerDate(new Date(System.currentTimeMillis()));
-        currentSample.setSequencingIndexes(new SequencingIndex("none"));
-        currentSample.setApplication(new Application(Application.DNA_SEQ));
+        currentSample.setIndex(DTOFactory.getIndexDTO("none"));
+        currentSample.setApplication(DTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ));
         isNewForm = true;
 
         return "/Sample/sampleDetails_1?faces-redirect=true";
     }
-    
+
     public String loadId() {
         FacesContext context = FacesContext.getCurrentInstance();
         String sid = (String) context.getExternalContext().getRequestParameterMap().get("sid");
         Integer sampleID = Integer.parseInt(sid);
+
+        currentSample = services.getSampleService().getFullSampleById(sampleID);
         
-        currentSample = sampleService.getFullSampleById(sampleID);
-        principalInvestigator = userService.getUserByID(currentSample.getUser().getPi());
-             
+        principalInvestigator = services.getUserService().getUserByID(currentSample.getUser().getPi());
+        isNewForm = false;
+        
         return "/Sample/sampleDetails_1?faces-redirect=true";
     }
-    
-    //USED BY AUTO-WIRING
-    public LazySampleService getSampleService() {
-        return sampleService;
-    }
-    public void setSampleService(LazySampleService sampleService) {
-        this.sampleService = sampleService;
-    }
-    public UserService getUserService() {
-        return userService;
-    }
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
+
+    //FOR WELDING...
     public NewRoleManager getRoleManager() {
         return roleManager;
     }
+
     public void setRoleManager(NewRoleManager roleManager) {
         this.roleManager = roleManager;
     }
-    
-    
-    //GETTERS
-    public String getSampleName() { return currentSample.getName();}
-    public Integer getSampleID() { return currentSample.getId();}
-    public String getUserLogin() { return currentSample.getUser().getLogin();}
-    public String getUserName() { return currentSample.getUser().getUserName();}
-    public String getUserEmail() { return currentSample.getUser().getMailAddress();}
-    public String getUserTel() { return currentSample.getUser().getPhone();}
-    public String getPiLogin() { return principalInvestigator.getLogin();}
-    public String getApplicationName() { 
-        return newApplication!=null? newApplication.getApplicationname() : emptyIfNull(currentSample.getApplication().getApplicationname());
-    }
-    public String getReadMode() { 
-        return newApplication!=null? newApplication.getReadmode() : currentSample.getApplication().getReadmode();
-    }
-    public Integer getReadLength() { 
-        return newApplication!=null? newApplication.getReadlength() : currentSample.getApplication().getReadlength();
-    }
-    public Integer getDepth() { 
-        return newApplication!=null? newApplication.getDepth() : currentSample.getApplication().getDepth();
-    }
-    public String getInstrument() { 
-        return newApplication!=null? newApplication.getInstrument() :currentSample.getApplication().getInstrument();
+
+    public ServiceFactory getServices() {
+        return services;
     }
 
-    public boolean getLibrarySynthesis() { return currentSample.getLibrarySynthesisNeeded();}
-    public String getSequencingIndex() { return emptyIfNull(currentSample.getSequencingIndexes().getIndex());}
-    public List<String> getPossibleIndexes() { return possibleIndexes;}
-    public String getCostCenter() { return currentSample.getCostCenter();}
-    public Date getBioDate() { return currentSample.getBioanalyzerDate();}
-    public Double getBioMolarity() { return currentSample.getBionalyzerBiomolarity();}
-    public String getSampleType() { return currentSample.getType();}
-    public String getOrganism() { return currentSample.getOrganism();}
-    public Double getSampleConcentration() { return currentSample.getConcentration();}
-    public Double getTotalAmount() { return currentSample.getTotalAmount();}
-    public Double getBulkFragmentSize() { return currentSample.getBulkFragmentSize();}
-    public String getAntibody() { return currentSample.getAntibody();}
-    public String getSampleDescription() { return currentSample.getDescription();}
-    public String getComments() { return currentSample.getComment();}
-    public String getStatus() { return currentSample.getStatus();}
-    public String[] getPossibleDepths() { return "PE".equals(getReadMode()) ? Preferences.getDepth_PE(): Preferences.getDepth_SR();}
+    public void setServices(ServiceFactory services) {
+        this.services = services;
+    }
+
+    //GETTERS
+    public String getSampleName() {
+        return currentSample.getName();
+    }
+
+    public Integer getSampleID() {
+        return currentSample.getId();
+    }
+
+    public String getUserLogin() {
+        return currentSample.getUser().getLogin();
+    }
+
+    public String getUserName() {
+        return currentSample.getUser().getUserName();
+    }
+
+    public String getUserEmail() {
+        return currentSample.getUser().getMailAddress();
+    }
+
+    public String getUserTel() {
+        return currentSample.getUser().getPhone();
+    }
+
+    public String getPiLogin() {
+        return principalInvestigator.getLogin();
+    }
+
+    public String getApplicationName() {
+        return newApplication != null ? newApplication.getApplicationName() : emptyIfNull(currentSample.getApplication().getApplicationName());
+    }
+
+    public String getReadMode() {
+        return newApplication != null ? newApplication.getReadMode() : currentSample.getApplication().getReadMode();
+    }
+
+    public Integer getReadLength() {
+        return newApplication != null ? newApplication.getReadLength() : currentSample.getApplication().getReadLength();
+    }
+
+    public Integer getDepth() {
+        return newApplication != null ? newApplication.getDepth() : currentSample.getApplication().getDepth();
+    }
+
+    public String getInstrument() {
+        return newApplication != null ? newApplication.getInstrument() : currentSample.getApplication().getInstrument();
+    }
+
+    public boolean getLibrarySynthesis() {
+        return currentSample.isSyntehsisNeeded();
+    }
+
+    public String getSequencingIndex() {
+        return emptyIfNull(currentSample.getIndex().getIndex());
+    }
+
+    public List<String> getPossibleIndexes() {
+        return possibleIndexes;
+    }
+
+    public String getCostCenter() {
+        return currentSample.getCostcenter();
+    }
+
+    public Date getBioDate() {
+        return currentSample.getBioanalyzerDate();
+    }
+
+    public Double getBioMolarity() {
+        return currentSample.getBioAnalyzerMolarity();
+    }
+
+    public String getSampleType() {
+        return currentSample.getType();
+    }
+
+    public String getOrganism() {
+        return currentSample.getOrganism();
+    }
+
+    public Double getSampleConcentration() {
+        return currentSample.getConcentration();
+    }
+
+    public Double getTotalAmount() {
+        return currentSample.getTotalAmount();
+    }
+
+    public Double getBulkFragmentSize() {
+        return currentSample.getBulkFragmentSize();
+    }
+
+    public String getAntibody() {
+        return currentSample.getAntibody();
+    }
+
+    public String getSampleDescription() {
+        return currentSample.getDescription();
+    }
+
+    public String getComments() {
+        return currentSample.getComment();
+    }
+
+    public String getStatus() {
+        return currentSample.getStatus();
+    }
+
+    public String[] getPossibleDepths() {
+        return "PE".equals(getReadMode()) ? Preferences.getDepth_PE() : Preferences.getDepth_SR();
+    }
+
     public boolean getModifyPermission() {
         boolean returnValue = roleManager.hasModifyPermission(currentSample);
         return returnValue;
     }
+
     public boolean getAddPermission() {
         return roleManager.hasSampleLoadPermission();
     }
+
     public boolean isIsNewForm() {
         return isNewForm;
     }
-    
 
     //SETTERS
-    public void setAntibody(String antibody) {  currentSample.setAntibody(antibody);}
-    public void setBulkFragmentSize(Double bulkFragmentSize) { currentSample.setBulkFragmentSize(bulkFragmentSize);}
-    public void setComments(String comment) { currentSample.setComment(comment);}
-    public void setSampleConcentration(Double concentration) { currentSample.setConcentration(concentration);}
-    public void setCostCenter(String costCenter) { currentSample.setCostCenter(costCenter);}
-    public void setSampleDescription(String description) { currentSample.setDescription(SampleNameFilter.legalize(description));}
-    public void setLibrarySynthesis(boolean syntesisNeeded) { 
-        currentSample.setLibrarySynthesisNeeded(syntesisNeeded);
-        if (syntesisNeeded){
+    public void setAntibody(String antibody) {
+        currentSample.setAntibody(antibody);
+    }
+
+    public void setBulkFragmentSize(Double bulkFragmentSize) {
+        currentSample.setBulkFragmentSize(bulkFragmentSize);
+    }
+
+    public void setComments(String comment) {
+        currentSample.setComment(comment);
+    }
+
+    public void setSampleConcentration(Double concentration) {
+        currentSample.setConcentration(concentration);
+    }
+
+    public void setCostCenter(String costCenter) {
+        currentSample.setCostcenter(costCenter);
+    }
+
+    public void setSampleDescription(String description) {
+        currentSample.setDescription(SampleNameFilter.legalize(description));
+    }
+
+    public void setLibrarySynthesis(boolean syntesisNeeded) {
+        currentSample.setSyntehsisNeeded(syntesisNeeded);
+        if (syntesisNeeded) {
             this.setSequencingIndex("none");
             this.setBioDate(null);
             this.setBioMolarity(null);
         }
     }
-    public void setOrganism(String organism) { currentSample.setOrganism(organism);}
-    public void setSampleName(String name) { currentSample.setName(SampleNameFilter.legalize(name));}
-    public void setSampleType(String type) { currentSample.setType(type);}
-    public void setTotalAmount(Double amount) {currentSample.setTotalAmount(amount);};
-    public void setBioDate(Date date) { currentSample.setBioanalyzerDate(date);}
-    public void setBioMolarity(Double molarity) { currentSample.setBionalyzerBiomolarity(molarity);}
-    
+
+    public void setOrganism(String organism) {
+        currentSample.setOrganism(organism);
+    }
+
+    public void setSampleName(String name) {
+        currentSample.setName(SampleNameFilter.legalize(name));
+    }
+
+    public void setSampleType(String type) {
+        currentSample.setType(type);
+    }
+
+    public void setTotalAmount(Double amount) {
+        currentSample.setTotalAmount(amount);
+    }
+
+    ;
+    public void setBioDate(Date date) {
+        currentSample.setBioanalyzerDate(date);
+    }
+
+    public void setBioMolarity(Double molarity) {
+        currentSample.setBioAnalyzerMolarity(molarity);
+    }
+
     //Those setters refer to application
-    public void setApplicationName(String appName) { 
-        newApplication = new Application(appName,currentSample.getApplication().getInstrument());        
+    public void setApplicationName(String appName) {
+        newApplication = DTOFactory.getApplicationDTO(appName, currentSample.getApplication().getInstrument());
     }
-    public void setReadMode(String readMode) { 
-        if (newApplication == null) newApplication = currentSample.getApplication().createCopy();
-        newApplication.setReadmode(readMode);
+
+    public void setReadMode(String readMode) {
+        if (newApplication == null) {
+            newApplication = currentSample.getApplication().getCopy();
+        }
+        newApplication.setReadMode(readMode);
     }
-    public void setReadLength(Integer readLength) { 
-        if (newApplication == null) newApplication = currentSample.getApplication().createCopy();
-        newApplication.setReadlength(readLength);
+
+    public void setReadLength(Integer readLength) {
+        if (newApplication == null) {
+            newApplication = currentSample.getApplication().getCopy();
+        }
+        newApplication.setReadLength(readLength);
     }
-    public void setDepth(Integer depth) { 
-        if (newApplication == null) newApplication = currentSample.getApplication().createCopy();
+
+    public void setDepth(Integer depth) {
+        if (newApplication == null) {
+            newApplication = currentSample.getApplication().getCopy();
+        }
         newApplication.setDepth(depth);
     }
+
     public void setInstrument(String instrument) {
-        if (newApplication == null) newApplication = currentSample.getApplication().createCopy();
+        if (newApplication == null) {
+            newApplication = currentSample.getApplication().getCopy();
+        }
         newApplication.setInstrument(instrument);
     }
-    
-    public void setSequencingIndex(String index) { 
-        currentSample.setSequencingIndexes(new SequencingIndex(index));
+
+    public void setSequencingIndex(String index) {
+        currentSample.setIndex(DTOFactory.getIndexDTO(index));
     }
-   
+
     //CRUD OPs
     public void modify() {
-        if (!getModifyPermission()){
+        if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT_MOD, "User error", "You do not have permissions to modify this component");
             return;
         }
-        
+
         persist();
     }
-    
-     public String save() {
-        if (!getAddPermission()){
+
+    public String save() {
+        if (!getAddPermission()) {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT_MOD, "User error", "You do not have permissions to save this component");
             return null;
         }
-        
-        if (persist()){
+
+        if (persist()) {
             return "sampleCreated_1?faces-redirect=true";
-        }else{
+        } else {
             return null;
         }
     }
-    
-    
+
     public String delete() {
         System.out.println("Deleting Sample with id " + currentSample.getId());
         if (!getModifyPermission()) {
@@ -247,9 +368,9 @@ public class SingleSampleBean implements Serializable {
             return null;
         }
 
-        if (currentSample.getStatus().equals(Sample.status_requested)) {
+        if (currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued)) {
             try {
-                sampleService.deleteSample(currentSample);
+                services.getSampleService().deleteSample(currentSample);
             } catch (Exception ex) {
                 NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT_DEL,
                         "Error in DB while deleting " + currentSample.getId(), ex.getMessage());
@@ -269,21 +390,22 @@ public class SingleSampleBean implements Serializable {
 
         return "sampleDeleted_1?faces-redirect=true";
     }
-    
+
     private boolean persist() {
         try {
 
             ApplicationValidator appValidator = null;
             if (newApplication != null) {
                 appValidator = new ApplicationValidator(newApplication);
-                Application appToPersist = appValidator.getValidatedObject();
+                ApplicationDTO appToPersist = appValidator.getValidatedObject();
                 currentSample.setApplication(appToPersist);
-                currentSample.setExperimentName(appToPersist.getApplicationname());
+                currentSample.setExperimentName(appToPersist.getApplicationName());
             }
 
             SampleValidator sampValidator = new SampleValidator(currentSample);
-            Sample sampleToPersist = sampValidator.getValidatedObject();
-            PersistedSampleReceipt receipt = sampleService.saveOrUpdateSample(sampleToPersist,isNewForm);
+            SampleDTO sampleToPersist = sampValidator.getValidatedObject();
+            PersistedSampleReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
+            this.currentSample = services.getSampleService().getFullSampleById(receipt.getId());
 
             if (appValidator != null) {
                 for (ValidatorMessage message : appValidator.getMessages()) {
@@ -320,12 +442,12 @@ public class SingleSampleBean implements Serializable {
             System.out.println("FATAL: exception " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return false;
     }
-    
+
     //UTILITY
-    private String emptyIfNull(String toCheck){
+    private String emptyIfNull(String toCheck) {
         return toCheck == null ? "" : toCheck;
     }
 }

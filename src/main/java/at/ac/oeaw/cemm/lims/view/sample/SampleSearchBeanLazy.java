@@ -5,9 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.model.SampleLazyDataModel;
-import it.iit.genomics.cru.smith.entity.Sample;
-import at.ac.oeaw.cemm.lims.service.LazySampleService;
+import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -23,30 +22,36 @@ import org.primefaces.model.LazyDataModel;
 @ManagedBean
 @ViewScoped
 public class SampleSearchBeanLazy implements Serializable{
-    private LazyDataModel<Sample> lazyModel;
     
-    @ManagedProperty("#{lazySampleService}")
-    private LazySampleService sampleService;
+    @ManagedProperty(value = "#{hibernateServiceFactory}")
+    private ServiceFactory services;
+    
+    private SampleLazyDataModel lazyModel;
+    
+    public SampleSearchBeanLazy(){
+        System.out.println("Initializing SampleSearchBeanLazy");
+    }
     
     @PostConstruct
     public void init() {
-        lazyModel = new SampleLazyDataModel(sampleService);
-    }
- 
-    public LazyDataModel<Sample> getLazyModel() {
-        return lazyModel;
+         System.out.println("SampleSearchBeanLazy post construct");
+        this.lazyModel = new SampleLazyDataModel(services);
     }
 
-    public LazySampleService getSampleService() {
-        return sampleService;
+    public ServiceFactory getServices() {
+        return services;
     }
 
-    public void setSampleService(LazySampleService sampleService) {
-        this.sampleService = sampleService;
+    public void setServices(ServiceFactory services) {
+        this.services = services;
     }
     
+    public LazyDataModel<SampleDTO> getLazyModel() {
+        return lazyModel;
+    }
+   
     public List<String> getAllLibraries() {
-        return sampleService.getAllLibraries();
+        return lazyModel.getAllLibraries();
     }
  
 }

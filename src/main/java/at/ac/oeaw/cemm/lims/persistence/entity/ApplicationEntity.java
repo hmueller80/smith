@@ -1,4 +1,4 @@
-package it.iit.genomics.cru.smith.entity;
+package at.ac.oeaw.cemm.lims.persistence.entity;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "application")
-public class Application implements java.io.Serializable {
+public class ApplicationEntity implements java.io.Serializable {
 
     public static final long serialVersionUID = 1L;
     
@@ -41,13 +41,13 @@ public class Application implements java.io.Serializable {
 
     @OneToMany(mappedBy = "application")
 //    @JoinColumn(name="application_id")
-    private Set<Sample> samples = new HashSet<Sample>(0);
+    private Set<SampleEntity> samples = new HashSet<SampleEntity>(0);
 
-    public Application() {
+    public ApplicationEntity() {
     }
 
-    public Application(Integer readlength, String readmode, String instrument,
-            String applicationname, Integer depth, Set<Sample> samples) {
+    public ApplicationEntity(Integer readlength, String readmode, String instrument,
+            String applicationname, Integer depth, Set<SampleEntity> samples) {
         this.readLength = readlength;
         this.readMode = readmode;
         this.instrument = instrument;
@@ -56,11 +56,11 @@ public class Application implements java.io.Serializable {
         this.samples = samples;
     }
     
-    public Application(String appName) {
+    public ApplicationEntity(String appName) {
         this(appName,null);
     }
     
-    public Application(String appName,String instrument) {
+    public ApplicationEntity(String appName,String instrument) {
         this.applicationName = appName ==null ? "undefined" : appName;
         this.instrument = instrument == null ? "HiSeq2000" : instrument;
         
@@ -149,15 +149,15 @@ public class Application implements java.io.Serializable {
         this.depth = depth;
     }
 
-    public Set<Sample> getSamples() {
+    public Set<SampleEntity> getSamples() {
         return this.samples;
     }
 
-    public void setSamples(Set<Sample> samples) {
+    public void setSamples(Set<SampleEntity> samples) {
         this.samples = samples;
     }
     
-    public boolean isMatching(Application app){        
+    public boolean isMatching(ApplicationEntity app){        
         if(app.depth.intValue() == this.depth.intValue() && app.readMode.equals(this.readMode) && app.readLength.intValue() == this.readLength.intValue()){             
             return true;
         }else{            
@@ -165,8 +165,8 @@ public class Application implements java.io.Serializable {
         }
     }
     
-    public Application createCopy(){
-       Application newApp = new Application();
+    public ApplicationEntity createCopy(){
+       ApplicationEntity newApp = new ApplicationEntity();
        newApp.setApplicationname(applicationName!=null ? applicationName : "undefined");
        newApp.setReadlength(readLength);
        newApp.setDepth(depth);

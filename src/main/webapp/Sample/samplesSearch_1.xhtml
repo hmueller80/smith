@@ -14,7 +14,7 @@
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['sample.emptymessage']}"
-                         filteredValue="#{filterBean.sample}"
+                         filteredValue="#{filterDTOBean.sample}"
                          lazy="true">
 
                 <f:facet name="header">
@@ -77,7 +77,7 @@
 
                 <p:column id="costCenterColumn" filterBy="#{sample.costCenter}"                    
                           headerText="#{bundle['samples.cost.center']}">
-                    <h:outputText value="#{sample.costCenter}" />
+                    <h:outputText value="#{sample.costcenter}" />
                 </p:column>
 
                 <p:column id="descriptionColumn" filterBy="#{sample.description}"                   

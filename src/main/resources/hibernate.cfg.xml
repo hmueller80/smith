@@ -45,19 +45,16 @@ Contributor(s):
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</property>
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/smithdemo?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">root</property>
-    <property name="hibernate.connection.password">mzsqlroot</property>
-    
+    <property name="hibernate.connection.username">smith</property>
+    <property name="hibernate.connection.password">smith</property>
     <!--
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.password">mzsqlroot</property>
     
         -->
-    
-    
     <property name="hibernate.show_sql">false</property>
-    <property name="hibernate.current_session_context_class">thread</property>    
+    <property name="hibernate.current_session_context_class">thread</property>
     <property name="hibernate.connection.zeroDateTimeBehavior">convertToNull</property>
     <property name="javax.persistence.validation.mode">none</property>
     <property name="hibernate.connection.release_mode">after_transaction</property>
@@ -71,24 +68,23 @@ Contributor(s):
     <property name="hibernate.c3p0.maxIdleTimeExcessConnections">5</property>
     <property name="hibernate.c3p0.idleConnectionTestPeriod">300</property>
     <property name="hibernate.id.new_generator_mappings">false</property>
-    
-    <mapping class="it.iit.genomics.cru.smith.entity.AlignedData"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.UserEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity"/>
+    <mapping class="it.iit.genomics.cru.smith.entity.News"/>
+    <mapping class="it.iit.genomics.cru.smith.entity.Communications"/>
+    <!--mapping class="it.iit.genomics.cru.smith.entity.AlignedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.AnnotatedData"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Application"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Attribute"/>
     <mapping class="it.iit.genomics.cru.smith.entity.AttributeValue"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Collaboration"/>
     <mapping class="it.iit.genomics.cru.smith.entity.MultipleRequest"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Library"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.News"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Project"/>
     <mapping class="it.iit.genomics.cru.smith.entity.RawData"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Reagent"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Sample"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.SampleRun"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.SequencingIndex"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.User"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Lane"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Communications"/>
+    <mapping class="it.iit.genomics.cru.smith.entity.Reagent"/-->
   </session-factory>
 </hibernate-configuration>
