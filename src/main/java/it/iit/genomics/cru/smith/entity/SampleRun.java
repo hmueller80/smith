@@ -256,7 +256,7 @@ public class SampleRun implements Serializable {
         this.flowcell = flowcell;
     }
 
-    /*public int getLane() {
+    /*public int a() {
      return this.lane;
      }
 

@@ -7,8 +7,10 @@ package at.ac.oeaw.cemm.lims.view.sample;
 
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import it.iit.genomics.cru.smith.userBeans.RoleManager;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
@@ -18,13 +20,10 @@ import org.primefaces.model.SortOrder;
  */
 public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
 
-    private ServiceFactory services;
+    @Inject private ServiceFactory services;
     
-    public SampleLazyDataModel(ServiceFactory services){
-        System.out.println("Initializing SampleLazyDataModel");
-        this.services = services;
-    }
-       
+    private RoleManager roleManager=null;
+    
     @Override
     public SampleDTO getRowData(String sampleId) {
         return services.getSampleService().getSampleById(Integer.parseInt(sampleId));
@@ -55,6 +54,13 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
     public List<String> getAllLibraries() {
         return services.getSampleService().getAllLibraries();
     }
-    
+
+    public RoleManager getRoleManager() {
+        return roleManager;
+    }
+
+    public void setRoleManager(RoleManager roleManager) {
+        this.roleManager = roleManager;
+    }    
 
 }

@@ -1,0 +1,176 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="runsSearch">
+
+
+        <h:form id="runsTableForm">
+
+            <p:dataTable id="runsTable" 
+                         var="run" 
+                         value="#{runsSearchBeanLazy.runDataModel}" 
+                         widgetVar="runsTable"
+                         style="font-size: x-small;" 
+                         paginator="true" 
+                         rows="20"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                         {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         emptyMessage="#{bundle['runs.emptymessage']}"
+                         sortBy="#{run.id}" 
+                         sortOrder="descending"
+                         lazy="true">
+
+
+
+                <f:facet name="header">
+                    <p:outputPanel>
+                        <h:outputText value="Search all SampleRun fields: " />
+                        <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column id="idRunsColumn"                 
+                          headerText="#{bundle['runs.run.id']}"
+                          filterBy="#{run.id.runId}"
+                          sortBy="#{run.id.runId}">
+                    <ui:remove>
+                        <h:link  outcome="runDetails.jsf" value="#{runs.id.runId}">
+                            <f:param name="rid" value="#{runs.id.runId}"/>
+
+                        </h:link>
+                    </ui:remove>
+                    <h:outputText value="#{run.id}" />
+                </p:column>
+
+                <p:column id="idSamColumn"                      
+                          headerText="#{bundle['runs.sample.id']}"
+                          filterBy="#{run.id.samId}">
+                    <ui:remove>
+                        <h:commandLink value="#{runs.id.samId}" target="_blank" action="#{modSampleFormBean.loadid(runs.id.samId)}" />
+                    </ui:remove>
+                    <h:outputText value="#{run.sample.id}" />
+                </p:column>
+
+                <p:column id="operatorColumn"                    
+                          headerText="#{bundle['runs.operator.header']}"
+                          filterBy="#{run.user.login}">
+                    <h:outputText value="#{run.operator.login}" />
+                </p:column>
+
+                <p:column id="requesterColumn"                      
+                          headerText="#{bundle['runs.requester']}"
+                          filterBy="#{run.sampleUser.login}">
+                    <h:outputText value="#{run.sample.user.login}" />
+                </p:column>
+
+
+                <p:column id="flowcellColumn"                  
+                          headerText="#{bundle['runs.flowcell']}"
+                          filterBy="#{flowcell}">
+                    <h:outputText value="#{run.flowcell}" />
+                </p:column>
+
+                <p:column id="laneColumn"                  
+                          headerText="#{bundle['runs.lane']}"
+                          filterBy="#{run.lane.laneName}">
+                    <h:outputText value="#{run.lanesString}" />
+                </p:column>
+
+                <p:column id="seqindexColumn"                 
+                          headerText="#{bundle['runs.sequencing.index']}"
+                          filterBy="#{run.sampleIndex.index}">
+                    <h:outputText value="#{run.sample.index.index}" />
+                </p:column>
+
+                <p:column id="isControlColumn"                    
+                          headerText="#{bundle['runs.is.control']}"
+                          filterBy="#{run.isControl}">
+                    <h:outputText value="#{run.isControl}" />
+                </p:column>
+
+                <p:column id="runFolderColumn"                 
+                          headerText="#{bundle['runs.run.folder']}"
+                          filterBy="#{run.runFolder}">      
+                    <h:outputText value="#{run.runFolder}" />
+                </p:column>
+
+
+            </p:dataTable>
+            <h:panelGrid columns="2">
+                <p:panel header="#{bundle['export.All']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
+                    </h:commandLink>
+
+                </p:panel>
+                <p:panel header="#{bundle['export.Page']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="true" />
+                    </h:commandLink>
+
+                </p:panel>
+
+            </h:panelGrid>    
+
+            <h3> #{bundle['runs.hint']} </h3>
+
+            <ui:remove>
+                <p:button outcome="selectSample.jsf"  value="#{bundle['button.text.new.run']}" disabled="#{!runsSearchBean.userHasAddPermission}">
+                    <f:param name="specifySamples" value="requested"/>
+                    <f:param name="rid" value="#{runsSearchBean.newRunId}" />
+                </p:button>
+
+
+
+                <p:button outcome="newDraggableRunForm.jsf"  value="Mindex" disabled="#{!runsSearchBean.userHasAddPermission}" rendered="true">
+                    <f:param name="specifySamples" value="requested"/>
+                    <f:param name="rid" value="#{runsSearchBean.newRunId}" />
+                </p:button>
+            </ui:remove>          
+        </h:form>
+
+
+
+        <p:separator/>
+        <ui:remove>    
+            <h2>Upload Run Form</h2>
+            <h:outputLink rendered="#{navigationBean.userHasAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
+                <h:outputText value="#{bundle['runs.exampleform']}" />
+            </h:outputLink>
+
+            <h:form id="runTableUploadForm" >
+
+                <p:panelGrid columns="3">
+                    <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" fileUploadListener="#{uploadRunFormBean.handleFileUpload}"  
+                                  sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/" mode="advanced"  update="ufilename">
+                    </p:fileUpload>
+
+                    <h:outputText id="ufilename"  value="#{uploadRunFormBean.filename}" ></h:outputText>
+
+
+
+                </p:panelGrid>
+            </h:form>
+
+            <h:form  id="runTableUploadProcessForm">
+                <p:panelGrid columns="2">
+                    <p:commandButton id="RunUploadProcessButton" action="#{uploadRunFormBean.submitSampleRun()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
+                    </p:commandButton>
+                    <p:progressBar  widgetVar="progressBar" style="width: 150px;" ajax="true" value="#{uploadRunFormBean.progress}" labelTemplate="{value}%" styleClass="animated">
+                        <p:ajax event="complete" onsuccess="PF('progressBar').stop();"/>
+                    </p:progressBar>
+
+                </p:panelGrid>
+            </h:form>
+        </ui:remove>   
+
+
+    </ui:define>
+
+</ui:composition>

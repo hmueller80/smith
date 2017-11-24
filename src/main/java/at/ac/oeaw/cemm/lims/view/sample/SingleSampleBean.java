@@ -29,6 +29,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 /**
  *
@@ -42,8 +43,7 @@ public class SingleSampleBean implements Serializable {
     private static final String COMPONENT_MOD = "SampleModbutton";
     private static final String COMPONENT_DEL = "SampleDeletionButton";
 
-    @ManagedProperty(value = "#{hibernateServiceFactory}")
-    private ServiceFactory services;
+    @Inject private ServiceFactory services;
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;

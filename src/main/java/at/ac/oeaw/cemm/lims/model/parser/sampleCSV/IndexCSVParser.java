@@ -23,12 +23,10 @@ public class IndexCSVParser extends DTOCSVParser<IndexDTO> {
     
     private final SampleService sampleService;
     
-    public IndexCSVParser(CSVRecord record) {
+    public IndexCSVParser(CSVRecord record, ServiceFactory services) {
         super(record);
         FacesContext context = FacesContext.getCurrentInstance();
-        sampleService = 
-                ((ServiceFactory) context.getApplication().evaluateExpressionGet(context, "#{hibernateServiceFactory}", ServiceFactory.class))
-                .getSampleService(); 
+        this.sampleService = services.getSampleService();
     }
   
     @Override

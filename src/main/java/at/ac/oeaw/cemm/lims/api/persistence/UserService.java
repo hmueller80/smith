@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.util.List;
 
 /**
  *
@@ -17,4 +18,6 @@ public interface UserService {
 
     UserDTO getUserByLogin(final String userLogin);
     
+    List<UserDTO> getAllUsersByPI(Integer PIid);
+
 }

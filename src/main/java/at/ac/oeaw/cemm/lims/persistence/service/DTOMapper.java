@@ -12,8 +12,13 @@ import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
+import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -93,6 +98,17 @@ public class DTOMapper {
                     entity.getPi(),
                     entity.getUserRole());
         }
+    }
+
+    protected static SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) {
+        SampleDTO sampleDTO = getSampleDTOfromEntity(sampleRun.getsample());
+        UserDTO operatorDTO = getUserDTOFromEntity(sampleRun.getUser());
+        Set<String> lanes = new HashSet<>();
+        for (LaneEntity lane:sampleRun.getLanes()){
+            lanes.add(lane.getLaneName());
+        }
+        
+        return DTOFactory.getSampleRunDTO(sampleRun.getId().getRunId(), sampleDTO, operatorDTO, sampleRun.getFlowcell(), lanes, sampleRun.getRunFolder());
     }
 
 }

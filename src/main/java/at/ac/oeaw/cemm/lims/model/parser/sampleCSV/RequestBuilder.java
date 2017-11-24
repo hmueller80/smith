@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
@@ -32,7 +33,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class RequestBuilder {
     
-    public static ValidatedRequest buildRequestFromCSV(File csvFile) {
+    public static ValidatedRequest buildRequestFromCSV(File csvFile, ServiceFactory services) {
         RequestDTO requestObj = null;
         BuilderValidationStatus validationStatus = new BuilderValidationStatus();
         
@@ -47,7 +48,7 @@ public class RequestBuilder {
             for (CSVRecord record: records){
                 SampleDTO sample= getObject(new SampleCSVParser(record),validationStatus);
 
-                IndexDTO index = getObject(new IndexCSVParser(record),validationStatus);
+                IndexDTO index = getObject(new IndexCSVParser(record,services),validationStatus);
                 sample.setIndex(index);
 
                 ApplicationDTO application= getObject(new ApplicationCSVParser(record),validationStatus);

@@ -10,8 +10,10 @@ import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -97,5 +99,10 @@ public class DTOFactory {
                 index,
                 user);
         
+    }
+    
+    public static SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder){     
+        return new SampleRunDTOImpl(id, sample,operator, flowCell, lanes, runFolder);
+  
     }
 }

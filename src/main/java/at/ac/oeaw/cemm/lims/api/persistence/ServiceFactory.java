@@ -5,10 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
-import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
-import at.ac.oeaw.cemm.lims.api.persistence.UploadService;
-import at.ac.oeaw.cemm.lims.api.persistence.UserService;
-
 /**
  *
  * @author dbarreca
@@ -20,5 +16,7 @@ public interface ServiceFactory {
     SampleService getSampleService();
 
     UserService getUserService();
+    
+    RunService getRunService();
     
 }

@@ -40,13 +40,16 @@
                     <h:outputText value="#{sample.name}" />
                 </p:column>
 
-                <p:column id="libNameColumn" filterBy="#{sample.library.libraryName}"                      
-                          headerText="">
-                    <f:facet name="filter">
-                        <p:selectCheckboxMenu label="Libraries" onchange="PF('samplesTable').filter()" panelStyle="width:300px" scrollHeight="200">
-                            <f:selectItems value="#{sampleSearchBeanLazy.allLibraries}" />
-                        </p:selectCheckboxMenu>
-                    </f:facet>
+                <p:column id="libNameColumn" 
+                          headerText="#{bundle['samples.library.name']}"
+                          filterBy="#{sample.library.libraryName}">
+                    <ui:remove>
+                        <f:facet name="filter">
+                            <p:selectCheckboxMenu label="Libraries" onchange="PF('samplesTable').filter()" panelStyle="width:300px" scrollHeight="200">
+                                <f:selectItems value="#{sampleSearchBeanLazy.allLibraries}" />
+                            </p:selectCheckboxMenu>
+                        </f:facet>
+                    </ui:remove>
                     <h:outputText value="#{sample.libraryName}" />
                 </p:column>
 

@@ -7,6 +7,8 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -34,5 +36,14 @@ public class UserDAO {
     public UserEntity getUserByID(Integer id) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         return (UserEntity) session.get(UserEntity.class, id);
+    }
+
+    public List<UserEntity> getUsersByPI(Integer PIid) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        if (PIid == null){
+            return new ArrayList<>();
+        }
+        Criteria userCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("pi", PIid));
+        return userCriteria.list();
     }
 }

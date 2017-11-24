@@ -9,6 +9,8 @@ import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -20,11 +22,6 @@ import javax.inject.Inject;
 public class UserServiceImpl implements UserService {
 
     @Inject  private UserDAO userDAO;
-
-    /*public UserServiceImpl(UserDAO userDAO) {
-        System.out.println("Initializing User Service");
-        this.userDAO = userDAO;
-    }*/
 
     @Override
     public UserDTO getUserByLogin(final String userLogin) {
@@ -72,5 +69,32 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+    @Override
+    public List<UserDTO> getAllUsersByPI(final Integer PIid) {
+        final List<UserDTO> result = new ArrayList<>();
+
+        try {
+
+            TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    List<UserEntity> userEntities = userDAO.getUsersByPI(PIid);
+                    if (userEntities != null) {
+                        for (UserEntity entity : userEntities) {
+                            result.add(DTOMapper.getUserDTOFromEntity(entity));
+                        }
+                    }
+                    return null;
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

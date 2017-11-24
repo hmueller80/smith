@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
@@ -30,23 +31,11 @@ import javax.inject.Inject;
 public class RequestUploadServiceImpl implements UploadService {
 
     @Inject SampleDAO sampleDAO;
-    @Inject  LibraryDAO libraryDAO;
+    @Inject LibraryDAO libraryDAO;
     @Inject IndexDAO indexDAO;
     @Inject ApplicationDAO applicationDAO;
     @Inject UserDAO userDAO;
-
-    LazySampleService lazySampleService;
-
-    /*public RequestUploadServiceImpl(SampleDAO sampleDAO, LibraryDAO libraryDAO, IndexDAO indexDAO, ApplicationDAO applicationDAO, UserDAO userDAO, LazySampleService lazySampleService) {
-        System.out.println("Initializing request upload service");
-
-        this.sampleDAO = sampleDAO;
-        this.libraryDAO = libraryDAO;
-        this.indexDAO = indexDAO;
-        this.applicationDAO = applicationDAO;
-        this.userDAO = userDAO;
-        this.lazySampleService = lazySampleService;
-    }*/
+    @Inject LazySampleService lazySampleService;
     
     @Override
     public Set<PersistedSampleReceipt> uploadRequest(final RequestDTO request) throws Exception {

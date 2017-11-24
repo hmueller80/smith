@@ -11,6 +11,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 /**
  * @(#)LoggedUser.java 20 JUN 2014 Copyright 2014 Computational Research Unit of
@@ -33,8 +34,7 @@ public class NewLoggedUser implements Serializable {
     private UserDTO loggedUserPI;
     private String loginName;
 
-    @ManagedProperty(value = "#{hibernateServiceFactory}")
-    private ServiceFactory services;
+    @Inject private ServiceFactory services;
 
     public NewLoggedUser() {
         System.out.println("Initializing NewLoggedUser");

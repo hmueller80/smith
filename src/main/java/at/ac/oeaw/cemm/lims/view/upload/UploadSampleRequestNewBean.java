@@ -26,6 +26,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.mail.MessagingException;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -68,8 +69,7 @@ public class UploadSampleRequestNewBean implements Serializable {
     @ManagedProperty("#{mailBean}")
     private MailBean mailBean;
  
-    @ManagedProperty(value = "#{hibernateServiceFactory}")
-    private ServiceFactory services;
+    @Inject private ServiceFactory services;
 
     int progress;
     
@@ -124,7 +124,7 @@ public class UploadSampleRequestNewBean implements Serializable {
      */
     public void submitRequest() {
 
-        ValidatedRequest request = RequestBuilder.buildRequestFromCSV(new File(destination + filename));
+        ValidatedRequest request = RequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
 
         System.out.println("---------Parsed file " + filename + "----------");
         System.out.println("Is Valid: " + !request.getValidationStatus().isIsFailed());

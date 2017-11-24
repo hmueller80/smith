@@ -96,22 +96,26 @@ public class SampleDAO {
             Disjunction globalFiltersCriterion = Restrictions.disjunction();
             for (String filteredField : filters.keySet()) {
                 if (querableFields.contains(filteredField)) {
-                    if (filteredField.equals("id") || filteredField.equals("submissionId")) {
-                        singleFiltersCriterion.add(Restrictions.eq(filteredField, Integer.parseInt((String) filters.get(filteredField))));
-                    } else if (filteredField.equals("library.libraryName")) {
-                        Object filterValue = filters.get(filteredField);
-                        if (filterValue instanceof String[]) {
-                            String[] filterValues = (String[]) filterValue;
-                            Disjunction selectedLibraries = Restrictions.disjunction();
-                            for (String singleValue : filterValues) {
-                                selectedLibraries.add(Restrictions.eq(filteredField, singleValue));
-                            }
-                            singleFiltersCriterion.add(selectedLibraries);
-                        } else {
-                            singleFiltersCriterion.add(Restrictions.like(filteredField, (String) filterValue, MatchMode.ANYWHERE));
-                        }
-                    } else {
-                        singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
+                    switch (filteredField) {
+                        case "id":
+                        case "submissionId":
+                            singleFiltersCriterion.add(Restrictions.eq(filteredField, Integer.parseInt((String) filters.get(filteredField))));
+                            break;
+                        case "library.libraryName":
+                            Object filterValue = filters.get(filteredField);
+                            if (filterValue instanceof String[]) {
+                                String[] filterValues = (String[]) filterValue;
+                                Disjunction selectedLibraries = Restrictions.disjunction();
+                                for (String singleValue : filterValues) {
+                                    selectedLibraries.add(Restrictions.eq(filteredField, singleValue));
+                                }
+                                singleFiltersCriterion.add(selectedLibraries);
+                            } else {
+                                singleFiltersCriterion.add(Restrictions.like(filteredField, (String) filterValue, MatchMode.ANYWHERE));
+                            }   break;
+                        default:
+                            singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
+                            break;
                     }
                 }
             }

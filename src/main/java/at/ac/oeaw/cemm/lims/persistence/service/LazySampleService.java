@@ -36,16 +36,6 @@ public class LazySampleService implements SampleService {
     @Inject IndexDAO indexDAO;
     @Inject ApplicationDAO applicationDAO;
     @Inject UserDAO userDAO;
-
-    /*public LazySampleService(SampleDAO sampleDAO, LibraryDAO libraryDAO, IndexDAO indexDAO, ApplicationDAO applicationDAO, UserDAO userDAO) {
-        System.out.println("initializing lazy sample service");
-
-        this.sampleDAO = sampleDAO;
-        this.libraryDAO = libraryDAO;
-        this.indexDAO = indexDAO;
-        this.applicationDAO = applicationDAO;
-        this.userDAO = userDAO;
-    }*/
     
     @Override
     public SampleDTO getSampleById(final int sampleId) {
@@ -87,7 +77,7 @@ public class LazySampleService implements SampleService {
 
         return DTOMapper.getSampleDTOfromEntity(sample);
     }
-    
+     
     @Override
     public int getSamplesCount(final int first, final int pageSize, final String sortField, final boolean ascending, final Map<String, Object> filters) {
         Integer samples = null;
