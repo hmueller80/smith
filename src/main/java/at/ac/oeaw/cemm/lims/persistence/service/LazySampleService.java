@@ -17,6 +17,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -212,6 +213,30 @@ public class LazySampleService implements SampleService {
         }
      }
     
+    @Override
+    public List<PersistedSampleReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) {
+        final List<PersistedSampleReceipt> receipts = new ArrayList<> ();
+        
+        try{
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    for (SampleDTO sample: samplesToUpdate) {
+                        UserEntity user = userDAO.getUserByID(sample.getUser().getId());
+                        receipts.add(persistOrUpdateSingleSample(sample,false,user));
+                    }
+                    
+                    return null;
+                }
+            });
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        return receipts;
+    }
+    
+    
     
     
     protected PersistedSampleReceipt persistOrUpdateSingleSample(SampleDTO sample, boolean isNew, UserEntity user) throws Exception {
@@ -290,5 +315,5 @@ public class LazySampleService implements SampleService {
         }
     }
 
-    
+  
 }

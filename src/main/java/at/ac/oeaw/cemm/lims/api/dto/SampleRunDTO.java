@@ -5,6 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto;
 
+import java.util.Set;
+
 /**
  *
  * @author dbarreca
@@ -19,6 +21,6 @@ public interface SampleRunDTO {
     public String getLanesString();
     public Boolean getIsControl();
     public String getRunFolder();
-
+    public Set<String> getLanes();
     
 }

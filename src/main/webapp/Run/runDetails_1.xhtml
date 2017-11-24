@@ -1,0 +1,82 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="runDetails" >      
+
+        <h:form id="rundetailsForm"  >
+
+            <h3>Run #{singleRunBean.runId} details</h3>
+
+            <p:scrollPanel  id="sampleruns"  style="width:500px;height:500px">
+                <p:dataGrid  
+                    value="#{singleRunBean.sampleRuns}" 
+                    var="sampleRun" 
+                    id="samplerunsgrid" columns="1">
+                    <p:button 
+                        icon="ui-icon-search" 
+                        outcome="samplerunDetails_1.jsf"  
+                        title="#{bundle['runs.view.detail']}" >
+
+                        <f:param value="#{sampleRun.sample.id}" name="sid" />
+                        <f:param name="rid" value="#{sampleRun.id}" /> 
+                    </p:button>
+                    <h:outputText value="#{bundle['runs.sample']}#{sampleRun.sample.id}#{bundle['runs.operator']} #{sampleRun.operator.login}" style="margin-left:10px" />
+                </p:dataGrid>
+            </p:scrollPanel>
+
+            <ui:remove>
+                 <p:button  outcome="selectSample.jsf"  
+                       value="#{bundle['button.text.add.sample']}" 
+                       rendered="#{singleRunBean.roleManager.hasRunAddPermission}" 
+                       disabled="#{singleRunBean.runIsClosed}" >
+                    <f:param name="specifySamples" value="requested"/>
+                    <f:param name="rid" value="#{singleRunBean.runId}" />
+                </p:button>
+            </ui:remove>
+           
+
+            <p:commandButton 
+                action="#{runDetailsBean.closeRun}"  
+                value="#{bundle['button.text.close.run']}" 
+                rendered="#{singleRunBean.roleManager.hasRunAddPermission}}" 
+                disabled="#{!singleRunBean.allConfirmed}" >
+            </p:commandButton>
+
+
+            <h></h>
+            
+            <ui:remove>
+                <p:message for="missing"  rendered="#{!runDetailsBean.sampleToBeAdded.isEmpty()}"  />
+                <h></h>
+                <p:scrollPanel  id="missing"  style="width:500px;height:500px" rendered="#{!runDetailsBean.sampleToBeAdded.isEmpty()}">
+                    <p:dataGrid  value="#{runDetailsBean.sampleToBeAdded}" var="missingSample" id="missinggrid" columns="1">
+                        <p:button icon="ui-icon-pencil" outcome="newSampleRunForm.jsf"  title="#{bundle['button.text.add.sample']}" >
+                            <f:param value="#{missingSample}" name="sid" />
+                            <f:param name="rid" value="#{runDetailsBean.runID}" /> 
+                        </p:button>
+                        <h:outputText value="sample (#{missingSample})"  style="margin-left:10px" />
+                    </p:dataGrid>
+                </p:scrollPanel>
+            </ui:remove>
+            
+            <p:separator/>
+            <h:outputText value="#{bundle['runs.reset']}"  style="margin-left:10px" />
+            <br/>
+            <p:commandButton
+                id="ResetRunButton" 
+                
+                action="#{runDetailsBean.resetRun}" 
+                value="#{bundle['button.text.reset.run']}">
+            </p:commandButton>
+
+
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
 import java.util.HashSet;
 import java.util.List;
@@ -48,9 +49,11 @@ public class SampleRunDAO {
     };
     
     
-    public SampleRunEntity getRunById(int runId) {
+    public List<SampleRunEntity> getSampleRunsById(int runId) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        return (SampleRunEntity) session.get(SampleRunEntity.class, runId);
+        Criteria query = session.createCriteria(SampleRunEntity.class);
+        query.add(Restrictions.eq("id.runId",runId));
+        return query.list();
     }
 
     public Integer getRunsCount(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters) {
@@ -72,6 +75,12 @@ public class SampleRunDAO {
         resultList = query.list();
 
         return resultList;
+    }
+    
+    public SampleRunEntity getSampleRunById(int runId, int samId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        SampleRunIdEntity sampleRunId = new SampleRunIdEntity(runId,samId);
+        return (SampleRunEntity) session.get(SampleRunEntity.class, sampleRunId);
     }
     
     private Criteria assembleQuery(String sortField, boolean ascending, Map<String, Object> filters) {
@@ -153,5 +162,7 @@ public class SampleRunDAO {
         }
         return query;
     }
+
+  
     
 }

@@ -14,6 +14,9 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -26,22 +29,28 @@ public class LazyRunService implements RunService {
     @Inject SampleRunDAO runDAO;
     
     @Override
-    public SampleRunDTO getRunById(final int id) {
+    public Set<SampleRunDTO> getSampleRunByRunId(final int id) {
+        final Set<SampleRunDTO> result = new HashSet<>();
+        
         try {
-           return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<SampleRunDTO>() {
+           TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
                 @Override
-                public SampleRunDTO execute() throws Exception {
-                    SampleRunEntity sampleRun = runDAO.getRunById(id);
+                public Void execute() throws Exception {
+                    List<SampleRunEntity> sampleRun = runDAO.getSampleRunsById(id);
                     if (sampleRun!=null){
-                        return DTOMapper.getSampleRunDTOFromEntity(sampleRun); 
+                        for (SampleRunEntity entity: sampleRun){
+                            result.add(DTOMapper.getSampleRunDTOFromEntity(entity));
+                        }
                     }
                     return null;
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        
+        return result;
+
     }
 
   
@@ -79,7 +88,7 @@ public class LazyRunService implements RunService {
 
     @Override
     public Integer getRunsCount(final int first, final int pageSize,final String sortField, final boolean ascending,final Map<String, Object> filters) {
-         Integer runs = null;
+        Integer runs = null;
 
         try {
             Long currentTime = System.currentTimeMillis();
@@ -98,5 +107,25 @@ public class LazyRunService implements RunService {
         return runs;
     }
 
-    
+    @Override
+    public SampleRunDTO getSampleRunById(final int runId,final int samId) {
+        try{
+            return TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<SampleRunDTO>() {
+                @Override
+                public SampleRunDTO execute() throws Exception {
+                    SampleRunEntity sampleRun = runDAO.getSampleRunById(runId,samId);
+                    return DTOMapper.getSampleRunDTOFromEntity(sampleRun);
+                }
+            });
+           
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        
+        
+    }
+
+
 }

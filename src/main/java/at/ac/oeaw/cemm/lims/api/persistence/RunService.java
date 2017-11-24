@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.api.persistence;
 import java.util.List;
 import java.util.Map;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import java.util.Set;
 
 /**
  *
@@ -15,10 +16,12 @@ import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
  */
 public interface RunService {
 
-    public SampleRunDTO getRunById(int id);
+    public Set<SampleRunDTO> getSampleRunByRunId(int id);
 
     public List<SampleRunDTO> getRuns(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters);
     
     public Integer getRunsCount(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters);
+
+    public SampleRunDTO getSampleRunById(int runId, int samId);
 
 }

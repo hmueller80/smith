@@ -25,16 +25,6 @@ public class RunLazyDataModel extends LazyDataModel<SampleRunDTO>{
     @Inject ServiceFactory services;
     
     private NewRoleManager roleManager;
-        
-    @Override
-    public SampleRunDTO getRowData(String sampleId) {
-        return services.getRunService().getRunById(Integer.parseInt(sampleId)); 
-    }
- 
-    @Override
-    public Object getRowKey(SampleRunDTO run) {
-        return run.getId();
-    }
  
     @Override
     public List<SampleRunDTO> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {

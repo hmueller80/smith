@@ -6,9 +6,11 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -33,4 +35,6 @@ public interface SampleService {
     PersistedSampleReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception;
     
     Boolean checkIdxExistence(final String sequence);
+
+    List<PersistedSampleReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate);
 }

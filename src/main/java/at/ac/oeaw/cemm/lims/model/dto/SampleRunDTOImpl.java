@@ -82,6 +82,11 @@ public class SampleRunDTOImpl implements SampleRunDTO {
     public String getRunFolder() {
         return runFolder;
     }
+
+    @Override
+    public Set<String> getLanes() {
+        return lanes;
+    }
     
     
 }

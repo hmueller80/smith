@@ -37,22 +37,17 @@
                           headerText="#{bundle['runs.run.id']}"
                           filterBy="#{run.id.runId}"
                           sortBy="#{run.id.runId}">
-                    <ui:remove>
-                        <h:link  outcome="runDetails.jsf" value="#{runs.id.runId}">
-                            <f:param name="rid" value="#{runs.id.runId}"/>
-
+                        <h:link  outcome="runDetails_1.jsf" value="#{run.id}">
+                            <f:param name="rid" value="#{run.id}"/>
                         </h:link>
-                    </ui:remove>
-                    <h:outputText value="#{run.id}" />
                 </p:column>
 
                 <p:column id="idSamColumn"                      
                           headerText="#{bundle['runs.sample.id']}"
                           filterBy="#{run.id.samId}">
-                    <ui:remove>
-                        <h:commandLink value="#{runs.id.samId}" target="_blank" action="#{modSampleFormBean.loadid(runs.id.samId)}" />
-                    </ui:remove>
-                    <h:outputText value="#{run.sample.id}" />
+                    <h:commandLink id="sampleId" action="#{singleSampleBean.loadId}" value="#{run.sample.id}" >
+                        <f:param name="sid" value="#{run.sample.id}"/>
+                    </h:commandLink>   
                 </p:column>
 
                 <p:column id="operatorColumn"                    
