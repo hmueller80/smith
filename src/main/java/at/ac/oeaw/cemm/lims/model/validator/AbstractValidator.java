@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.validator;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -75,6 +76,19 @@ public abstract class AbstractValidator<T> {
         
         if (toCheck==null || toCheck<0){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is undefined or negative"));
+            return false;
+        }
+        
+        return true;
+    }
+    
+     protected boolean collectionNotEmpty(
+            Collection toCheck, 
+            ValidatorSeverity severity,
+            String parameterName){
+        
+        if (toCheck==null || toCheck.isEmpty()){
+            messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is empty"));
             return false;
         }
         

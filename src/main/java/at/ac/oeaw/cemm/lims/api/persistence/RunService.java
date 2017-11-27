@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.api.persistence;
 import java.util.List;
 import java.util.Map;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.Set;
 
 /**
@@ -20,8 +21,13 @@ public interface RunService {
 
     public List<SampleRunDTO> getRuns(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters);
     
-    public Integer getRunsCount(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters);
+    public Integer getRunsCount(Map<String, Object> filters);
 
     public SampleRunDTO getSampleRunById(int runId, int samId);
+    
+    public void bulkDeleteRun(Integer runId) throws Exception;
+    
+    public boolean runExists(int runId) throws Exception;
 
+    public Set<PersistedEntityReceipt> bulkUploadRuns(Set<SampleRunDTO> sampleRuns) throws Exception;
 }

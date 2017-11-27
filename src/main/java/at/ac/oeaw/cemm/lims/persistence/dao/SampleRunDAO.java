@@ -51,29 +51,52 @@ public class SampleRunDAO {
     
     public List<SampleRunEntity> getSampleRunsById(int runId) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria query = session.createCriteria(SampleRunEntity.class);
-        query.add(Restrictions.eq("id.runId",runId));
+        Criteria query = session.createCriteria(SampleRunEntity.class)
+                .add(Restrictions.eq("id.runId",runId))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
         return query.list();
     }
 
-    public Integer getRunsCount(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters) {
+    public Integer getRunsCount(Map<String, Object> filters) {
         int result = 0;
 
-        Criteria query = assembleQuery(sortField, ascending, filters);
-        query.setProjection(Projections.rowCount());
-        result = ((Long) query.uniqueResult()).intValue();
+        Criteria query = assembleQuery(filters);
+        query.setProjection(Projections.countDistinct("id"));
 
+        result = ((Long) query.uniqueResult()).intValue();
+        
+        System.out.println("There are "+result+" sample runs");
         return result;
     }
 
     public List<SampleRunEntity> getRuns(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters) {
         List<SampleRunEntity> resultList = null;
 
-        Criteria query = assembleQuery(sortField, ascending, filters);
+        //1. Get the ids of the distinct runs satisfying the query
+        Criteria query = assembleQuery(sortField,ascending,filters);
+        query.setProjection(Projections.distinct(Projections.property("id")));
         query.setFirstResult(first);
         query.setMaxResults(pageSize);
-        resultList = query.list();
+        List idsToFetch = query.list();
+        
+        //2. Fetch the distinct sample runs in the query
+        query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleRunEntity.class)
+                .add(Restrictions.in("id", idsToFetch))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        
+        if (sortField != null) {
+            if (ascending) {
+                query.addOrder(Order.asc(sortField));
+            } else {
+                query.addOrder(Order.desc(sortField));
+            }
+        }
+          
+        resultList = (List<SampleRunEntity>) query.list();
+        
 
+        System.out.println("Returning "+resultList.size()+" sample runs");
         return resultList;
     }
     
@@ -83,7 +106,12 @@ public class SampleRunDAO {
         return (SampleRunEntity) session.get(SampleRunEntity.class, sampleRunId);
     }
     
-    private Criteria assembleQuery(String sortField, boolean ascending, Map<String, Object> filters) {
+     private Criteria assembleQuery(Map<String, Object> filters) {
+        return assembleQuery(null,null,filters);
+    }
+
+    
+    private Criteria assembleQuery(String sortField, Boolean ascending, Map<String, Object> filters) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         Criteria query = session.createCriteria(SampleRunEntity.class)
@@ -91,8 +119,8 @@ public class SampleRunDAO {
                 .createAlias("user", "user", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample", "sample", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample.user", "sampleUser", JoinType.LEFT_OUTER_JOIN)
-                .createAlias("sample.sequencingIndexes", "sampleIndex", JoinType.LEFT_OUTER_JOIN);
-
+                .createAlias("sample.sequencingIndexes", "sampleIndex", JoinType.LEFT_OUTER_JOIN)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if (filters != null) {
             Conjunction singleFiltersCriterion = Restrictions.conjunction();
@@ -146,13 +174,10 @@ public class SampleRunDAO {
                 Criterion userCriterion = Restrictions.in("sampleUser.id", restrictedUsers);
                 filterCriterion = Restrictions.conjunction().add(filterCriterion).add(userCriterion);
             }
-            
-            
+  
             query.add(filterCriterion);
-            
-          
-            
         }
+        
         if (sortField != null) {
             if (ascending) {
                 query.addOrder(Order.asc(sortField));
@@ -160,9 +185,42 @@ public class SampleRunDAO {
                 query.addOrder(Order.desc(sortField));
             }
         }
+   
         return query;
     }
 
-  
+    public void deleteSampleRun(int runId, int sampleId) {
+        SampleRunEntity toDelete = getSampleRunById(runId, sampleId);
+        deleteSampleRun(toDelete);
+    }
+    
+    public void deleteSampleRun(SampleRunEntity toDelete) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.delete(toDelete);
+    }
+
+    public Boolean checkRunExistence(int runId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleRunEntity.class)
+                .add(Restrictions.eq("id.runId", runId))
+                .setProjection(Projections.rowCount());
+        
+        long count = (Long) query.uniqueResult();
+        if(count != 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void persistSampleRun(SampleRunEntity sampleRunEntity) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.save(sampleRunEntity);
+    }
+
+    public void updateSampleRun(SampleRunEntity sampleRunEntity) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.update(sampleRunEntity);
+    }
     
 }

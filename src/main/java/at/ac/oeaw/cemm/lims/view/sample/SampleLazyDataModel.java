@@ -26,7 +26,7 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
     
     @Override
     public SampleDTO getRowData(String sampleId) {
-        return services.getSampleService().getSampleById(Integer.parseInt(sampleId));
+        return services.getSampleService().getFullSampleById(Integer.parseInt(sampleId));
     }
  
     @Override
@@ -46,7 +46,7 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
             System.out.println(filter+":"+filters.get(filter).toString());
         }
         
-        this.setRowCount(services.getSampleService().getSamplesCount(first, pageSize, sortField, ascending, filters));
+        this.setRowCount(services.getSampleService().getSamplesCount(filters));
         List<SampleDTO> result =  services.getSampleService().getSamples(first, pageSize, sortField, ascending, filters);
         return result;
     }

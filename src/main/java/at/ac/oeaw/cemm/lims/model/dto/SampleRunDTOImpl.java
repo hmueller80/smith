@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.model.dto;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,8 +17,8 @@ import java.util.Set;
  */
 public class SampleRunDTOImpl implements SampleRunDTO {
     private final Integer id;
-    private SampleDTO sample;
-    private UserDTO operator;
+    private final SampleDTO sample;
+    private final UserDTO operator;
     private String flowCell;
     private Set<String> lanes;
     private boolean isControl = false;
@@ -29,18 +30,24 @@ public class SampleRunDTOImpl implements SampleRunDTO {
             UserDTO operator, 
             String flowCell, 
             Set<String> lanes, 
-            String runFolder
+            String runFolder,
+            Boolean isControl
     ) {
         this.id = id;
         this.sample = sample;
         this.operator = operator;
         this.flowCell = flowCell;
-        this.lanes = lanes;
+        if (lanes!=null){
+            this.lanes = lanes;
+        }else{
+            this.lanes= new HashSet<>();
+        }
         this.runFolder = runFolder;
+        this.isControl = isControl;
     }
     
     @Override
-    public Integer getId() {
+    public Integer getRunId() {
         return id;
     }
 
@@ -86,6 +93,35 @@ public class SampleRunDTOImpl implements SampleRunDTO {
     @Override
     public Set<String> getLanes() {
         return lanes;
+    }
+
+    @Override
+    public void setFlowcell(String flowCell) {
+        this.flowCell= flowCell;
+    }
+
+    @Override
+    public void addLane(String lane) {
+        this.lanes.add(lane);
+    }
+
+    @Override
+    public void setIsControl(boolean isControl) {
+        this.isControl = isControl;
+    }
+
+    @Override
+    public void setRunFolder(String runFolder) {
+        this.runFolder = runFolder;
+    }
+
+    @Override
+    public void setLanes(Set<String> lanes) {
+        if (lanes == null){
+            this.lanes = new HashSet<>();
+        }else{
+            this.lanes = lanes;
+        }
     }
     
     

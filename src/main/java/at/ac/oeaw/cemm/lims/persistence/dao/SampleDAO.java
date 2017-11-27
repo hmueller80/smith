@@ -59,13 +59,14 @@ public class SampleDAO {
         return sample;
     }
 
-    public int getSamplesCount(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters)
+    public int getSamplesCount(Map<String, Object> filters)
             throws HibernateException {
 
         int result = 0;
 
-        Criteria query = assembleQuery(sortField, ascending, filters);
-        query.setProjection(Projections.rowCount());
+        Criteria query = assembleQuery(filters);
+        query.setProjection(Projections.countDistinct("id"));
+                
         result = ((Long) query.uniqueResult()).intValue();
 
         return result;
@@ -76,20 +77,41 @@ public class SampleDAO {
 
         List<SampleEntity> resultList = null;
 
-        Criteria query = assembleQuery(sortField, ascending, filters);
+        //1. Get the ids of the distinct samples satisfying the query
+        Criteria query = assembleQuery(sortField,ascending,filters);
+        query.setProjection(Projections.distinct(Projections.property("id")));
         query.setFirstResult(first);
         query.setMaxResults(pageSize);
-        resultList = query.list();
+        List idsToFetch = query.list();
+
+         //2. Fetch the distinct sample in the query
+        query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleEntity.class)
+                .add(Restrictions.in("id", idsToFetch))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        if (sortField != null) {
+            if (ascending) {
+                query.addOrder(Order.asc(sortField));
+            } else {
+                query.addOrder(Order.desc(sortField));
+            }
+        }
+
+        resultList = (List<SampleEntity>) query.list();
 
         return resultList;
-
+    }
+    
+    private Criteria assembleQuery(Map<String, Object> filters) {
+        return assembleQuery(null,null,filters);
     }
 
-    private Criteria assembleQuery(String sortField, boolean ascending, Map<String, Object> filters) {
+    
+    private Criteria assembleQuery(String sortField, Boolean ascending, Map<String, Object> filters) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
         Criteria query = session.createCriteria(SampleEntity.class).createAlias("library", "library", JoinType.LEFT_OUTER_JOIN)
-                .createAlias("user", "user", JoinType.LEFT_OUTER_JOIN);
+                .createAlias("user", "user", JoinType.LEFT_OUTER_JOIN)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if (filters != null) {
             Conjunction singleFiltersCriterion = Restrictions.conjunction();
@@ -145,6 +167,7 @@ public class SampleDAO {
                 query.addOrder(Order.desc(sortField));
             }
         }
+
         return query;
     }
 

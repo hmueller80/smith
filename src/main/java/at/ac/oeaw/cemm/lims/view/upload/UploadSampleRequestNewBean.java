@@ -4,8 +4,8 @@ import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
-import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.ValidatedRequest;
-import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
+import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
@@ -124,10 +124,10 @@ public class UploadSampleRequestNewBean implements Serializable {
      */
     public void submitRequest() {
 
-        ValidatedRequest request = RequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
+        ValidatedCSV<RequestDTO> request = RequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
 
         System.out.println("---------Parsed file " + filename + "----------");
-        System.out.println("Is Valid: " + !request.getValidationStatus().isIsFailed());
+        System.out.println("Is Valid: " + !request.getValidationStatus().isFailed());
         System.out.println("Errors");
         for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
             System.out.println(message.getSummary() + ":" + message.getMessage());
@@ -137,7 +137,7 @@ public class UploadSampleRequestNewBean implements Serializable {
             System.out.println(message.getSummary() + ":" + message.getMessage());
         }
 
-        if (request.getValidationStatus().isIsFailed()) {
+        if (request.getValidationStatus().isFailed()) {
             for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
                 NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
                 System.out.println("Failed validation");
@@ -150,7 +150,7 @@ public class UploadSampleRequestNewBean implements Serializable {
                     for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
                         NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
                     }
-                    Set<PersistedSampleReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
+                    Set<PersistedEntityReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
                     sendMailWithReceipts(requestor, receipts);
                 } catch (Exception e) {
                     NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request", e.getMessage());
@@ -218,11 +218,11 @@ public class UploadSampleRequestNewBean implements Serializable {
         }
     }
 
-    private void sendMailWithReceipts(UserDTO user, Set<PersistedSampleReceipt> receipts) {
+    private void sendMailWithReceipts(UserDTO user, Set<PersistedEntityReceipt> receipts) {
 
         StringBuilder sb = new StringBuilder("");
-        for (PersistedSampleReceipt receipt : receipts) {
-            sb.append("<tr><td>" + receipt.getId() + "</td><td>" + receipt.getSampleName() + "</td></tr>");
+        for (PersistedEntityReceipt receipt : receipts) {
+            sb.append("<tr><td>" + receipt.getId() + "</td><td>" + receipt.getEntityName() + "</td></tr>");
         }
 
         String message = mailBean.composeRequestReceivedMessage(user.getFirstName(), sb.toString());

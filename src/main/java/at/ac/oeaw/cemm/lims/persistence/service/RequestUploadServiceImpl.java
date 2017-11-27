@@ -38,9 +38,9 @@ public class RequestUploadServiceImpl implements UploadService {
     @Inject LazySampleService lazySampleService;
     
     @Override
-    public Set<PersistedSampleReceipt> uploadRequest(final RequestDTO request) throws Exception {
+    public Set<PersistedEntityReceipt> uploadRequest(final RequestDTO request) throws Exception {
 
-        final Set<PersistedSampleReceipt> receipts = new HashSet<>();
+        final Set<PersistedEntityReceipt> receipts = new HashSet<>();
 
         TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
             @Override
@@ -55,7 +55,7 @@ public class RequestUploadServiceImpl implements UploadService {
 
                     for (SampleDTO sample : library.getSamples()) {
                         try {
-                            PersistedSampleReceipt receipt = lazySampleService.persistOrUpdateSingleSample(sample, true, user);
+                            PersistedEntityReceipt receipt = lazySampleService.persistOrUpdateSingleSample(sample, true, user);
                             receipts.add(receipt);
                             LibraryIdEntity libraryIdEntity = new LibraryIdEntity(libraryId, receipt.getId());
                             LibraryEntity libraryEntity = new LibraryEntity(libraryIdEntity,finalLibraryName);

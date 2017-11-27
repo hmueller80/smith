@@ -28,7 +28,10 @@ public class IndexDAO {
 
     public SequencingIndexEntity getIdxBySequence(String sequence) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria libraryCriteria = session.createCriteria(SequencingIndexEntity.class).add(Restrictions.eq("index", sequence));
+        Criteria libraryCriteria = session.createCriteria(SequencingIndexEntity.class)
+                .add(Restrictions.eq("index", sequence))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        
         List<SequencingIndexEntity> seqIndex = (List<SequencingIndexEntity>) libraryCriteria.list();
         if (seqIndex != null && seqIndex.size() != 0) {
             return seqIndex.get(0);

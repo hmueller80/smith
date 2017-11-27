@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.Set;
 
 /**
@@ -15,6 +15,6 @@ import java.util.Set;
  */
 public interface UploadService {
 
-    Set<PersistedSampleReceipt> uploadRequest(final RequestDTO request) throws Exception;
+    Set<PersistedEntityReceipt> uploadRequest(final RequestDTO request) throws Exception;
     
 }

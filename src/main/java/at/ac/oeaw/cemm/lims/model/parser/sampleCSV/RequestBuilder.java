@@ -5,6 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
+import at.ac.oeaw.cemm.lims.model.parser.CSVValidationStatus;
+import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
@@ -33,9 +35,9 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class RequestBuilder {
     
-    public static ValidatedRequest buildRequestFromCSV(File csvFile, ServiceFactory services) {
+    public static ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, ServiceFactory services) {
         RequestDTO requestObj = null;
-        BuilderValidationStatus validationStatus = new BuilderValidationStatus();
+        CSVValidationStatus validationStatus = new CSVValidationStatus();
         
         try {
             Reader reader = new FileReader(csvFile);
@@ -66,7 +68,7 @@ public class RequestBuilder {
             validationStatus.addFailMessage("CSV Parsing", e.getMessage());
         }
         
-        return new ValidatedRequest(requestObj,validationStatus);
+        return new ValidatedCSV(requestObj,validationStatus);
     }
     
     private static String getUserFromCSVRecords(List<CSVRecord> records) throws ParsingException{
@@ -88,7 +90,7 @@ public class RequestBuilder {
         }
     }
     
-    private static <T> T getObject(DTOCSVParser<T> parser,  BuilderValidationStatus validationStatus) throws ParsingException {
+    private static <T> T getObject(DTOCSVParser<T> parser,  CSVValidationStatus validationStatus) throws ParsingException {
         ParsedObject<T> parsedObj = parser.parse();
         validationStatus.addWarnings(parsedObj.getWarnings());
         return parsedObj.getObject();

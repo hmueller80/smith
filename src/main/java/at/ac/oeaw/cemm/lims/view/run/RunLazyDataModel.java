@@ -60,7 +60,7 @@ public class RunLazyDataModel extends LazyDataModel<SampleRunDTO>{
             System.out.println(filter+":"+filters.get(filter).toString());
         }
         
-        this.setRowCount(services.getRunService().getRunsCount(first, pageSize, sortField, ascending, filters));
+        this.setRowCount(services.getRunService().getRunsCount(filters));
         List<SampleRunDTO> result =  services.getRunService().getRuns(first, pageSize, sortField, ascending, filters);
 
         return result;

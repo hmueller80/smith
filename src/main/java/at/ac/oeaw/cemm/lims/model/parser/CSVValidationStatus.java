@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
+package at.ac.oeaw.cemm.lims.model.parser;
 
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import java.util.HashSet;
@@ -13,10 +13,10 @@ import java.util.Set;
  *
  * @author dbarreca
  */
-public class BuilderValidationStatus {
+public class CSVValidationStatus {
     private Set<ParsingMessage> warningMessages=new HashSet<>();
     private Set<ParsingMessage> failMessages=new HashSet<>();
-    boolean isFailed = false;
+    boolean failed = false;
     
     public void addWarning(String summary,String description) {
         warningMessages.add(new ParsingMessage(summary,description));       
@@ -27,7 +27,7 @@ public class BuilderValidationStatus {
     }
     
     public void addFailMessage(String summary,String description) {
-        isFailed = true;
+        failed = true;
         failMessages.add(new ParsingMessage(summary,description));       
     }
 
@@ -39,8 +39,8 @@ public class BuilderValidationStatus {
         return failMessages;
     }
 
-    public boolean isIsFailed() {
-        return isFailed;
+    public boolean isFailed() {
+        return failed;
     }
      
 }

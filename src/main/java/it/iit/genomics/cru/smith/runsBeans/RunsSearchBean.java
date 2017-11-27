@@ -17,7 +17,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 
 /**
  * @(#)RunsSearchBean.java 20 JUN 2014 Copyright 2014 Computational Research

@@ -19,8 +19,8 @@
                             <p:separator id="customSeparator2" style="width:300px;height:5px" />
                      
                             <h:outputLabel for="runId" value="#{bundle['runs.run.id']}:  "  />
-                            <h:link  id="runId"  value="#{singleSampleRunBean.sampleRun.id}"  outcome="runDetails_1.jsf">
-                                <f:param name="rid" value="#{singleSampleRunBean.sampleRun.id}"/>
+                            <h:link  id="runId"  value="#{singleSampleRunBean.sampleRun.runId}"  outcome="runDetails_1.jsf">
+                                <f:param name="rid" value="#{singleSampleRunBean.sampleRun.runId}"/>
                             </h:link>
                             <p:message for="runId"/>
                             
@@ -57,46 +57,25 @@
                             <p:separator id="customSeparator42" style="width:300px;height:5px" />
                                                       
                             <h:outputLabel for="lane" value="#{bundle['runs.lane']}:  " />
-                            <p:inputTextarea id="lane" 
-                                             value="#{singleSampleRunBean.lanesString}" 
-                                             rows="#{singleSampleRunBean.lanesRows}"  
-                                             style="width:300px;"/>
+                            <h:outputText  style="width:300px;" id="lane" value="#{singleSampleRunBean.sampleRun.lanesString}"/>
                             <p:message for="lane" />
                             
                             <h:outputLabel for="flowcell" value="#{bundle['runs.flowcell']}:  " />
-                            <p:inputMask id="flowcell" value="#{singleSampleRunBean.flowCell}" mask="" style="width:300px;" />
+                            <h:outputText  style="width:300px;" id="flowcell" value="#{singleSampleRunBean.sampleRun.flowcell}"/>
                             <p:message for="flowcell" />
                             
                             <h:outputLabel for="sequencingindex" value="#{bundle['runs.sequencing.index']}:  " />
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleRunBean.sequencingIndex}">
-                                <f:selectItems id="sequencingindex" value="#{singleSampleRunBean.possibleIndexes}"/>
-                            </h:selectOneMenu>                            
+                            <h:outputText id="sequencingindex" value="#{singleSampleRunBean.sampleRun.sample.index.index}" />
                             <p:message for="sequencingindex" />
                             
                             <h:outputLabel for="runfolder" value="#{bundle['runs.run.folder']}:  " />
-                            <p:inputMask id="runfolder" value="#{singleSampleRunBean.runFolder}" mask="" style="width:300px;" />
+                            <h:outputText  style="width:300px;" id="runfolder" value="#{singleSampleRunBean.sampleRun.runFolder}"/>
                             <p:message for="runfolder" />
                             
                             <h:outputLabel for="iscontrol" value="#{bundle['runs.is.control']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="false" value="#{singleSampleRunBean.isControl}">
-                                <f:selectItems id="iscontrol" value="#{preferences.bools}"/>
-                            </h:selectOneMenu>
+                            <h:outputText  style="width:300px;" id="iscontrol" value="#{singleSampleRunBean.sampleRun.isControl}"/>
                             <p:message for="iscontrol" />
-                            
-                            <ui:remove>
-                                <p:commandButton action="#{modSampleRunFormBean.delete()}" id="delete"
-                                                 value="#{bundle['button.text.delete']}"  type="submit" update="SamplerundetailsForm" disabled="#{!modSampleRunFormBean.userHasUpdatePermission}">
-                                    <f:param name="sid" value="#{modSampleRunFormBean.sampleID}" />
-                                    <f:param name="rid" value="#{modSampleRunFormBean.runID}" />
-                                </p:commandButton> 
-                                <p:commandButton actionListener="#{modSampleRunFormBean.save()}" id="save"
-                                                 value="#{bundle['button.text.save']}"  type="submit" update="SamplerundetailsForm" disabled="#{!modSampleRunFormBean.userHasUpdatePermission}">
-                                    <f:param name="sid" value="#{modSampleRunFormBean.sampleID}" />
-                                    <f:param name="rid" value="#{modSampleRunFormBean.runID}" />
-                                </p:commandButton>
-                                <p:message for="save" />
-                            </ui:remove>
-                 
+                                                                          
                  </h:panelGrid>
              
              </p:panel>

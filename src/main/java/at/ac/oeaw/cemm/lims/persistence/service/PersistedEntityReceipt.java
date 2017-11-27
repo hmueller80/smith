@@ -9,21 +9,21 @@ package at.ac.oeaw.cemm.lims.persistence.service;
  *
  * @author dbarreca
  */
-public class PersistedSampleReceipt {
+public class PersistedEntityReceipt {
     private Integer Id;
-    private String sampleName;
+    private String entityName;
 
-    public PersistedSampleReceipt(Integer Id, String sampleName) {
+    public PersistedEntityReceipt(Integer Id, String entityName) {
         this.Id = Id;
-        this.sampleName = sampleName;
+        this.entityName = entityName;
     }
 
     public Integer getId() {
         return Id;
     }
 
-    public String getSampleName() {
-        return sampleName;
+    public String getEntityName() {
+        return entityName;
     }
     
     

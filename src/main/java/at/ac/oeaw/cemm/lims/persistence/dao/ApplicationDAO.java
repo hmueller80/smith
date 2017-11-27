@@ -33,7 +33,8 @@ public class ApplicationDAO {
                 .add(eqOrNull("readMode", readMode))
                 .add(Restrictions.eq("instrument", instrument))
                 .add(Restrictions.eq("applicationName", applicationName))
-                .add(eqOrNull("depth", depth));
+                .add(eqOrNull("depth", depth))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         List<ApplicationEntity> applications = (List<ApplicationEntity>) libraryCriteria.list();
         if (applications != null && applications.size() != 0) {

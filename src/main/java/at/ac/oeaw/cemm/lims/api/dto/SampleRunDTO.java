@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface SampleRunDTO {
 
-    public Integer getId();
+    public Integer getRunId();
     
     public SampleDTO getSample();
     public UserDTO getOperator();
@@ -23,4 +23,9 @@ public interface SampleRunDTO {
     public String getRunFolder();
     public Set<String> getLanes();
     
+    public void setFlowcell(String flowCell);
+    public void addLane(String lane);
+    public void setIsControl(boolean isControl);
+    public void setRunFolder(String runFolder);
+    public void setLanes(Set<String> lanes);      
 }

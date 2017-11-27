@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
+import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
 import it.iit.genomics.cru.smith.news.NewsHelper;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import javax.inject.Inject;
 @ManagedBean
 @ViewScoped
 public class SingleRunBean {
+    private static final String FORM_ID="rundetailsForm";
 
     @Inject
     ServiceFactory services;
@@ -100,11 +102,22 @@ public class SingleRunBean {
 
         services.getSampleService().bulkUpdateSamples(samplesToUpdate);
 
-        return "runDetails.jsf?rid=" + runId + " faces-redirect=true";
+        return "runDetails_1.jsf?rid=" + runId + " faces-redirect=true";
     }
 
     public void resetRun() {
         //TODONewsHelper.resetRun(runID);
         //System.out.println("delete news for run " + runID);
+    }
+    
+    public String deleteRun() {
+         try{
+            services.getRunService().bulkDeleteRun(runId);
+            return "runDeleted_1?rid="+runId+"&faces-redirect=true";
+        }catch(Exception e){
+            NgsLimsUtility.setFailMessage(FORM_ID, "delete", "Error in deleting ", e.getMessage());
+            return null;
+        }
+        
     }
 }

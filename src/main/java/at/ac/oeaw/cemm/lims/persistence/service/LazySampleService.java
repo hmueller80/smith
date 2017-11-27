@@ -38,25 +38,7 @@ public class LazySampleService implements SampleService {
     @Inject ApplicationDAO applicationDAO;
     @Inject UserDAO userDAO;
     
-    @Override
-    public SampleDTO getSampleById(final int sampleId) {
-        SampleEntity sampleEntity = null;
-
-        try {
-            sampleEntity = TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<SampleEntity>() {
-                @Override
-                public SampleEntity execute() throws Exception {
-                    return sampleDAO.getSampleById(sampleId);
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return DTOMapper.getSampleDTOfromEntity(sampleEntity);
-    }
-    
+   
     @Override
      public SampleDTO getFullSampleById(final int sampleId) {
         SampleEntity sample = null;
@@ -80,7 +62,7 @@ public class LazySampleService implements SampleService {
     }
      
     @Override
-    public int getSamplesCount(final int first, final int pageSize, final String sortField, final boolean ascending, final Map<String, Object> filters) {
+    public int getSamplesCount(final Map<String, Object> filters) {
         Integer samples = null;
 
         try {
@@ -89,7 +71,7 @@ public class LazySampleService implements SampleService {
                     new TransactionManager.TransactionCallable<Integer>() {
                 @Override
                 public Integer execute() throws Exception {
-                    return sampleDAO.getSamplesCount(first, pageSize, sortField, ascending, filters);
+                    return sampleDAO.getSamplesCount(filters);
                 }
             });
             System.out.println("Samples count took "+(System.currentTimeMillis()-currentTime));
@@ -169,11 +151,11 @@ public class LazySampleService implements SampleService {
     }
     
     @Override
-    public PersistedSampleReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception {
+    public PersistedEntityReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception {
         
-        PersistedSampleReceipt receipt = TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<PersistedSampleReceipt>() {
+        PersistedEntityReceipt receipt = TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<PersistedEntityReceipt>() {
             @Override
-            public PersistedSampleReceipt execute() throws Exception {
+            public PersistedEntityReceipt execute() throws Exception {
                 UserEntity user = userDAO.getUserByID(sample.getUser().getId());
                 return persistOrUpdateSingleSample(sample,isNew,user);
             }
@@ -214,8 +196,8 @@ public class LazySampleService implements SampleService {
      }
     
     @Override
-    public List<PersistedSampleReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) {
-        final List<PersistedSampleReceipt> receipts = new ArrayList<> ();
+    public List<PersistedEntityReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) {
+        final List<PersistedEntityReceipt> receipts = new ArrayList<> ();
         
         try{
             TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
@@ -239,7 +221,7 @@ public class LazySampleService implements SampleService {
     
     
     
-    protected PersistedSampleReceipt persistOrUpdateSingleSample(SampleDTO sample, boolean isNew, UserEntity user) throws Exception {
+    protected PersistedEntityReceipt persistOrUpdateSingleSample(SampleDTO sample, boolean isNew, UserEntity user) throws Exception {
         if (user == null) {
             throw new Exception("Cannot create a sample with null user");
         }
@@ -280,7 +262,7 @@ public class LazySampleService implements SampleService {
                 sampleEntity.setId(sample.getId());
                 sampleDAO.updateSample(sampleEntity);
             }
-            return new PersistedSampleReceipt(sampleEntity.getId(), sampleEntity.getName());
+            return new PersistedEntityReceipt(sampleEntity.getId(), sampleEntity.getName());
         } catch (Exception e) {
             throw new Exception("Error while persisting sample " + sample.getName(),e);
         }

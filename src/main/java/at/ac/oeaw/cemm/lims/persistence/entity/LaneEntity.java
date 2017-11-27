@@ -28,7 +28,7 @@ public class LaneEntity implements Serializable {
 
     @Column(name = "lane_name")
     private String laneName;
-
+    
     @ManyToOne
     @JoinColumns({
         @JoinColumn(name = "run_id", referencedColumnName = "run_id"),

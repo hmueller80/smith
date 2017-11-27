@@ -22,46 +22,19 @@
                         title="#{bundle['runs.view.detail']}" >
 
                         <f:param value="#{sampleRun.sample.id}" name="sid" />
-                        <f:param name="rid" value="#{sampleRun.id}" /> 
+                        <f:param name="rid" value="#{sampleRun.runId}" /> 
                     </p:button>
                     <h:outputText value="#{bundle['runs.sample']}#{sampleRun.sample.id}#{bundle['runs.operator']} #{sampleRun.operator.login}" style="margin-left:10px" />
                 </p:dataGrid>
             </p:scrollPanel>
 
-            <ui:remove>
-                 <p:button  outcome="selectSample.jsf"  
-                       value="#{bundle['button.text.add.sample']}" 
-                       rendered="#{singleRunBean.roleManager.hasRunAddPermission}" 
-                       disabled="#{singleRunBean.runIsClosed}" >
-                    <f:param name="specifySamples" value="requested"/>
-                    <f:param name="rid" value="#{singleRunBean.runId}" />
-                </p:button>
-            </ui:remove>
-           
-
-            <p:commandButton 
-                action="#{runDetailsBean.closeRun}"  
-                value="#{bundle['button.text.close.run']}" 
-                rendered="#{singleRunBean.roleManager.hasRunAddPermission}}" 
-                disabled="#{!singleRunBean.allConfirmed}" >
-            </p:commandButton>
-
-
-            <h></h>
-            
-            <ui:remove>
-                <p:message for="missing"  rendered="#{!runDetailsBean.sampleToBeAdded.isEmpty()}"  />
-                <h></h>
-                <p:scrollPanel  id="missing"  style="width:500px;height:500px" rendered="#{!runDetailsBean.sampleToBeAdded.isEmpty()}">
-                    <p:dataGrid  value="#{runDetailsBean.sampleToBeAdded}" var="missingSample" id="missinggrid" columns="1">
-                        <p:button icon="ui-icon-pencil" outcome="newSampleRunForm.jsf"  title="#{bundle['button.text.add.sample']}" >
-                            <f:param value="#{missingSample}" name="sid" />
-                            <f:param name="rid" value="#{runDetailsBean.runID}" /> 
-                        </p:button>
-                        <h:outputText value="sample (#{missingSample})"  style="margin-left:10px" />
-                    </p:dataGrid>
-                </p:scrollPanel>
-            </ui:remove>
+            <p:commandButton action="#{singleRunBean.deleteRun}" 
+                             disabled="#{!singleRunBean.roleManager.hasRunAddPermission}" 
+                             id="delete" 
+                             value="#{bundle['button.text.delete']}" 
+                             update="rundetailsForm" 
+                             immediate="true" />
+            <p:message for="delete" />
             
             <p:separator/>
             <h:outputText value="#{bundle['runs.reset']}"  style="margin-left:10px" />
@@ -69,7 +42,7 @@
             <p:commandButton
                 id="ResetRunButton" 
                 
-                action="#{runDetailsBean.resetRun}" 
+                action="#{singleRunBean.resetRun}" 
                 value="#{bundle['button.text.reset.run']}">
             </p:commandButton>
 

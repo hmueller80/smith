@@ -14,7 +14,7 @@ import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.ApplicationValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.SampleValidator;
-import at.ac.oeaw.cemm.lims.persistence.service.PersistedSampleReceipt;
+import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
@@ -404,7 +404,7 @@ public class SingleSampleBean implements Serializable {
 
             SampleValidator sampValidator = new SampleValidator(currentSample);
             SampleDTO sampleToPersist = sampValidator.getValidatedObject();
-            PersistedSampleReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
+            PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
             this.currentSample = services.getSampleService().getFullSampleById(receipt.getId());
 
             if (appValidator != null) {
@@ -425,8 +425,8 @@ public class SingleSampleBean implements Serializable {
 
             NgsLimsUtility.setSuccessMessage(FORM_ID, COMPONENT_MOD,
                     "Sample with id " + receipt.getId() + " updated successfully",
-                    "Updated sample with id " + receipt.getId() + " and name " + receipt.getSampleName());
-            System.out.println("SUCCESS: " + "Updated sample with id " + receipt.getId() + " and name " + receipt.getSampleName());
+                    "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
+            System.out.println("SUCCESS: " + "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
             return true;
 
         } catch (ValidatorException e) {

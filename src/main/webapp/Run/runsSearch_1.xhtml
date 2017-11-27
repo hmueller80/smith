@@ -37,8 +37,8 @@
                           headerText="#{bundle['runs.run.id']}"
                           filterBy="#{run.id.runId}"
                           sortBy="#{run.id.runId}">
-                        <h:link  outcome="runDetails_1.jsf" value="#{run.id}">
-                            <f:param name="rid" value="#{run.id}"/>
+                        <h:link  outcome="runDetails_1.jsf" value="#{run.runId}">
+                            <f:param name="rid" value="#{run.runId}"/>
                         </h:link>
                 </p:column>
 
@@ -133,38 +133,28 @@
 
 
         <p:separator/>
-        <ui:remove>    
-            <h2>Upload Run Form</h2>
-            <h:outputLink rendered="#{navigationBean.userHasAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
-                <h:outputText value="#{bundle['runs.exampleform']}" />
-            </h:outputLink>
+        <h2>Upload Run Form</h2>
+        <h:outputLink rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
+            <h:outputText value="#{bundle['runs.exampleform']}" />
+        </h:outputLink>
 
-            <h:form id="runTableUploadForm" >
+        <h:form id="runTableUploadForm" rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}">
 
-                <p:panelGrid columns="3">
-                    <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" fileUploadListener="#{uploadRunFormBean.handleFileUpload}"  
-                                  sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/" mode="advanced"  update="ufilename">
-                    </p:fileUpload>
+            <p:panelGrid columns="3">
+                <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" 
+                              fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"  
+                              sizeLimit="100000000" 
+                              allowTypes="/(\.|\/)(csv|txt)$/" 
+                              mode="advanced"  
+                              update="ufilename">
+                </p:fileUpload>
 
-                    <h:outputText id="ufilename"  value="#{uploadRunFormBean.filename}" ></h:outputText>
+                <h:outputText id="ufilename"  value="#{uploadRunFormNewBean.filename}" ></h:outputText>
 
-
-
-                </p:panelGrid>
-            </h:form>
-
-            <h:form  id="runTableUploadProcessForm">
-                <p:panelGrid columns="2">
-                    <p:commandButton id="RunUploadProcessButton" action="#{uploadRunFormBean.submitSampleRun()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
-                    </p:commandButton>
-                    <p:progressBar  widgetVar="progressBar" style="width: 150px;" ajax="true" value="#{uploadRunFormBean.progress}" labelTemplate="{value}%" styleClass="animated">
-                        <p:ajax event="complete" onsuccess="PF('progressBar').stop();"/>
-                    </p:progressBar>
-
-                </p:panelGrid>
-            </h:form>
-        </ui:remove>   
-
+            </p:panelGrid>
+            <p:commandButton id="RunUploadProcessButton" action="#{uploadRunFormNewBean.submitSampleRun()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
+            </p:commandButton>
+        </h:form>
 
     </ui:define>
 

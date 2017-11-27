@@ -3,28 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
-
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+package at.ac.oeaw.cemm.lims.model.parser;
 
 
 /**
  *
  * @author dbarreca
  */
-public class ValidatedRequest {
-    private RequestDTO requestObj;
-    private BuilderValidationStatus validationStatus;
+public class ValidatedCSV<T> {
+    private T requestObj;
+    private CSVValidationStatus validationStatus;
 
-    public ValidatedRequest(RequestDTO requestObj, BuilderValidationStatus validationStatus) {
+    public ValidatedCSV(T requestObj, CSVValidationStatus validationStatus) {
         this.requestObj = requestObj;
         this.validationStatus = validationStatus;
     }
 
  
     
-    public RequestDTO getRequestObj() {
-        if (validationStatus.isFailed){
+    public T getRequestObj() {
+        if (validationStatus.isFailed()){
             return null;
         }else{
             return requestObj;
@@ -32,7 +30,7 @@ public class ValidatedRequest {
     }
 
    
-    public BuilderValidationStatus getValidationStatus() {
+    public CSVValidationStatus getValidationStatus() {
         return validationStatus;
     }
 

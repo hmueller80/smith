@@ -108,7 +108,7 @@ public class DTOMapper {
             lanes.add(lane.getLaneName());
         }
         
-        return DTOFactory.getSampleRunDTO(sampleRun.getId().getRunId(), sampleDTO, operatorDTO, sampleRun.getFlowcell(), lanes, sampleRun.getRunFolder());
+        return DTOFactory.getSampleRunDTO(sampleRun.getId().getRunId(), sampleDTO, operatorDTO, sampleRun.getFlowcell(), lanes, sampleRun.getRunFolder(),sampleRun.getIsControl());
     }
 
 }
