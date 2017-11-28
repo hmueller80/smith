@@ -76,7 +76,7 @@ Contributor(s):
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity"/>
     <mapping class="it.iit.genomics.cru.smith.entity.News"/>
-    <mapping class="it.iit.genomics.cru.smith.entity.Communications"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity"/>
     <!--mapping class="it.iit.genomics.cru.smith.entity.AlignedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.AnnotatedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Attribute"/>
