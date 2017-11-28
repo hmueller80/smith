@@ -11,6 +11,10 @@ import org.hibernate.Transaction;
 
 
 class TransactionManager {   
+
+    static void doInTransaction() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     public static abstract class TransactionCallable<T> {
         public abstract T execute() throws Exception;

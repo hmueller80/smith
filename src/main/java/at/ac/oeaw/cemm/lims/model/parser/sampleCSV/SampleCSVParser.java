@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
@@ -22,13 +22,13 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
     
-    public SampleCSVParser(CSVRecord record) {
-        super(record);
+    public SampleCSVParser(CSVRecord record, DTOFactory myDTOFactory) {
+        super(record,myDTOFactory);
     }
 
     @Override
     public ParsedObject<SampleDTO> parse() throws ParsingException {
-        SampleDTO sample = DTOFactory.getSampleDTO(null);
+        SampleDTO sample = myDTOFactory.getSampleDTO(null);
         ParsedObject<SampleDTO> returnValue = new ParsedObject<>(sample);
         
         String sampleType = record.get(SampleRequestCSVHeader.SampleType);

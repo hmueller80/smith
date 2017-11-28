@@ -19,4 +19,6 @@ public interface ServiceFactory {
     
     RunService getRunService();
     
+    NewsService getNewsService();
+    
 }

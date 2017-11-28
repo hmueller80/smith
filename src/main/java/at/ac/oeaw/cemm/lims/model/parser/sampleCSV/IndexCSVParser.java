@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
 import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
@@ -23,15 +23,15 @@ public class IndexCSVParser extends DTOCSVParser<IndexDTO> {
     
     private final SampleService sampleService;
     
-    public IndexCSVParser(CSVRecord record, ServiceFactory services) {
-        super(record);
+    public IndexCSVParser(CSVRecord record, ServiceFactory services, DTOFactory myDTOFactory) {
+        super(record,myDTOFactory);
         FacesContext context = FacesContext.getCurrentInstance();
         this.sampleService = services.getSampleService();
     }
   
     @Override
     public ParsedObject<IndexDTO> parse() throws ParsingException {
-        IndexDTO index =  DTOFactory.getIndexDTO("none");
+        IndexDTO index =  myDTOFactory.getIndexDTO("none");
         ParsedObject<IndexDTO> returnObj = new ParsedObject<>(index);
         
         String indexInCSV = record.get(SampleRequestCSVHeader.BarcodeByName);

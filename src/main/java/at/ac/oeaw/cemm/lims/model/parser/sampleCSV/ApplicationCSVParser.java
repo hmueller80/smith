@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
@@ -34,8 +34,8 @@ public class ApplicationCSVParser extends DTOCSVParser<ApplicationDTO> {
     private Integer readDepth = null;
     private Integer readLength = null;
        
-    public ApplicationCSVParser(CSVRecord record) {
-        super(record);
+    public ApplicationCSVParser(CSVRecord record, DTOFactory myDTOFactory) {
+        super(record,myDTOFactory);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ApplicationCSVParser extends DTOCSVParser<ApplicationDTO> {
             throw new ParsingException("Read Length Error", "Wrong Read Length ("+readLengthString+") in line " + record.getRecordNumber());
         }
 
-        ApplicationDTO returnObj = DTOFactory.getApplicationDTO(readLength,readMode,instrument,appName,readDepth);
+        ApplicationDTO returnObj = myDTOFactory.getApplicationDTO(readLength,readMode,instrument,appName,readDepth);
         
         return new ParsedObject<>(returnObj,warningMessages);
     }

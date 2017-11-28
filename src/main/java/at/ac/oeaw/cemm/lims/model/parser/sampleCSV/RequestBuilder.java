@@ -13,7 +13,7 @@ import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.inject.Inject;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -35,7 +36,9 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class RequestBuilder {
     
-    public static ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, ServiceFactory services) {
+    @Inject private DTOFactory myDTOFactory;
+    
+    public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, ServiceFactory services) {
         RequestDTO requestObj = null;
         CSVValidationStatus validationStatus = new CSVValidationStatus();
         
@@ -45,19 +48,19 @@ public class RequestBuilder {
             CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord());
             List<CSVRecord> records = parser.getRecords();
             String user = getUserFromCSVRecords(records);
-            requestObj= DTOFactory.getRequestDTO(user);
+            requestObj= myDTOFactory.getRequestDTO(user);
             
             for (CSVRecord record: records){
-                SampleDTO sample= getObject(new SampleCSVParser(record),validationStatus);
+                SampleDTO sample= getObject(new SampleCSVParser(record,myDTOFactory),validationStatus);
 
-                IndexDTO index = getObject(new IndexCSVParser(record,services),validationStatus);
+                IndexDTO index = getObject(new IndexCSVParser(record,services,myDTOFactory),validationStatus);
                 sample.setIndex(index);
 
-                ApplicationDTO application= getObject(new ApplicationCSVParser(record),validationStatus);
+                ApplicationDTO application= getObject(new ApplicationCSVParser(record,myDTOFactory),validationStatus);
                 sample.setApplication(application);
                 sample.setExperimentName(application.getApplicationName());
                 
-                LibraryDTO library = requestObj.addOrGetLibrary(getObject(new LibraryCSVParser(record),validationStatus));
+                LibraryDTO library = requestObj.addOrGetLibrary(getObject(new LibraryCSVParser(record,myDTOFactory),validationStatus));
                 library.addSample(sample);
                 
             }

@@ -37,7 +37,8 @@ public class LazySampleService implements SampleService {
     @Inject IndexDAO indexDAO;
     @Inject ApplicationDAO applicationDAO;
     @Inject UserDAO userDAO;
-    
+    @Inject DTOMapper myDTOMapper;
+
    
     @Override
      public SampleDTO getFullSampleById(final int sampleId) {
@@ -58,7 +59,7 @@ public class LazySampleService implements SampleService {
             e.printStackTrace();
         }
 
-        return DTOMapper.getSampleDTOfromEntity(sample);
+        return myDTOMapper.getSampleDTOfromEntity(sample);
     }
      
     @Override
@@ -95,7 +96,7 @@ public class LazySampleService implements SampleService {
                     List<SampleEntity> sampleEntities = sampleDAO.getSamples(first, pageSize, sortField, ascending, filters);
 
                     for (SampleEntity entity : sampleEntities) {
-                        samples.add(DTOMapper.getSampleDTOfromEntity(entity));
+                        samples.add(myDTOMapper.getSampleDTOfromEntity(entity));
                     }
                     
                     return null;

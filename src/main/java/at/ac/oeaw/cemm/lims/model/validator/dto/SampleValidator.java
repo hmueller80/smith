@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.validator.dto;
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -17,8 +17,10 @@ import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
  */
 public class SampleValidator extends AbstractValidator<SampleDTO> {
 
-    public SampleValidator(SampleDTO objectToValidate) {
+    private DTOFactory myDTOFactory;
+    public SampleValidator(SampleDTO objectToValidate,DTOFactory myDTOFactory) {
         super(objectToValidate);
+        this.myDTOFactory=myDTOFactory;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class SampleValidator extends AbstractValidator<SampleDTO> {
         } else {
             objectToValidate.setBioanalyzerDate(null);
             objectToValidate.setBioAnalyzerMolarity(null);
-            objectToValidate.setIndex(DTOFactory.getIndexDTO("none"));
+            objectToValidate.setIndex(myDTOFactory.getIndexDTO("none"));
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Bioanalyzer Date","Bioanalyzer Date was reset since library synth. is needed"));
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Bioanalyzer Molarity","Bioanalyzer Molarity was reset since library synth. is needed"));
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Sequencing Index","Sequencing Index was reset since library synth. is needed"));

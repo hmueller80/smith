@@ -7,9 +7,10 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
+import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
@@ -17,16 +18,21 @@ import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity;
 import java.util.HashSet;
 import java.util.Set;
+import javax.faces.bean.ApplicationScoped;
+import javax.inject.Inject;
 
 /**
  *
  * @author dbarreca
  */
+@ApplicationScoped
 public class DTOMapper {
-
-    protected static SampleDTO getSampleDTOfromEntity(SampleEntity entity) {
+    @Inject private DTOFactory myDTOFactory;
+    
+    protected SampleDTO getSampleDTOfromEntity(SampleEntity entity) {
         if (entity == null) {
             return null;
         } else {
@@ -34,7 +40,7 @@ public class DTOMapper {
             IndexDTO index = getIndexDTOFromEntity(entity.getSequencingIndexes());
             UserDTO user = getUserDTOFromEntity(entity.getUser());
             
-            SampleDTO sample = DTOFactory.getSampleDTO(
+            SampleDTO sample = myDTOFactory.getSampleDTO(
                     entity.getId(),
                     application,
                     entity.getOrganism(),
@@ -64,11 +70,11 @@ public class DTOMapper {
     
     
 
-    protected static ApplicationDTO getApplicationDTOfromEntity(ApplicationEntity entity) {
+    protected ApplicationDTO getApplicationDTOfromEntity(ApplicationEntity entity) {
         if (entity == null) {
             return null;
         } else {
-            return DTOFactory.getApplicationDTO(
+            return myDTOFactory.getApplicationDTO(
                     entity.getReadlength(),
                     entity.getReadmode(),
                     entity.getInstrument(),
@@ -77,19 +83,19 @@ public class DTOMapper {
         }
     }
 
-    protected static IndexDTO getIndexDTOFromEntity(SequencingIndexEntity entity) {
+    protected IndexDTO getIndexDTOFromEntity(SequencingIndexEntity entity) {
         if (entity == null) {
             return null;
         } else {
-            return DTOFactory.getIndexDTO(entity.getIndex());
+            return myDTOFactory.getIndexDTO(entity.getIndex());
         }
     }
 
-    protected static UserDTO getUserDTOFromEntity(UserEntity entity) {
+    protected UserDTO getUserDTOFromEntity(UserEntity entity) {
          if (entity == null) {
             return null;
         } else {
-            return DTOFactory.getUserDTO(
+            return myDTOFactory.getUserDTO(
                     entity.getId(),
                     entity.getUserName(),
                     entity.getLogin(),
@@ -100,7 +106,7 @@ public class DTOMapper {
         }
     }
 
-    protected static SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) {
+    protected SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) {
         SampleDTO sampleDTO = getSampleDTOfromEntity(sampleRun.getsample());
         UserDTO operatorDTO = getUserDTOFromEntity(sampleRun.getUser());
         Set<String> lanes = new HashSet<>();
@@ -108,7 +114,12 @@ public class DTOMapper {
             lanes.add(lane.getLaneName());
         }
         
-        return DTOFactory.getSampleRunDTO(sampleRun.getId().getRunId(), sampleDTO, operatorDTO, sampleRun.getFlowcell(), lanes, sampleRun.getRunFolder(),sampleRun.getIsControl());
+        return myDTOFactory.getSampleRunDTO(sampleRun.getId().getRunId(), sampleDTO, operatorDTO, sampleRun.getFlowcell(), lanes, sampleRun.getRunFolder(),sampleRun.getIsControl());
+    }
+    
+     protected NewsDTO getNewsDTOFromEntity(NewsEntity news) {
+        
+        return myDTOFactory.getNewsDTO(news.getId(), news.getHeader(), news.getBody(), news.getDate());
     }
 
 }

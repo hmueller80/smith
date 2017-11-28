@@ -22,7 +22,6 @@ import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,7 +37,8 @@ public class LazyRunService implements RunService {
     @Inject UserDAO userDAO;
     @Inject SampleDAO sampleDAO;
     @Inject LaneDAO laneDAO;
-
+    @Inject DTOMapper myDTOMapper;
+    
     @Override
     public Set<SampleRunDTO> getSampleRunByRunId(final int id) {
         final Set<SampleRunDTO> result = new HashSet<>();
@@ -50,7 +50,7 @@ public class LazyRunService implements RunService {
                     List<SampleRunEntity> sampleRun = runDAO.getSampleRunsById(id);
                     if (sampleRun!=null){
                         for (SampleRunEntity entity: sampleRun){
-                            result.add(DTOMapper.getSampleRunDTOFromEntity(entity));
+                            result.add(myDTOMapper.getSampleRunDTOFromEntity(entity));
                         }
                     }
                     return null;
@@ -78,7 +78,7 @@ public class LazyRunService implements RunService {
 
                     if (runEntities != null) {
                         for (SampleRunEntity entity : runEntities) {
-                            runs.add(DTOMapper.getSampleRunDTOFromEntity(entity));
+                            runs.add(myDTOMapper.getSampleRunDTOFromEntity(entity));
                         }
                     }
 
@@ -125,7 +125,7 @@ public class LazyRunService implements RunService {
                 @Override
                 public SampleRunDTO execute() throws Exception {
                     SampleRunEntity sampleRun = runDAO.getSampleRunById(runId,samId);
-                    return DTOMapper.getSampleRunDTOFromEntity(sampleRun);
+                    return myDTOMapper.getSampleRunDTOFromEntity(sampleRun);
                 }
             });
            

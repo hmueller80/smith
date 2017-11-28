@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Inject  private UserDAO userDAO;
     @Inject  private CommunicationsDAO commDAO;
+    @Inject DTOMapper myDTOMapper;
 
     @Override
     public UserDTO getUserByLogin(final String userLogin) {
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
             });
             
             if (userEntity!=null) {
-                user = DTOMapper.getUserDTOFromEntity(userEntity);
+                user = myDTOMapper.getUserDTOFromEntity(userEntity);
             }
             
         } catch (Exception e) {
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
             });
             
             if (userEntity!=null) {
-                user = DTOMapper.getUserDTOFromEntity(userEntity);
+                user = myDTOMapper.getUserDTOFromEntity(userEntity);
             }
             
         } catch (Exception e) {
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
                     List<UserEntity> userEntities = userDAO.getUsersByPI(PIid);
                     if (userEntities != null) {
                         for (UserEntity entity : userEntities) {
-                            result.add(DTOMapper.getUserDTOFromEntity(entity));
+                            result.add(myDTOMapper.getUserDTOFromEntity(entity));
                         }
                     }
                     return null;
@@ -116,7 +117,7 @@ public class UserServiceImpl implements UserService {
                     List<UserEntity> userEntities = userDAO.getAllUsers();
                     if (userEntities != null) {
                         for (UserEntity entity : userEntities) {
-                            result.add(DTOMapper.getUserDTOFromEntity(entity));
+                            result.add(myDTOMapper.getUserDTOFromEntity(entity));
                         }
                     }
                     return null;
@@ -143,7 +144,7 @@ public class UserServiceImpl implements UserService {
                     List<UserEntity> userEntities = userDAO.getAllUsersByRole(role);
                     if (userEntities != null) {
                         for (UserEntity entity : userEntities) {
-                            result.add(DTOMapper.getUserDTOFromEntity(entity));
+                            result.add(myDTOMapper.getUserDTOFromEntity(entity));
                         }
                     }
                     return null;
@@ -172,7 +173,7 @@ public class UserServiceImpl implements UserService {
                             List<UserEntity> userEntities = userDAO.getUsersByID(collaborators);
                             if (userEntities != null) {
                                 for (UserEntity entity : userEntities) {
-                                    result.add(DTOMapper.getUserDTOFromEntity(entity));
+                                    result.add(myDTOMapper.getUserDTOFromEntity(entity));
                                 }
                             }
                         }

@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
@@ -22,8 +22,8 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class LibraryCSVParser extends DTOCSVParser<LibraryDTO> {
 
-    public LibraryCSVParser(CSVRecord record) {
-        super(record);
+    public LibraryCSVParser(CSVRecord record,DTOFactory myDTOFactory) {
+        super(record,myDTOFactory);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class LibraryCSVParser extends DTOCSVParser<LibraryDTO> {
         }
         libraryName = SampleNameFilter.legalizeLibrary(libraryName);
         
-        return new ParsedObject<>(DTOFactory.getLibraryDTO(libraryName),messages);
+        return new ParsedObject<>(myDTOFactory.getLibraryDTO(libraryName),messages);
     }
     
 }

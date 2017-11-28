@@ -7,44 +7,42 @@
 
     <ui:define name="loggedUserInfo">
         <h:form id="loggedUserForm">
-            
+
             <h3>#{bundle['general.info']}</h3>
             <table border="0" cellspadding="50"  >
-            <tr>
-            <td>#{bundle['user.login']}:</td>
-            <td>#{newLoggedUser.loggedUser.login}</td>
-            </tr>
-            <tr>
-            <td>#{bundle['user.name']}:</td>
-            <td>#{newLoggedUser.loggedUser.userName}</td>
-            </tr>
-            <tr>
-            <td>#{bundle['user.tel']}:</td>
-            <td>#{newLoggedUser.loggedUser.phone}</td>
-            </tr>
-            <tr>
-            <td>#{bundle['user.email']}:</td>
-            <td>#{newLoggedUser.loggedUser.mailAddress}</td>
-            </tr>
-            <tr>
-            <td>#{bundle['user.role']}:</td>
-            <td>#{newLoggedUser.loggedUser.userRole}</td>
-            </tr>
-               
-            <tr>
-            <td>Group ID :</td>
-            <td>#{newLoggedUser.loggedUser.pi}</td>
-            </tr>   
-            <tr>
-            <td>#{bundle['user.groupleader']}:</td>
-            <td>#{newLoggedUser.loggedUserPIName}</td>
-            </tr>             
+                <tr>
+                    <td>#{bundle['user.login']}:</td>
+                    <td>#{newRoleManager.currentUser.login}</td>
+                </tr>
+                <tr>
+                    <td>#{bundle['user.name']}:</td>
+                    <td>#{newRoleManager.currentUser.userName}</td>
+                </tr>
+                <tr>
+                    <td>#{bundle['user.tel']}:</td>
+                    <td>#{newRoleManager.currentUser.phone}</td>
+                </tr>
+                <tr>
+                    <td>#{bundle['user.email']}:</td>
+                    <td>#{newRoleManager.currentUser.mailAddress}</td>
+                </tr>
+                <tr>
+                    <td>#{bundle['user.role']}:</td>
+                    <td>#{newRoleManager.currentUser.userRole}</td>
+                </tr>
+
+                <tr>
+                    <td>Group ID :</td>
+                    <td>#{newRoleManager.currentUser.pi}</td>
+                </tr>   
+                <tr>
+                    <td>#{bundle['user.groupleader']}:</td>
+                    <td>#{newRoleManager.pi.userName}</td>
+                </tr>             
             </table>
-            
-            </h:form>     
-            
-            
-        
+
+        </h:form>     
+
     </ui:define>
 
 </ui:composition>

@@ -54,7 +54,7 @@
                         </h:panelGrid>  
                     </p:fieldset> 
                     <br/>
-                    <p:button rendered="#{navigationBean.userHasAddPermission}" target="/index.jsf" value="#{bundle['news.newswriter']}" outcome="/News/newsWriter.xhtml"></p:button>
+                    <p:button rendered="#{navigationBean.roleManager.hasNewsPermission()}" target="/index.jsf" value="#{bundle['news.newswriter']}" outcome="/News/newsWriter.xhtml"></p:button>
 
                 </p:tab>
 

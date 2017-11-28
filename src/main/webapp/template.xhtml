@@ -39,7 +39,7 @@
                         <h:outputText value=" #{bundle['unit.name']}. " />
                         <h:outputText rendered="#{not navigationBean.isLoggedIn}" value="#{bundle['unit.welcome']}" />
                         <h:outputText rendered="#{navigationBean.isLoggedIn}" value="#{bundle['user.login.message']} " />                    
-                        <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/loggedUserInfo.xhtml" > #{navigationBean.loginName} </h:outputLink>
+                        <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/loggedUserInfo.xhtml" > #{newRoleManager.currentUser.login} </h:outputLink>
                     </h:form>
                 </f:facet>
 

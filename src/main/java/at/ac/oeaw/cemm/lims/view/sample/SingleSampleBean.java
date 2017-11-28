@@ -8,7 +8,7 @@ package at.ac.oeaw.cemm.lims.view.sample;
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -44,7 +44,8 @@ public class SingleSampleBean implements Serializable {
     private static final String COMPONENT_DEL = "SampleDeletionButton";
 
     @Inject private ServiceFactory services;
-
+    @Inject private DTOFactory myDTOFactory;
+    
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
 
@@ -69,7 +70,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public String loadNew() {
-        currentSample = DTOFactory.getSampleDTO(null);
+        currentSample = myDTOFactory.getSampleDTO(null);
         UserDTO currentUser = roleManager.getCurrentUser();
         principalInvestigator = roleManager.getPi();
         currentSample.setUser(currentUser);
@@ -78,8 +79,8 @@ public class SingleSampleBean implements Serializable {
         currentSample.setStatus(SampleDTO.status_queued);
         currentSample.setRequestDate(new Date(System.currentTimeMillis()));
         currentSample.setBioanalyzerDate(new Date(System.currentTimeMillis()));
-        currentSample.setIndex(DTOFactory.getIndexDTO("none"));
-        currentSample.setApplication(DTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ));
+        currentSample.setIndex(myDTOFactory.getIndexDTO("none"));
+        currentSample.setApplication(myDTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ));
         isNewForm = true;
 
         return "/Sample/sampleDetails_1?faces-redirect=true";
@@ -302,7 +303,7 @@ public class SingleSampleBean implements Serializable {
 
     //Those setters refer to application
     public void setApplicationName(String appName) {
-        newApplication = DTOFactory.getApplicationDTO(appName, currentSample.getApplication().getInstrument());
+        newApplication = myDTOFactory.getApplicationDTO(appName, currentSample.getApplication().getInstrument());
     }
 
     public void setReadMode(String readMode) {
@@ -334,7 +335,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setSequencingIndex(String index) {
-        currentSample.setIndex(DTOFactory.getIndexDTO(index));
+        currentSample.setIndex(myDTOFactory.getIndexDTO(index));
     }
 
     //CRUD OPs
@@ -402,7 +403,7 @@ public class SingleSampleBean implements Serializable {
                 currentSample.setExperimentName(appToPersist.getApplicationName());
             }
 
-            SampleValidator sampValidator = new SampleValidator(currentSample);
+            SampleValidator sampValidator = new SampleValidator(currentSample,myDTOFactory);
             SampleDTO sampleToPersist = sampValidator.getValidatedObject();
             PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
             this.currentSample = services.getSampleService().getFullSampleById(receipt.getId());

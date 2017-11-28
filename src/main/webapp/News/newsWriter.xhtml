@@ -14,31 +14,25 @@
 
                 <h:panelGrid columns="3" cellpadding="5">
 
-                    
-
                     <h:outputLabel for="header" value="#{bundle['news.header']}: " />
-                    <p:inputMask style="width:300px;"  required="true" id="header" value="#{newsBean.header}" mask="" immediate="true"/>
+                    <p:inputMask style="width:300px;"  required="true" id="header" value="#{singleNewsBean.newNews.header}" mask="" immediate="true"/>
                     <p:message for="header" />   
                     
                     <h:outputLabel for="body" value="#{bundle['news.body']}: " />
-                    <p:inputTextarea  id="body" style="width:300px;height:100px;" value="#{newsBean.body}" immediate="true" required="true"/>
+                    <p:inputTextarea  id="body" style="width:300px;height:100px;" value="#{singleNewsBean.newNews.body}" immediate="true" required="true"/>
                     <p:message for="body" />   
                   
-                    <p:commandButton actionListener="#{newsBean.submit()}"
+                    <p:commandButton actionListener="#{singleNewsBean.submit()}"
                                      title="#{bundle['news.submit']}"
                                      id="NewsPublishButton" value="#{bundle['news.submit']}"                                
-                                     rendered="#{navigationBean.userHasAddPermission}" action="/index.jsf"/>
-                    <p:message id="mbutton" for="NewsPublishButton" />
+                                     rendered="#{singleNewsBean.roleManager.hasNewsPermission()}" action="/index.jsf"/>
+                    <p:message for="NewsPublishButton" />
 
                 </h:panelGrid>
-
-            
 
             </p:panel>
            
         </h:form>
-
-
 
     </ui:define>
 

@@ -6,12 +6,17 @@ package at.ac.oeaw.cemm.lims.view;
 
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import it.iit.genomics.cru.smith.defaults.Preferences;
 import java.io.Serializable;
+import java.security.Principal;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -21,8 +26,9 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class NewRoleManager implements Serializable {
 
+    @Inject ServiceFactory services;
+    
     UserDTO currentUser;
-    String loginName = "";
     UserDTO pi;
     boolean Admin;
     boolean Technician;
@@ -30,35 +36,27 @@ public class NewRoleManager implements Serializable {
     boolean GroupLeader;
     boolean Guest;
 
-    @ManagedProperty(value = "#{newLoggedUser}")
-    NewLoggedUser loggedUser;
-
-    public NewRoleManager() {
-        System.out.println("Initializing NewRoleManager");
-    }
-
     @PostConstruct
     public void init() {
         System.out.println("NewRoleManager post construct");
-        loggedUser.init();
-        currentUser = loggedUser.getLoggedUser();
-        
-        if (currentUser == null) {
-            Admin = false;
-            Technician = false;
-            User = false;
-            GroupLeader = false;
-            Guest = true;
-            loginName = Preferences.ROLE_GUEST;
-        } else {
-            Admin = currentUser.getUserRole().equals(Preferences.ROLE_ADMIN);
-            Technician = currentUser.getUserRole().equals(Preferences.ROLE_TECHNICIAN);
-            User = currentUser.getUserRole().equals(Preferences.ROLE_USER);
-            GroupLeader = currentUser.getUserRole().equals(Preferences.ROLE_GROUPLEADER);
-            Guest = currentUser.getUserRole().equals(Preferences.ROLE_GUEST);
-            pi = loggedUser.getLoggedUserPI();
-            loginName = currentUser.getLogin();
+        FacesContext context = FacesContext.getCurrentInstance();
+        String loginName = context.getExternalContext().getRemoteUser();
+
+        currentUser = services.getUserService().getUserByLogin(loginName);
+        if (currentUser == null ){
+            System.out.println("Could not find user with name: "+loginName);
+            currentUser = services.getUserService().getUserByLogin("guest");
+            currentUser.setUserRole(Preferences.ROLE_GUEST);
+            pi = currentUser;
         }
+
+        pi = services.getUserService().getUserByID(currentUser.getPi());
+        
+        Admin = currentUser.getUserRole().equals(Preferences.ROLE_ADMIN);
+        Technician = currentUser.getUserRole().equals(Preferences.ROLE_TECHNICIAN);
+        User = currentUser.getUserRole().equals(Preferences.ROLE_USER);
+        GroupLeader = currentUser.getUserRole().equals(Preferences.ROLE_GROUPLEADER);
+        Guest = currentUser.getUserRole().equals(Preferences.ROLE_GUEST);
     }
 
     public void dump() {
@@ -67,14 +65,6 @@ public class NewRoleManager implements Serializable {
         System.out.println("User " + User);
         System.out.println("GroupLeader " + GroupLeader);
         System.out.println("Guest " + Guest);
-    }
-
-    public NewLoggedUser getLoggedUser() {
-        return loggedUser;
-    }
-
-    public void setLoggedUser(NewLoggedUser loggedUser) {
-        this.loggedUser = loggedUser;
     }
 
     public UserDTO getCurrentUser() {
@@ -103,10 +93,6 @@ public class NewRoleManager implements Serializable {
 
     public boolean isGuest() {
         return Guest;
-    }
-
-    public String getLoginName() {
-        return loginName;
     }
 
     public boolean hasSampleLoadPermission() {

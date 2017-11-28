@@ -9,7 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.CSVValidationStatus;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,7 +33,9 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class SampleRunsBuilder {
     
-    public static ValidatedCSV<Set<SampleRunDTO>> buildSampleRunsFromCSV(File csvFile, ServiceFactory services, UserDTO operator){
+    @Inject private DTOFactory myDTOFactory;
+    
+    public ValidatedCSV<Set<SampleRunDTO>> buildSampleRunsFromCSV(File csvFile, ServiceFactory services, UserDTO operator){
        
         //This objects maps sample Id -> sampleRuns)
         Map<Integer,SampleRunDTO> samples = new HashMap<>();
@@ -93,7 +96,7 @@ public class SampleRunsBuilder {
                 
                 if (!samples.containsKey(sampleId)){
                     String flowCell= getStringFromField(record,RunFormCSVHeader.Flowcell);
-                    SampleRunDTO newSampleRun = DTOFactory.getSampleRunDTO(
+                    SampleRunDTO newSampleRun = myDTOFactory.getSampleRunDTO(
                             runId, 
                             sample, 
                             operator, 

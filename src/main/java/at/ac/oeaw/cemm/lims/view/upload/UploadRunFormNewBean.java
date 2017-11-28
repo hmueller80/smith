@@ -39,7 +39,8 @@ public class UploadRunFormNewBean implements Serializable {
     protected NewRoleManager roleManager;
 
     @Inject private ServiceFactory services;
-
+    @Inject private SampleRunsBuilder runBuilder;
+    
     private String destination;
     private String filename;
 
@@ -96,7 +97,7 @@ public class UploadRunFormNewBean implements Serializable {
 
     public void submitSampleRun() {
         if (roleManager.getHasRunAddPermission()) {
-            ValidatedCSV<Set<SampleRunDTO>> parsedCSV = SampleRunsBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
+            ValidatedCSV<Set<SampleRunDTO>> parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
 
             System.out.println("---------Parsed file " + filename + "----------");
             System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());

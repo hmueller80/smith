@@ -7,7 +7,7 @@ package at.ac.oeaw.cemm.lims.view.user;
 
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import at.ac.oeaw.cemm.lims.model.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -38,6 +38,7 @@ public class SingleUserBean {
     private final static String FORM_ID = "userDetailsForm";
     
     @Inject private ServiceFactory services;
+    @Inject private DTOFactory myDTOFactory;
     
     @ManagedProperty(value="#{newRoleManager}")
     NewRoleManager roleManager;
@@ -61,7 +62,7 @@ public class SingleUserBean {
             }
         }else{
             isNew = true;
-            currentUser = DTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null);
+            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null);
             currentUserPI = currentUser;
 
         } 

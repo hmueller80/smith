@@ -70,7 +70,8 @@ public class UploadSampleRequestNewBean implements Serializable {
     private MailBean mailBean;
  
     @Inject private ServiceFactory services;
-
+    @Inject private RequestBuilder sampleRequestBuilder;
+    
     int progress;
     
     public UploadSampleRequestNewBean() {
@@ -124,7 +125,7 @@ public class UploadSampleRequestNewBean implements Serializable {
      */
     public void submitRequest() {
 
-        ValidatedCSV<RequestDTO> request = RequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
+        ValidatedCSV<RequestDTO> request = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
 
         System.out.println("---------Parsed file " + filename + "----------");
         System.out.println("Is Valid: " + !request.getValidationStatus().isFailed());

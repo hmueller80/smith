@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence;
 
 
+import at.ac.oeaw.cemm.lims.api.persistence.NewsService;
 import at.ac.oeaw.cemm.lims.api.persistence.RunService;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
@@ -26,6 +27,7 @@ public class HibernateServiceFactory implements ServiceFactory {
     @Inject UserService userService;
     @Inject UploadService requestUploadService;
     @Inject RunService runService;
+    @Inject NewsService newsService;
 
     @Override
     public SampleService getSampleService() {
@@ -47,4 +49,9 @@ public class HibernateServiceFactory implements ServiceFactory {
         return runService;
     }
 
+    @Override
+    public NewsService getNewsService() {
+        return newsService;
+    }
+  
 }
