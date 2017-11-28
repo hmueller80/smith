@@ -9,12 +9,18 @@
 
         <h:form id="sampleTableForm">
 
-            <p:dataTable id="sampleTable" var="sample" value="#{sampleSearchBeanLazy.lazyModel}" widgetVar="samplesTable"
-                         style="font-size: x-small;" paginator="true" rows="20"
+            <p:dataTable id="sampleTable"
+                         var="sample"
+                         value="#{sampleSearchBeanLazy.lazyModel}"
+                         widgetVar="samplesTable"
+                         style="font-size: x-small;"
+                         paginator="true" 
+                         rows="20"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['sample.emptymessage']}"
-                         sortBy="#{sample.id}" sortOrder="descending"
+                         sortBy="#{sample.id}" 
+                         sortOrder="descending"
                          lazy="true">
 
                 <f:facet name="header">

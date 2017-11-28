@@ -113,5 +113,16 @@ public class UserDTOImpl implements UserDTO {
         }
         return firstName;
     }
+    
+    @Override
+    public boolean equals(Object other){
+        if (other instanceof UserDTO ){
+            if (this.id == ((UserDTO) other).getId() ){
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
 }

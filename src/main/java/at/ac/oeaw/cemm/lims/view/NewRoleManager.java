@@ -124,6 +124,11 @@ public class NewRoleManager implements Serializable {
     public boolean getHasRunAddPermission(){
         return (Admin || Technician);
     }
+    
+     public boolean getHasUserAddPermission(){
+        return (Admin);
+    }
+           
                 
     public boolean hasModifyPermission(SampleDTO sample) {
         if (Admin || Technician) {

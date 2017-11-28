@@ -2,24 +2,31 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"    
-                xmlns:p="http://primefaces.org/ui" 
-                template="/template.xhtml">
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml"> 
 
-    <ui:define name="addCollaborator">
+    <ui:define name="usersSearch">
 
         <h:form>
 
-            <p:dataTable id="dataTable" var="user" value="#{addCollaboratorBean.usList}" widgetVar="usersTable" 
-                         emptyMessage="#{bundle['data.emptymessage']}"
-                         style="font-size: x-small;" paginator="true" rows="20"
+            <p:dataTable id="dataTable" 
+                         var="user" 
+                         value="#{filteredUserView.users}" 
+                         widgetVar="usersTable" 
+                         style="font-size: x-small;" 
+                         paginator="true" 
+                         rows="30"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                         selection="#{addCollaboratorBean.selectedCollaborators}" selectionMode="multiple">
+                         emptyMessage="#{bundle['user.emptymessage']}" 
+                         filteredValue="#{filteredUserView.filteredUsers}">
 
                 <p:column id="idColumn" filterBy="#{user.id}" 
                           headerText="#{bundle['user.id']}"
                           filterMatchMode="contains">
-                    <h:outputText value="#{user.id}" />
+                    <h:link  outcome="userDetails.jsf" value="#{user.id}">
+                            <f:param name="uid" value="#{user.id}"/>
+                    </h:link>
                 </p:column>
 
                 <p:column id="nameColumn" filterBy="#{user.userName}" 
@@ -61,17 +68,32 @@
 
             </p:dataTable>
 
-            <p:commandButton value="#{bundle['button.text.add.selected']}" action="#{addCollaboratorBean.addSelected()}"
-                             type="update"                     
-                             disabled="false" update="@form">
-                <f:param name="pid" value="#{v.projectId}"/>
-            </p:commandButton>
+            <h:panelGrid columns="2">
+                <p:panel header="#{bundle['export.All']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="dataTable" fileName="Users" pageOnly="false" />
+                    </h:commandLink>
 
-            <p:button value="#{bundle['button.text.back']}" outcome="projectDetails.jsf">
-                <f:param name="pid" value="#{addCollaboratorBean.projectId}"/>
+                </p:panel>
+
+                <p:panel header="#{bundle['export.Page']}">
+                    <h:commandLink>
+                        <p:graphicImage value="/img/csv.png" />
+                        <p:dataExporter type="csv" target="dataTable" fileName="Users" pageOnly="true" />
+                    </h:commandLink>
+
+                </p:panel>
+
+            </h:panelGrid> 
+
+            <p:button outcome="userDetails.jsf" value="#{bundle['user.add.button.text']}" rendered="#{newRoleManager.hasUserAddPermission}">
             </p:button>
 
         </h:form>
+
+
+
 
     </ui:define>
 

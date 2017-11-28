@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
@@ -27,6 +28,7 @@ import org.hibernate.sql.JoinType;
  *
  * @author dbarreca
  */
+@ApplicationScoped
 public class SampleRunDAO {
 
      private Set<String> querableFields = new HashSet<String>() {

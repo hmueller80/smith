@@ -116,13 +116,6 @@
             <h3> #{bundle['runs.hint']} </h3>
 
             <ui:remove>
-                <p:button outcome="selectSample.jsf"  value="#{bundle['button.text.new.run']}" disabled="#{!runsSearchBean.userHasAddPermission}">
-                    <f:param name="specifySamples" value="requested"/>
-                    <f:param name="rid" value="#{runsSearchBean.newRunId}" />
-                </p:button>
-
-
-
                 <p:button outcome="newDraggableRunForm.jsf"  value="Mindex" disabled="#{!runsSearchBean.userHasAddPermission}" rendered="true">
                     <f:param name="specifySamples" value="requested"/>
                     <f:param name="rid" value="#{runsSearchBean.newRunId}" />

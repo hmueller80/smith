@@ -5,15 +5,11 @@
  */
 package at.ac.oeaw.cemm.lims.view.run;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
-import it.iit.genomics.cru.smith.news.NewsHelper;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -67,49 +63,6 @@ public class SingleRunBean {
         this.roleManager = roleManager;
     }
 
-    public boolean isRunIsClosed() {
-        for (SampleRunDTO sampleRun : sampleRuns) {
-            String status = sampleRun.getSample().getStatus();
-            if (SampleDTO.status_queued.equals(status)
-                    || SampleDTO.status_confirmed.equals(status)
-                    || SampleDTO.status_requested.equals(status)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean isAllConfirmed() {
-        for (SampleRunDTO sampleRun : sampleRuns) {
-            String status = sampleRun.getSample().getStatus();
-            if (!SampleDTO.status_confirmed.equals(status)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public String closeRun() {
-        List<SampleDTO> samplesToUpdate = new ArrayList<>();
-
-        for (SampleRunDTO sampleRun : sampleRuns) {
-            SampleDTO sample = sampleRun.getSample();
-            sample.setStatus(SampleDTO.status_running);
-            samplesToUpdate.add(sample);
-        }
-
-        services.getSampleService().bulkUpdateSamples(samplesToUpdate);
-
-        return "runDetails_1.jsf?rid=" + runId + " faces-redirect=true";
-    }
-
-    public void resetRun() {
-        //TODONewsHelper.resetRun(runID);
-        //System.out.println("delete news for run " + runID);
-    }
-    
     public String deleteRun() {
          try{
             services.getRunService().bulkDeleteRun(runId);

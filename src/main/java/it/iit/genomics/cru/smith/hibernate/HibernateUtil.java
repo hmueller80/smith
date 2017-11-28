@@ -4,7 +4,7 @@ import it.iit.genomics.cru.smith.defaults.Preferences;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 
-public class HibernateUtil {
+ public class HibernateUtil {
 
     private static final SessionFactory sessionFactory;
 

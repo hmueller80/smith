@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
 import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -17,6 +18,7 @@ import org.hibernate.criterion.Restrictions;
  *
  * @author dbarreca
  */
+@ApplicationScoped
 public class LaneDAO {
     
     public List<LaneEntity> getLanesBySampleAndRun(int run_id,int sam_id){

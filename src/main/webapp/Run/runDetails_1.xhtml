@@ -31,23 +31,11 @@
             <p:commandButton action="#{singleRunBean.deleteRun}" 
                              disabled="#{!singleRunBean.roleManager.hasRunAddPermission}" 
                              id="delete" 
-                             value="#{bundle['button.text.delete']}" 
+                             value="#{bundle['button.text.delete']} Run" 
                              update="rundetailsForm" 
                              immediate="true" />
             <p:message for="delete" />
             
-            <p:separator/>
-            <h:outputText value="#{bundle['runs.reset']}"  style="margin-left:10px" />
-            <br/>
-            <p:commandButton
-                id="ResetRunButton" 
-                
-                action="#{singleRunBean.resetRun}" 
-                value="#{bundle['button.text.reset.run']}">
-            </p:commandButton>
-
-
-
         </h:form>
 
     </ui:define>

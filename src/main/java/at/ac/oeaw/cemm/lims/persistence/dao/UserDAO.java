@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -28,8 +29,8 @@ public class UserDAO {
 
     public UserEntity getUserByLogin(String userLogin) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria libraryCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("login", userLogin));
-        UserEntity user = (UserEntity) libraryCriteria.uniqueResult();
+        Criteria userCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("login", userLogin));
+        UserEntity user = (UserEntity) userCriteria.uniqueResult();
         return user;
     }
 
@@ -40,10 +41,52 @@ public class UserDAO {
 
     public List<UserEntity> getUsersByPI(Integer PIid) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        if (PIid == null){
+        if (PIid == null) {
             return new ArrayList<>();
         }
         Criteria userCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("pi", PIid));
         return userCriteria.list();
     }
+
+    public List<UserEntity> getAllUsers() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria userCriteria = session.createCriteria(UserEntity.class);
+        return userCriteria.list();
+    }
+
+    public List<UserEntity> getAllUsersByRole(String role) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria userCriteria = session.createCriteria(UserEntity.class);
+        userCriteria.add(Restrictions.eq("userRole", role));
+        return userCriteria.list();
+    }
+
+    public List<UserEntity> getUsersByID(List<Integer> ids) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria userCriteria = session.createCriteria(UserEntity.class);
+        userCriteria.add(Restrictions.in("id", ids));
+
+        return userCriteria.list();
+    }
+
+    public Boolean userExists(String login) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(UserEntity.class)
+                .add(Restrictions.eq("login", login))
+                .setProjection(Projections.rowCount());
+        
+        long count = (Long) query.uniqueResult();
+        if(count != 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void updateOrPersistUser(UserEntity userEntity) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.saveOrUpdate(userEntity);
+
+    }
+
 }
