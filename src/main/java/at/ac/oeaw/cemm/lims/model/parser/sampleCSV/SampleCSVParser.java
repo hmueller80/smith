@@ -10,10 +10,13 @@ import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
-import it.iit.genomics.cru.smith.sampleBeans.SampleNameFilter;
-import it.iit.genomics.cru.smith.utils.DateParser;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import org.apache.commons.csv.CSVRecord;
 
 /**
@@ -71,7 +74,7 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
 
         String sampleName = record.get(SampleRequestCSVHeader.SampleName);
         if (sampleName != null && !sampleName.trim().isEmpty()) {
-            sample.setName(SampleNameFilter.legalize(sampleName));
+            sample.setName(NameFilter.legalize(sampleName));
         } else {
             sample.setName("undefined");
         }
@@ -86,7 +89,7 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
         //TODO: double check default and errors from parser
         String bioAnalyzerDate = record.get(SampleRequestCSVHeader.BioAnalyzerDate);
         if (bioAnalyzerDate != null && !bioAnalyzerDate.trim().isEmpty()) {
-            Date date = DateParser.parseDateAustria(bioAnalyzerDate, "dd.MM.YYYY");
+            Date date = parseDate(bioAnalyzerDate, "dd.MM.YYYY");
             if (date != null) {
                 sample.setBioanalyzerDate(date);
             }
@@ -151,7 +154,7 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
         String requestDateString = record.get(SampleRequestCSVHeader.date);
         Date requestDate = null;
         if (requestDateString != null && !requestDateString.trim().isEmpty()) {
-            requestDate = DateParser.parseDateAustria(requestDateString, "dd.MM.YYYY");
+            requestDate = parseDate(requestDateString, "dd.MM.YYYY");
         }
         if (requestDate != null) {
             sample.setRequestDate(requestDate);
@@ -181,6 +184,25 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
         }
         
         return returnValue;
+    }
+    
+    private static Date parseDate(String date, String format){
+        if(date == null){
+            date = new String("1.1.1970");
+        }
+        if(date.length() == 0){
+            date = new String("1.1.1970");
+        }
+        
+        DateFormat df = new SimpleDateFormat(format, Locale.GERMANY);
+        df.setLenient(false); 
+        try{
+            return df.parse(date);
+        }
+        catch(ParseException ex){ 
+            ex.printStackTrace();  
+        }
+        return new Date(System.currentTimeMillis());
     }
 }
    

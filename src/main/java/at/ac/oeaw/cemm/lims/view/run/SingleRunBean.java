@@ -8,7 +8,7 @@ package at.ac.oeaw.cemm.lims.view.run;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
-import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;

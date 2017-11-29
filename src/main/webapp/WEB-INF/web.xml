@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <listener>
-        <listener-class>it.iit.genomics.cru.smith.utils.ContextListener</listener-class>
-    </listener>
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
@@ -28,249 +25,57 @@
     <context-param>
         <param-name>remoterunfolder</param-name>
         <param-value>/scratch/lab_bsf/projects/BSF_runs/</param-value>
-        <!--
-        <param-value>/data/Illumina/Runs/</param-value>
-        -->
-    </context-param>
-    <context-param>
-        <param-name>remotefastqfolder</param-name>
-        <param-value>/scratch/lab_bsf/samples/</param-value>
-        <!--
-        <param-value>/data/Illumina/PublicData/FASTQ/</param-value>  
-        -->
-    </context-param>
-    <context-param>
-        <param-name>remotebamfolder</param-name>
-        <param-value>/scratch/lab_bsf/samples/</param-value>
-        <!--
-        <param-value>/data/Illumina/PublicData/BAM/</param-value>  
-        -->
-    </context-param>
-    <context-param>
-        <param-name>remotebigwigfolder</param-name>
-        <param-value>/scratch/lab_bsf/samples/</param-value>
-        <!--
-        <param-value>/data/Illumina/PublicData/BIGWIG/</param-value>  
-        -->
-    </context-param>
-    <context-param>
-        <param-name>remotebedfolder</param-name>
-        <param-value>/scratch/lab_bsf/samples/</param-value>
-        <!--
-        <param-value>/data/Illumina/PublicData/BED/</param-value>  
-        -->
     </context-param>
     <context-param>
         <param-name>remotesamplesheetfolder</param-name>
         <param-value>/scratch/lab_bsf/projects/BSF_runs/libraries/</param-value>
-        <!--
-        <param-value>/home/hmuller/workdir_smith/Samplesheets/</param-value> 
-        /home/glassfish/workdir_smith/ 
-        -->
     </context-param>
     <context-param>
         <param-name>remoteworkdir</param-name>
         <param-value>/scratch/lab_bsf/projects/BSF_runs/</param-value>
-        <!--
-         /home/hmuller/glassfish3/glassfish/domains/domain1/applications/smith/upload/
-         <param-value>/home/hmuller/glassfishb1p2/glassfish/domains/domain1/applications/smith/upload/</param-value>
-         /home/hmuller/workdir_smith/
-         /home/glassfish/workdir_smith/
-         -->
-    </context-param>
-    <context-param>
-        <param-name>remotegalaxyscriptpath</param-name>
-        <param-value>/home/hmuller/glassfish3/glassfish/domains/domain1/applications/smith/galaxy/smith_run_workflow.py</param-value>
-        <!--
-         <param-value>/home/hmuller/glassfishb1p2/glassfish/domains/domain1/applications/smith/galaxy/smith_run_workflow.py</param-value>
-         -->
     </context-param>
     <context-param>
         <param-name>remotemonitoringcutoffdate</param-name>
         <param-value>171101</param-value>
     </context-param>
     <context-param>
-        <param-name>remotescratchdir</param-name>
-        <param-value>/home/glassfish/scratch/</param-value>
-        <!--
-         /home/glassfish/
-         -->
-    </context-param>
-    <context-param>
-        <param-name>remotefastqcexecpath</param-name>
-        <param-value>/opt/cluster/bin/fastqc --casava -t 8</param-value>
-    </context-param>
-    <context-param>
-        <param-name>remotebcltofastqexecpath</param-name>
-        <param-value>/usr/bin/perl /opt/cluster/bin/configureBclToFastq.pl --input-dir=</param-value>
-    </context-param>
-    <context-param>
-        <param-name>remotemismatches</param-name>
-        <param-value>0</param-value>
-    </context-param>
-    <context-param>
-        <param-name>remotefastqhyperlink</param-name>
-        <param-value>http://localhost/data/FASTQ/</param-value>
-    </context-param>
-    <context-param>
-        <param-name>remoteexecuterpathflowcellA</param-name>
+        <param-name>remoteexecuterpath</param-name>
         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-        <!--
-         <param-value>http://blade-b1-p2.iit.ieo.eu:8081/Bash/Executer</param-value>
-         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-         -->
-    </context-param>
-    <context-param>
-        <param-name>remoteexecuterpathflowcellB</param-name>
-        <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-        <!--
-         <param-value>http://hilt.iit.ieo.eu:8080/Bash/Executer</param-value>
-         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-         -->
     </context-param>
     <context-param>
         <param-name>remoterunfolderscaninterval</param-name>
-        <param-value>30</param-value>
+        <param-value>5</param-value>
         <!--
-        interval in minutes
-        <param-value>30</param-value>
-         -->
+        interval in minutes-->
     </context-param>
-    
-    
-    
+     
     
     <context-param>
         <param-name>localrunfolder</param-name>
         <param-value>/C:/Temp/Runs/</param-value>
-        <!--
-        <param-value>/home/hmueller/Temp/Runs/</param-value>
-        <param-value>/C:/Temp/Runs/</param-value>
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localfastqfolder</param-name>
-        <param-value>/C:/Temp/FASTQ/</param-value>
-        <!--
-        <param-value>/C:/Temp/FASTQ/</param-value>  
-        <param-value>/home/hmueller/Temp/FASTQ/</param-value>  
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localbamfolder</param-name>
-        <param-value>/C:/Temp/BAM/</param-value>
-        <!--
-         <param-value>/C:/Temp/BAM/</param-value>  
-         <param-value>/home/hmueller/Temp/BAM/</param-value>  
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localbigwigfolder</param-name>
-        <param-value>/C:/Temp/BIGWIG/</param-value>
-        <!--
-         <param-value>/C:/Temp/BIGWIG/</param-value>   
-         <param-value>/home/hmueller/Temp/BIGWIG/</param-value>      
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localbedfolder</param-name>
-        <param-value>/C:/Temp/BED/</param-value>
-        <!--
-         <param-value>/C:/Temp/BED/</param-value> 
-         <param-value>/home/hmueller/Temp/BED/</param-value>
-        -->
-    </context-param>
+    </context-param>  
     <context-param>
         <param-name>localsamplesheetfolder</param-name>
         <param-value>/C:/Temp/Runs/libraries/</param-value>
-        <!--
-         <param-value>/C:/Temp/Samplesheets/</param-value>
-         <param-value>/home/hmueller/Temp/Samplesheets/</param-value>
-        -->
     </context-param>
     <context-param>
         <param-name>localworkdir</param-name>
         <param-value>/C:/Temp/Runs/</param-value>
-        <!--
-         <param-value>/home/hmueller/temp/work/</param-value>
-         <param-value>/C:/temp/work/</param-value>
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localgalaxyscriptpath</param-name>
-        <param-value>/C:/Temp/GALAXY/smith_run_workflow.py</param-value>
-        <!--
-         <param-value>/home/hmueller/Temp/GALAXY/smith_run_workflow.py</param-value>
-         <param-value>/C:/Temp/GALAXY/smith_run_workflow.py</param-value>
-        -->
     </context-param>
     <context-param>
         <param-name>localmonitoringcutoffdate</param-name>
-        <param-value>171201</param-value>
-        <!--
-         
-        -->
+        <param-value>171101</param-value>
     </context-param>
     <context-param>
-        <param-name>localscratchdir</param-name>
-        <param-value>/C:/temp/scratch/</param-value>
-        <!--
-         <param-value>/home/hmueller/temp/scratch/</param-value>
-         <param-value>/C:/temp/scratch/</param-value>
-        -->
-    </context-param>
-    <context-param>
-        <param-name>localfastqcexecpath</param-name>
-        <param-value>/opt/cluster/bin/fastqc --casava -t 8</param-value>
-    </context-param>
-    <context-param>
-        <param-name>localbcltofastqexecpath</param-name>
-        <param-value>/usr/bin/perl /opt/cluster/bin/configureBclToFastq.pl --input-dir=</param-value>
-    </context-param>
-    <context-param>
-        <param-name>localmismatches</param-name>
-        <param-value>1</param-value>
-    </context-param>
-    <context-param>
-        <param-name>localfastqhyperlink</param-name>
-        <param-value>http://hilt.iit.ieo.eu/data/FASTQ/</param-value>
-    </context-param>
-    <context-param>
-        <param-name>localexecuterpathflowcellA</param-name>
+        <param-name>localexecuterpath</param-name>
         <param-value>http://localhost:9092/TimerServlet</param-value>
-        <!--
-         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-         -->
-    </context-param>
-    <context-param>
-        <param-name>localexecuterpathflowcellB</param-name>
-        <param-value>http://localhost:9092/TimerServlet</param-value>
-        <!--
-         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
-         -->
     </context-param>
     <context-param>
         <param-name>localrunfolderscaninterval</param-name>
         <param-value>3</param-value>
-        <!--
-        interval in minutes
-        <param-value>30</param-value>
-         -->
     </context-param>
-    
-    
-    
-    
-    
-    <!-- mail parameters -->
-    <context-param>
-        <param-name>subjectRequestReceived</param-name>
-        <param-value>Your NGS request -&gt; requestIDs</param-value>
-    </context-param>
-    <context-param>
-        <param-name>subjectFastQReadyAlert</param-name>
-        <param-value>Your new NGS data are now available</param-value>
-    </context-param>
+ 
+  
     <context-param>
         <param-name>sentByMailAddress</param-name>
         <param-value>b@a</param-value>
@@ -289,36 +94,23 @@
          your smtp server
          -->
     </context-param>
+    
     <context-param>
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>commons</param-value>
-        <!--
-        <param-value>auto|native|commons</param-value>
-        -->
     </context-param>
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!--
-    <servlet>
-        <description>Timer</description>
-        <servlet-name>TimerServlet</servlet-name>
-        <servlet-class>it.iit.genomics.cru.smith.utils.TimerServlet</servlet-class>
-        <load-on-startup>2</load-on-startup>
-    </servlet>    -->
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
         <url-pattern>*.jsf</url-pattern>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-    <!--
-    <servlet-mapping>
-        <servlet-name>TimerServlet</servlet-name>
-        <url-pattern>/TimerServlet</url-pattern>
-    </servlet-mapping>   --> 
+ 
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
@@ -362,15 +154,8 @@
             <web-resource-name>smith</web-resource-name>
             <description>smith</description>
             <url-pattern>/Sample/*</url-pattern>
-            <url-pattern>/Project/*</url-pattern>
             <url-pattern>/Run/*</url-pattern>
-            <url-pattern>/Flowcell/*</url-pattern>
-            <url-pattern>/SamplesSheet/*</url-pattern>
-            <url-pattern>/Data/*</url-pattern>
             <url-pattern>/User/*</url-pattern>
-            <url-pattern>/Reagent/*</url-pattern>
-            <url-pattern>/upload/*</url-pattern>
-            <url-pattern>/galaxy/*</url-pattern>
             <url-pattern>/img/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>

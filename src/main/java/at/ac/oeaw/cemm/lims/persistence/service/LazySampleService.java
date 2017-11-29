@@ -14,6 +14,7 @@ import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
@@ -296,6 +297,91 @@ public class LazySampleService implements SampleService {
                 throw new Exception("Error while persisting application " + application.getApplicationName());
             }
         }
+    }
+
+    @Override
+    public List<SampleDTO> getSamplesByStatus(final String status) {
+        final List<SampleDTO> samples = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<SampleEntity> sampleEntities = sampleDAO.getSamplesByStatus(status);
+
+                    for (SampleEntity entity : sampleEntities) {
+                        samples.add(myDTOMapper.getSampleDTOfromEntity(entity));
+                    }
+                    
+                    return null;
+                }
+            });
+            
+            return samples;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return samples;
+    }
+
+    @Override
+    public List<ApplicationDTO> getAllApplications() {
+        final List<ApplicationDTO> applications = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<ApplicationEntity> appEntities = applicationDAO.getAll();
+
+                    for (ApplicationEntity appEntity : appEntities) {
+                        applications.add(myDTOMapper.getApplicationDTOfromEntity(appEntity));
+                    }
+                    
+                    return null;
+                }
+
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return applications;
+    }
+
+    @Override
+    public List<SampleDTO> getAllPooledSamples(final SampleDTO sample) {
+        final List<SampleDTO> samples = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    SampleEntity sampleEntity = sampleDAO.getSampleById(sample.getId());
+                    for (LibraryEntity library: sampleEntity.getLibrary()){
+                        List<LibraryEntity>  allPooledLibraries = libraryDAO.getAllLibrariesByLibID(library.getId().getLibraryId());
+                        for (LibraryEntity pooledLibrary: allPooledLibraries ){
+                            SampleEntity pooledSample = pooledLibrary.getSample();
+                            samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
+                        }
+                    }
+                     return null;
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (samples.isEmpty()){
+            samples.add(sample);
+        }
+        
+        return samples;
     }
 
   

@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;

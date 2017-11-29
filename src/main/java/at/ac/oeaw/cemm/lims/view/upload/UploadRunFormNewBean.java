@@ -9,7 +9,7 @@ import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.model.parser.runCSV.SampleRunsBuilder;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
-import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

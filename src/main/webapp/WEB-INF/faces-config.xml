@@ -7,7 +7,7 @@
   
     <application>
         <resource-bundle>
-            <base-name>it.iit.genomics.cru.smith.Messages.Messages</base-name>
+            <base-name>at.ac.oeaw.cemm.lims.Messages</base-name>
             <var>bundle</var>
         </resource-bundle>
     </application>

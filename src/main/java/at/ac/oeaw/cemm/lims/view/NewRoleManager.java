@@ -7,7 +7,7 @@ package at.ac.oeaw.cemm.lims.view;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import it.iit.genomics.cru.smith.defaults.Preferences;
+import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;
 import java.security.Principal;
 import javax.annotation.PostConstruct;

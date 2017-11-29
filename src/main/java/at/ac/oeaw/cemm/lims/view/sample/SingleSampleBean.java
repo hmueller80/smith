@@ -16,10 +16,10 @@ import at.ac.oeaw.cemm.lims.model.validator.dto.ApplicationValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.SampleValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
-import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
-import it.iit.genomics.cru.smith.defaults.Preferences;
-import it.iit.genomics.cru.smith.sampleBeans.SampleNameFilter;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
+import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
@@ -226,7 +226,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public String[] getPossibleDepths() {
-        return "PE".equals(getReadMode()) ? Preferences.getDepth_PE() : Preferences.getDepth_SR();
+        return "PE".equals(getReadMode()) ? Preferences.getDepthPE() : Preferences.getDepthSR();
     }
 
     public boolean getModifyPermission() {
@@ -264,7 +264,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setSampleDescription(String description) {
-        currentSample.setDescription(SampleNameFilter.legalize(description));
+        currentSample.setDescription(NameFilter.legalize(description));
     }
 
     public void setLibrarySynthesis(boolean syntesisNeeded) {
@@ -281,7 +281,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setSampleName(String name) {
-        currentSample.setName(SampleNameFilter.legalize(name));
+        currentSample.setName(NameFilter.legalize(name));
     }
 
     public void setSampleType(String type) {

@@ -11,7 +11,7 @@ import at.ac.oeaw.cemm.lims.persistence.dao.CommunicationsDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

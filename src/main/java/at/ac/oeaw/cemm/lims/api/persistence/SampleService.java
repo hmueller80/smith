@@ -5,12 +5,11 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
+import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -36,4 +35,9 @@ public interface SampleService {
 
     List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate);
     
+    List<SampleDTO> getSamplesByStatus(String status);
+    
+    List<ApplicationDTO> getAllApplications();
+        
+    List<SampleDTO> getAllPooledSamples(SampleDTO sample);
 }

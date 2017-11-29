@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 

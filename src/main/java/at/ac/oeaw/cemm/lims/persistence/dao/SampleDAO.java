@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -199,6 +199,14 @@ public class SampleDAO {
     public void deleteSample(SampleEntity sample) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.delete(sample);
+    }
+
+    public List<SampleEntity> getSamplesByStatus(String status) {
+         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+         Criteria query = session.createCriteria(SampleEntity.class)
+                 .add(Restrictions.eq("status", status));
+         
+         return query.list();
     }
 
 }

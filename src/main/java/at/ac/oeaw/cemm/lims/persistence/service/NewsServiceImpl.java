@@ -64,11 +64,33 @@ public class NewsServiceImpl implements NewsService {
                     newsEntity.setHeader(newNews.getHeader());
                     newsEntity.setBody(newNews.getBody());
                     newsEntity.setDate(newNews.getDate());
+                    newsEntity.setId(newsDAO.getMaxId()+1);
                     newsDAO.save(newsEntity);
                     return null;
                 }
             }
             );
+    }
+
+    @Override
+    public boolean newsExists(final String body) {
+        boolean result = false;
+
+        try {
+            result = TransactionManager.doInTransaction(
+                    new TransactionCallable<Boolean>() {
+                @Override
+                public Boolean execute() throws Exception {
+
+                    return newsDAO.newsExists(body);
+                }
+            }
+            );
+        } catch (Exception ex) {
+            Logger.getLogger(NewsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return result;
     }
 
 }

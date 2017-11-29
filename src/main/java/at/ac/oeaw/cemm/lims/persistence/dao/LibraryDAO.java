@@ -6,13 +6,15 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.entity.LibraryIdEntity;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -44,5 +46,13 @@ public class LibraryDAO {
     public void persistLibrary(LibraryEntity library) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.save(library);
+    }
+
+    public List<LibraryEntity> getAllLibrariesByLibID(int id) {
+         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+         Criteria query = session.createCriteria(LibraryEntity.class)
+                 .add(Restrictions.eq("id.libraryId", id));
+         
+         return query.list();
     }
 }

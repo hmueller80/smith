@@ -7,10 +7,10 @@ import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
-import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
-import it.iit.genomics.cru.smith.defaults.Preferences;
-import it.iit.genomics.cru.smith.mail.MailBean;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
+import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -66,9 +66,7 @@ public class UploadSampleRequestNewBean implements Serializable {
     @ManagedProperty("#{newRoleManager}")
     protected NewRoleManager roleManager;
 
-    @ManagedProperty("#{mailBean}")
-    private MailBean mailBean;
- 
+    @Inject private MailBean mailBean;
     @Inject private ServiceFactory services;
     @Inject private RequestBuilder sampleRequestBuilder;
     

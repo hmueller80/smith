@@ -7,7 +7,7 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +50,15 @@ public class SampleRunDAO {
         }
     };
     
+    public Integer getMaxRunId() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria sampleCriteria = session.createCriteria(SampleRunEntity.class).setProjection(Projections.max("id.runId"));
+        Integer id = (Integer) sampleCriteria.uniqueResult();
+        if (id == null) {
+            id = 0;
+        }
+        return id;
+    }
     
     public List<SampleRunEntity> getSampleRunsById(int runId) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -223,6 +232,14 @@ public class SampleRunDAO {
     public void updateSampleRun(SampleRunEntity sampleRunEntity) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.update(sampleRunEntity);
+    }
+
+    public List<SampleRunEntity> getRunsByFlowcell(String FCID) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleRunEntity.class)
+                .add(Restrictions.eq("flowcell", FCID))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return query.list();
     }
     
 }

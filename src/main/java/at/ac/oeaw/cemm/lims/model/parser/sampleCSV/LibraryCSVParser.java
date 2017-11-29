@@ -11,7 +11,7 @@ import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
-import it.iit.genomics.cru.smith.sampleBeans.SampleNameFilter;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.csv.CSVRecord;
@@ -38,7 +38,7 @@ public class LibraryCSVParser extends DTOCSVParser<LibraryDTO> {
         if (libraryName==null || libraryName.trim().isEmpty()){
             throw new ParsingException("Library Name","Both library name and sample name are empty in line "+record.getRecordNumber());
         }
-        libraryName = SampleNameFilter.legalizeLibrary(libraryName);
+        libraryName = NameFilter.legalizeLibrary(libraryName);
         
         return new ParsedObject<>(myDTOFactory.getLibraryDTO(libraryName),messages);
     }

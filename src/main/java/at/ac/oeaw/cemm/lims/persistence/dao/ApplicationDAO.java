@@ -6,7 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
@@ -55,5 +55,11 @@ public class ApplicationDAO {
         }
 
         return Restrictions.eq(property, value);
+    }
+
+    public List<ApplicationEntity> getAll() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(ApplicationEntity.class);
+        return query.list();
     }
 }

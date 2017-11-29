@@ -9,7 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
-import it.iit.genomics.cru.smith.defaults.NgsLimsUtility;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;

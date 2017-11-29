@@ -21,7 +21,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import it.iit.genomics.cru.smith.hibernate.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -194,6 +194,48 @@ public class LazyRunService implements RunService {
 
         return result;
     }
+    
+    @Override
+    public PersistedEntityReceipt uploadSingleRun(final SampleRunDTO sampleRun, final boolean isNew) throws Exception {
+
+        return TransactionManager.doInTransaction(
+                new TransactionManager.TransactionCallable<PersistedEntityReceipt>() {
+            @Override
+            public PersistedEntityReceipt execute() throws Exception {
+                return presistOrUpdateSampleRun(sampleRun, isNew);
+            }
+        });
+
+    }
+    
+    @Override
+    public List<SampleRunDTO> getRunsByFlowCell(final String FCID) {
+        final List<SampleRunDTO> runs = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<SampleRunEntity> runEntities = runDAO.getRunsByFlowcell(FCID);
+
+                    if (runEntities != null) {
+                        for (SampleRunEntity entity : runEntities) {
+                            runs.add(myDTOMapper.getSampleRunDTOFromEntity(entity));
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+        return runs;
+    }
 
     protected PersistedEntityReceipt presistOrUpdateSampleRun(SampleRunDTO sampleRun, boolean isNew) throws Exception {
 
@@ -206,7 +248,15 @@ public class LazyRunService implements RunService {
 
         SampleRunIdEntity id = new SampleRunIdEntity();
         id.setSamId(sampleEntity.getId());
-        id.setRunId(sampleRun.getRunId());
+        Integer runId = sampleRun.getRunId();
+        if (runId == null){
+            if (!isNew){
+                throw new Exception("Cannot update Sample Run with null ID");
+            }else{
+                runId = runDAO.getMaxRunId() + 1;                
+            }
+        }
+        id.setRunId(runId);
         sampleRunEntity.setId(id);
 
         sampleRunEntity.setsample(sampleEntity);
@@ -258,4 +308,6 @@ public class LazyRunService implements RunService {
         return new PersistedEntityReceipt(sampleRunEntity.getId().getRunId(), sampleEntity.getName());
 
     }
+
+  
 }
