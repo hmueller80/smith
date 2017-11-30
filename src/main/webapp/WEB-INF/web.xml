@@ -10,7 +10,7 @@
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>bootstrap</param-value>
+        <param-value>cemm</param-value>
     </context-param>
     <!-- installation parameter, local serves for testing purposes, remote is for production -->
     <context-param>
@@ -106,7 +106,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
         <url-pattern>*.jsf</url-pattern>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
@@ -115,7 +114,7 @@
         <session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>faces/index.xhtml</welcome-file>
+        <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>

@@ -21,11 +21,14 @@
                          sortOrder="descending"
                          lazy="true">
 
-                <f:facet name="header">
-                    <p:outputPanel>
-                        <h:outputText value="Search all SampleRun fields: " />
-                        <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
-                    </p:outputPanel>
+                <f:facet name="header">             
+                    <div class="ui-g">
+                        <div class ="ui-g-12">
+                            <h:outputText value="Search all SampleRun fields: " />
+                            <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                        </div>
+
+                    </div>                      
                 </f:facet>
 
                 <p:column id="idRunsColumn"                 
