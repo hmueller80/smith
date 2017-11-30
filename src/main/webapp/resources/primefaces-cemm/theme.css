@@ -554,3 +554,16 @@ a.ui-button:active,
 .ui-layout-unit {
     border-style: none !important;
 }
+.homePageTabs{
+    border:none!important;
+}
+.homePageTabs .ui-tabs-nav{
+    background-color: #ffffff;
+}
+.homePageTabs .ui-tabs-panel{
+    border:1px solid!important;
+    border-color: #1f7285!important;
+}
+.homePageTabs .ui-tabs-selected{
+    border-bottom-color: #bde7f0;
+}
