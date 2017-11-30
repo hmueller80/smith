@@ -190,7 +190,7 @@
                                  rendered = "#{singleSampleBean.isNewForm}">                                             
                 </p:commandButton>
                 <p:commandButton action="#{singleSampleBean.save}" 
-                                 disabled="#{!singleSampleBean.addPermission}" 
+                                 disabled="#{!singleSampleBean.roleManager.hasSampleLoadPermission()}" 
                                  id="SampleAddbutton" 
                                  value="#{bundle['button.text.save']}" 
                                  update="SampledetailsForm"

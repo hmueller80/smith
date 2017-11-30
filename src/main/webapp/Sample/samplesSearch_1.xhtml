@@ -113,13 +113,13 @@
             <ui:remove>
             <p:commandButton action="#{singleSampleBean.loadNew}" 
                              value="#{bundle['button.text.new.sample']}" 
-                             rendered="#{singleSampleBean.addPermission}" />
+                             rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}" />
             </ui:remove>
         </h:form>
 
         <p:separator/>
 
-        <h:form id="sampleTableUploadForm" >
+        <h:form id="sampleTableUploadForm" rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}" >
             <h2>Upload request form</h2>
 
             <h:outputLink id="requestform" value="../downloads/example.csv">
@@ -134,7 +134,7 @@
                 <h:outputText id="i22"  value="#{uploadSampleRequestNewBean.filename}" ></h:outputText>
             </p:panelGrid>
         </h:form>
-        <h:form  id="sampleTableUploadProcessForm">
+        <h:form  id="sampleTableUploadProcessForm" rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}">
             <p:commandButton id="RequestUploadProcessButton" actionListener="#{uploadSampleRequestNewBean.submitRequest()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
             </p:commandButton>
         </h:form>

@@ -6,7 +6,10 @@
 package at.ac.oeaw.cemm.lims.view.sample;
 
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.view.NewRoleManager;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -20,7 +23,8 @@ import org.primefaces.model.SortOrder;
 public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
 
     @Inject private ServiceFactory services;
-        
+    private NewRoleManager roleManager;
+    
     @Override
     public SampleDTO getRowData(String sampleId) {
         return services.getSampleService().getFullSampleById(Integer.parseInt(sampleId));
@@ -33,6 +37,20 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
  
     @Override
     public List<SampleDTO> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {
+        if (roleManager==null){
+            System.out.println("RoleManager is null in RunDataModel");
+        }else{
+            System.out.println("Role is "+roleManager.getCurrentUser().getUserName());
+        }
+
+        if (roleManager!=null && !roleManager.isGuest()){
+            if (roleManager.isGroupLeader() || roleManager.isUser()){ 
+                filters.put("restrictToUsers",  roleManager.getSubjectsIds());
+            }
+        }else {
+            return new ArrayList<>();
+        }
+        
         boolean ascending = SortOrder.ASCENDING.equals(sortOrder);
         System.out.println("firt "+first);
         System.out.println("pagesize "+pageSize);
@@ -50,6 +68,14 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
 
     public List<String> getAllLibraries() {
         return services.getSampleService().getAllLibraries();
+    }
+
+    public NewRoleManager getRoleManager() {
+        return roleManager;
+    }
+
+    public void setRoleManager(NewRoleManager roleManager) {
+        this.roleManager = roleManager;
     }
 
 }

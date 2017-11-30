@@ -160,9 +160,7 @@
         </web-resource-collection>
         <auth-constraint>
             <description>Auth</description>
-            <role-name>admin</role-name>
             <role-name>user</role-name>
-            <role-name>guest</role-name>
         </auth-constraint>
     </security-constraint>
     <login-config>
@@ -173,10 +171,6 @@
         <realm-name>file</realm-name>
         -->
     </login-config>
-    <security-role>
-        <description>admin</description>
-        <role-name>admin</role-name>
-    </security-role>
     <security-role>
         <description>user</description>
         <role-name>user</role-name>

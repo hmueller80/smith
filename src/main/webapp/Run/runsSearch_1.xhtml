@@ -6,10 +6,7 @@
                 template="/template.xhtml">
 
     <ui:define name="runsSearch">
-
-
         <h:form id="runsTableForm">
-
             <p:dataTable id="runsTable" 
                          var="run" 
                          value="#{runsSearchBeanLazy.runDataModel}" 
@@ -23,8 +20,6 @@
                          sortBy="#{run.id}" 
                          sortOrder="descending"
                          lazy="true">
-
-
 
                 <f:facet name="header">
                     <p:outputPanel>
@@ -123,12 +118,12 @@
 
 
         <p:separator/>
-        <h2>Upload Run Form</h2>
         <h:outputLink rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
             <h:outputText value="#{bundle['runs.exampleform']}" />
         </h:outputLink>
 
         <h:form id="runTableUploadForm" rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}">
+            <h2>Upload Run Form</h2>
 
             <p:panelGrid columns="3">
                 <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" 

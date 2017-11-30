@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +159,15 @@ public class SampleDAO {
             }
 
             Criterion filterCriterion = Restrictions.conjunction().add(singleFiltersCriterion).add(globalFiltersCriterion);
+            
+            if (filters.containsKey("restrictToUsers")) {                
+                Collection<Integer> restrictedUsers = ( Collection<Integer>) filters.get("restrictToUsers");
+                Criterion userCriterion = Restrictions.in("user.id", restrictedUsers);
+                filterCriterion = Restrictions.conjunction().add(filterCriterion).add(userCriterion);
+            }
+            
             query.add(filterCriterion);
+            
         }
         if (sortField != null) {
             if (ascending) {

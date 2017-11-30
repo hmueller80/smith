@@ -2,6 +2,8 @@ package at.ac.oeaw.cemm.lims.view;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
@@ -9,6 +11,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.faces.bean.ManagedProperty;
+import javax.servlet.ServletException;
 
 /**
  * @(#)NavigationBean.java 20 JUN 2014 Copyright 2014 Computational Research
@@ -36,9 +39,11 @@ public class NavigationBean implements Serializable {
         }
     }
 
-    public void doLogout() {
+    public String doLogout() {
         HttpSession sess = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         sess.invalidate();
+
+        return "/logout?faces-redirect=true";
     }
 
     public String getIsLoggedIn() {

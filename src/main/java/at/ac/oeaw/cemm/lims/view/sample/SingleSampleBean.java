@@ -230,12 +230,8 @@ public class SingleSampleBean implements Serializable {
     }
 
     public boolean getModifyPermission() {
-        boolean returnValue = roleManager.hasModifyPermission(currentSample);
+        boolean returnValue = roleManager.hasSampleModifyPermission(currentSample);
         return returnValue;
-    }
-
-    public boolean getAddPermission() {
-        return roleManager.hasSampleLoadPermission();
     }
 
     public boolean isIsNewForm() {
@@ -349,7 +345,7 @@ public class SingleSampleBean implements Serializable {
     }
 
     public String save() {
-        if (!getAddPermission()) {
+        if (!roleManager.hasSampleLoadPermission()) {
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT_MOD, "User error", "You do not have permissions to save this component");
             return null;
         }

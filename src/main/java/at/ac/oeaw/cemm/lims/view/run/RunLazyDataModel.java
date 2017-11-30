@@ -35,16 +35,8 @@ public class RunLazyDataModel extends LazyDataModel<SampleRunDTO>{
         }
 
         if (roleManager!=null && !roleManager.isGuest()){
-            List<Integer> usersRestrictions = new ArrayList<>();
-            if (roleManager.isGroupLeader()){
-                for (UserDTO user: services.getUserService().getAllUsersByPI(roleManager.getCurrentUser().getId())){
-                    usersRestrictions.add(user.getId());
-                }
-            }else if (roleManager.isUser()){
-                usersRestrictions.add(roleManager.getCurrentUser().getId());
-            }
-            if (!usersRestrictions.isEmpty()){
-                filters.put("restrictToUsers", usersRestrictions);
+            if (roleManager.isGroupLeader() || roleManager.isUser()){ 
+                filters.put("restrictToUsers",  roleManager.getSubjectsIds());
             }
         }else {
             return new ArrayList<>();

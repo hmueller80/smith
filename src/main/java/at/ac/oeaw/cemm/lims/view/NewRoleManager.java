@@ -9,6 +9,8 @@ import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -27,6 +29,7 @@ public class NewRoleManager implements Serializable {
     
     UserDTO currentUser;
     UserDTO pi;
+    Set<Integer> subjectsIds=new HashSet<>();
     boolean Admin;
     boolean Technician;
     boolean User;
@@ -40,20 +43,29 @@ public class NewRoleManager implements Serializable {
         String loginName = context.getExternalContext().getRemoteUser();
 
         currentUser = services.getUserService().getUserByLogin(loginName);
-        if (currentUser == null ){
-            System.out.println("Could not find user with name: "+loginName);
+        if (currentUser == null) {
+            System.out.println("Could not find user with name: " + loginName);
             currentUser = services.getUserService().getUserByLogin("guest");
             currentUser.setUserRole(Preferences.ROLE_GUEST);
             pi = currentUser;
-        }
-
-        pi = services.getUserService().getUserByID(currentUser.getPi());
+        } 
         
         Admin = currentUser.getUserRole().equals(Preferences.ROLE_ADMIN);
         Technician = currentUser.getUserRole().equals(Preferences.ROLE_TECHNICIAN);
         User = currentUser.getUserRole().equals(Preferences.ROLE_USER);
         GroupLeader = currentUser.getUserRole().equals(Preferences.ROLE_GROUPLEADER);
         Guest = currentUser.getUserRole().equals(Preferences.ROLE_GUEST);
+        
+        if(!Guest) {
+            pi = services.getUserService().getUserByID(currentUser.getPi());
+            subjectsIds.add(currentUser.getId());
+            if (GroupLeader) {
+                for (UserDTO subject : services.getUserService().getAllUsersByPI(currentUser.getId())) {
+                    subjectsIds.add(subject.getId());
+                }
+            }
+        }
+
     }
 
     public void dump() {
@@ -93,14 +105,10 @@ public class NewRoleManager implements Serializable {
     }
 
     public boolean hasSampleLoadPermission() {
-        return (!Technician && !Guest);
-    }
-    
-    public boolean hasNewsPermission() {
         return (Admin || Technician);
     }
     
-    public boolean hasAddPermission(){
+    public boolean hasNewsPermission() {
         return (Admin || Technician);
     }
     
@@ -111,40 +119,23 @@ public class NewRoleManager implements Serializable {
      public boolean getHasUserAddPermission(){
         return (Admin);
     }
-           
-                
-    public boolean hasModifyPermission(SampleDTO sample) {
+                  
+    public boolean hasSampleModifyPermission(SampleDTO sample) {
         if (Admin || Technician) {
             return true;
-        } else if (Guest) {
-            return false;
-        } else if (User) {
-            if (sample.getStatus().equals(SampleDTO.status_requested)) {
-                return true;
-            }
-        } else if (GroupLeader) {
-            if (sample.getStatus().equals(SampleDTO.status_requested)) {
+        } else if (User || GroupLeader) {
+            if (sample.getStatus().equals(SampleDTO.status_requested) 
+                    && subjectsIds.contains(sample.getUser().getId())) {
                 return true;
             }
         }
+        
         return false;
     }
 
-    public boolean hasDeletePermission(SampleDTO sample) {
-        if (Admin || Technician) {
-            return true;
-        } else if (Guest) {
-            return false;
-        } else if (User) {
-            if (sample.getStatus().equals(SampleDTO.status_requested)) {
-                return true;
-            }
-        } else if (GroupLeader) {
-            if (sample.getStatus().equals(SampleDTO.status_requested)) {
-                return true;
-            }
-        }
-        return false;
+    public Set<Integer> getSubjectsIds() {
+        return subjectsIds;
     }
+   
 
 }
