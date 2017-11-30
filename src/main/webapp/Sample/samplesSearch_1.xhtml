@@ -110,10 +110,11 @@
                     </h:commandLink>
                 </p:panel>
             </h:panelGrid>
+            <ui:remove>
             <p:commandButton action="#{singleSampleBean.loadNew}" 
                              value="#{bundle['button.text.new.sample']}" 
                              rendered="#{singleSampleBean.addPermission}" />
-
+            </ui:remove>
         </h:form>
 
         <p:separator/>

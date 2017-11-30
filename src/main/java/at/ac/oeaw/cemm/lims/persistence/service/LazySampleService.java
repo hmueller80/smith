@@ -311,6 +311,8 @@ public class LazySampleService implements SampleService {
                     List<SampleEntity> sampleEntities = sampleDAO.getSamplesByStatus(status);
 
                     for (SampleEntity entity : sampleEntities) {
+                        Hibernate.initialize(entity.getApplication());
+                        Hibernate.initialize(entity.getSequencingIndexes());
                         samples.add(myDTOMapper.getSampleDTOfromEntity(entity));
                     }
                     
@@ -366,6 +368,8 @@ public class LazySampleService implements SampleService {
                         List<LibraryEntity>  allPooledLibraries = libraryDAO.getAllLibrariesByLibID(library.getId().getLibraryId());
                         for (LibraryEntity pooledLibrary: allPooledLibraries ){
                             SampleEntity pooledSample = pooledLibrary.getSample();
+                            Hibernate.initialize(pooledSample.getApplication());
+                            Hibernate.initialize(pooledSample.getSequencingIndexes());
                             samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
                         }
                     }

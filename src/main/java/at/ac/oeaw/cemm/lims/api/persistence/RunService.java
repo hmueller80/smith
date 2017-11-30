@@ -29,9 +29,8 @@ public interface RunService {
     
     public boolean runExists(int runId) throws Exception;
 
-    public Set<PersistedEntityReceipt> bulkUploadRuns(Set<SampleRunDTO> sampleRuns) throws Exception;
+    public Set<PersistedEntityReceipt> bulkUploadRuns(Set<SampleRunDTO> sampleRuns, boolean allNew) throws Exception;
 
     public List<SampleRunDTO> getRunsByFlowCell(String FCID);
     
-    PersistedEntityReceipt uploadSingleRun(SampleRunDTO sampleRun, boolean isNew) throws Exception;
 }

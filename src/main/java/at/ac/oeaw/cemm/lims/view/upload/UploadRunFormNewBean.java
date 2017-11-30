@@ -1,8 +1,6 @@
 package at.ac.oeaw.cemm.lims.view.upload;
 
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
@@ -119,7 +117,7 @@ public class UploadRunFormNewBean implements Serializable {
                 Set<SampleRunDTO> sampleRuns = parsedCSV.getRequestObj();
 
                 try {
-                    Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns);
+                    Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns,true);
 
                     for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
                         NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());

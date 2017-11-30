@@ -112,15 +112,12 @@
                 </p:panel>
 
             </h:panelGrid>    
-
-            <h3> #{bundle['runs.hint']} </h3>
-
+            
             <ui:remove>
-                <p:button outcome="newDraggableRunForm.jsf"  value="Mindex" disabled="#{!runsSearchBean.userHasAddPermission}" rendered="true">
-                    <f:param name="specifySamples" value="requested"/>
-                    <f:param name="rid" value="#{runsSearchBean.newRunId}" />
-                </p:button>
-            </ui:remove>          
+                 <h3> #{bundle['runs.hint']} </h3>
+                 <p:button outcome="newDraggableRunForm.jsf"  value="Mindex" disabled="#{!runsSearchBeanLazy.roleManager.hasRunAddPermission}" rendered="true" />
+            </ui:remove>
+            
         </h:form>
 
 

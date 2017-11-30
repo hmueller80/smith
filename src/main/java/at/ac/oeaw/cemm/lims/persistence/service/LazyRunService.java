@@ -178,7 +178,7 @@ public class LazyRunService implements RunService {
     }
 
     @Override
-    public Set<PersistedEntityReceipt> bulkUploadRuns(final Set<SampleRunDTO> sampleRuns) throws Exception {
+    public Set<PersistedEntityReceipt> bulkUploadRuns(final Set<SampleRunDTO> sampleRuns, final boolean allNew) throws Exception {
         final Set<PersistedEntityReceipt> result = new HashSet<>();
 
         TransactionManager.doInTransaction(
@@ -186,7 +186,11 @@ public class LazyRunService implements RunService {
             @Override
             public Void execute() throws Exception {
                 for (SampleRunDTO sampleRun : sampleRuns) {
-                    result.add(presistOrUpdateSampleRun(sampleRun, true));
+                    boolean isNew = true;
+                    if (!allNew && sampleRun.getRunId() != null) {
+                        isNew = false;
+                    }
+                    result.add(presistOrUpdateSampleRun(sampleRun, isNew));
                 }
                 return null;
             }
@@ -194,20 +198,7 @@ public class LazyRunService implements RunService {
 
         return result;
     }
-    
-    @Override
-    public PersistedEntityReceipt uploadSingleRun(final SampleRunDTO sampleRun, final boolean isNew) throws Exception {
-
-        return TransactionManager.doInTransaction(
-                new TransactionManager.TransactionCallable<PersistedEntityReceipt>() {
-            @Override
-            public PersistedEntityReceipt execute() throws Exception {
-                return presistOrUpdateSampleRun(sampleRun, isNew);
-            }
-        });
-
-    }
-    
+        
     @Override
     public List<SampleRunDTO> getRunsByFlowCell(final String FCID) {
         final List<SampleRunDTO> runs = new LinkedList<>();

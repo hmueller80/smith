@@ -32,15 +32,7 @@
                         <h:panelGrid columns="3">
                             <h:outputLabel for="flowcell" value="Flowcell: " />
                             <p:inputText id="flowcell" value="#{newDraggableRunFormBean.flowcell}" immediate="true"/>
-                            <p:message for="flowcell" />
-                            
-                            <h:outputLabel for="cluster" value="Cluster generation: " />
-                            <p:inputText id="cluster" value="#{newDraggableRunFormBean.clustergeneration}" immediate="true"/>
-                            <p:message for="cluster" />
-                            
-                            <h:outputLabel for="sequencing" value="Sequencing: " />
-                            <p:inputText id="sequencing" value="#{newDraggableRunFormBean.sequencing}" immediate="true" />
-                            <p:message for="sequencing" />
+                            <p:message for="flowcell" />                                                                                                          
 
                             <h:outputLabel for="lane" value="lane:" />
                             <p:inputMask id="lane" value="#{newDraggableRunFormBean.lane}" mask="9" immediate="true"/>
@@ -85,7 +77,7 @@
                         </p:column>
 
                         <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}">
-                            <h:outputText value="#{dsample.sequencingIndexes.index}" />
+                            <h:outputText value="#{dsample.index.index}" />
                         </p:column>
 
                         <p:column style="width:32px">
@@ -150,20 +142,20 @@
                         <h:outputText value="#{asample.libraryName}" />
                     </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.mode']}" filterBy="#{asample.application.readmode}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.application.readmode}" />
+                    <p:column headerText="#{bundle['newDraggableRunForm.mode']}" filterBy="#{asample.application.readMode}" filterMatchMode="contains">
+                        <h:outputText value="#{asample.application.readMode}" />
                     </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.length']}" filterBy="#{asample.application.readlength}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.application.readlength}" />
+                    <p:column headerText="#{bundle['newDraggableRunForm.length']}" filterBy="#{asample.application.readLength}" filterMatchMode="contains">
+                        <h:outputText value="#{asample.application.readLength}" />
                     </p:column>
 
                     <p:column headerText="#{bundle['newDraggableRunForm.depth']}" filterBy="#{asample.application.depth}" filterMatchMode="contains">
                         <h:outputText value="#{asample.application.depth}" />
                     </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}" filterBy="#{asample.sequencingIndexes.index}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.sequencingIndexes.index}" />
+                    <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}" filterBy="#{asample.index.index}" filterMatchMode="contains">
+                        <h:outputText value="#{asample.index.index}" />
                     </p:column>
                 </p:dataTable>
             </p:fieldset>

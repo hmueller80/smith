@@ -48,7 +48,7 @@ public class Mindex implements Serializable {
      * mismatch allowed, -1 otherwise
      * @since 1.0
      */
-    public int calculateHashSet1(ArrayList<String> indices) {
+    public int calculateHashSet1(List<String> indices) {
         //exclude "none" indexed samples from HashSet calculation
 
         int result = 1;
@@ -89,7 +89,7 @@ public class Mindex implements Serializable {
      * mismatches allowed, -1 otherwise
      * @since 1.0
      */
-    public int calculateHashSet2(ArrayList<String> indices) {
+    public int calculateHashSet2(List<String> indices) {
         //exclude "none" indexed samples from HashSet calculation
 
         int result = 2;
@@ -670,7 +670,7 @@ public class Mindex implements Serializable {
      * @return String - a String indicating the proportion of A/C versus G/T nucleotides for each of the 6 positions
      * @since 1.0
      */
-    public String getLaserBalance(ArrayList<String> list) {
+    public String getLaserBalance(List<String> list) {
         int count = 0;
         //exclude "none" indexed samples from laser balance calculation
         for (String idx : list) {
