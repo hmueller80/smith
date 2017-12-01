@@ -17,6 +17,7 @@ import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import java.util.Date;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
+import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
 
 /**
  *
@@ -122,6 +123,11 @@ public class DTOFactoryImpl implements DTOFactory {
     @Override
     public NewsDTO getNewsDTO(Integer id, String header, String body, Date date){
         return new NewsDTOImpl(id,header,body,date);
+    }
+    
+     @Override
+    public MinimalRunDTO getMinimalRunDTO(Integer id, String flowcell, UserDTO operator){
+        return new MinimalRunDTOImpl(id,flowcell,operator);
     }
 
     @Override

@@ -567,3 +567,17 @@ a.ui-button:active,
 .homePageTabs .ui-tabs-selected{
     border-bottom-color: #bde7f0;
 }
+
+/*.ui-fileupload 
+
+.ui-fileupload-choose Browse button
+.ui-fileupload-upload Upload button
+.ui-fileupload-cancel Cancel button*/
+.ui-fileupload-content {
+    display: none;
+}
+.ui-fileupload .ui-widget-header{
+    background-color: #ffffff;
+    border: none;
+    padding:0;
+}

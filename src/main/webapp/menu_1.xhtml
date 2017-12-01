@@ -5,38 +5,36 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui"> 
 
+    <p:growl id="messages" autoUpdate="true" sticky="true" showDetail="true" />
 
-	<p:growl id="messages" autoUpdate="true" />
+    <p:tabMenu id="topMenu" activeIndex="#{param.i}">
 
+        <p:menuitem value="#{bundle['menu.home']}" outcome="/index.jsf"
+                    icon="ui-icon ui-icon-home">
+            <f:param name="i" value="0" />
+        </p:menuitem>
 
-	<p:tabMenu id="topMenu" activeIndex="#{param.i}">
+        <p:menuitem value="#{bundle['menu.samples']}"
+                    outcome="/Sample/samplesSearch_1.jsf" 
+                    icon="ui-icon ui-icon-search">
+            <f:param name="i" value="1" />
+        </p:menuitem>	
 
-		<p:menuitem value="#{bundle['menu.home']}" outcome="/index.jsf"
-			icon="ui-icon ui-icon-home">
-                     <f:param name="i" value="0" />
-                </p:menuitem>
+        <p:menuitem value="#{bundle['menu.runs']}" 
+                    outcome="/Run/runsSearch_1.jsf"
+                    icon="ui-icon ui-icon-search">
+            <f:param name="i" value="2" />
+        </p:menuitem>     
 
-		<p:menuitem value="#{bundle['menu.samples']}"
-			outcome="/Sample/samplesSearch_1.jsf" 
-                        icon="ui-icon ui-icon-search">
-                     <f:param name="i" value="1" />
-                </p:menuitem>	
-            
-		<p:menuitem value="#{bundle['menu.runs']}" 
-                        outcome="/Run/runsSearch_1.jsf"
-			icon="ui-icon ui-icon-search">
-                     <f:param name="i" value="2" />
-                </p:menuitem>     
-            
-		<p:menuitem value="#{bundle['menu.users']}" outcome="/User/usersSearch.jsf"
-			icon="ui-icon ui-icon-search">
-                     <f:param name="i" value="3" />
-                </p:menuitem>
+        <p:menuitem value="#{bundle['menu.users']}" outcome="/User/usersSearch.jsf"
+                    icon="ui-icon ui-icon-search">
+            <f:param name="i" value="3" />
+        </p:menuitem>
 
-		<p:menuitem value="#{bundle['menu.logout']}"
-			icon="ui-icon ui-icon-arrowreturnthick-1-w"
-			action="#{navigationBean.doLogout}" >
-                     <f:param name="i" value="4" />
-                </p:menuitem>
-	</p:tabMenu>
+        <p:menuitem value="#{bundle['menu.logout']}"
+                    icon="ui-icon ui-icon-arrowreturnthick-1-w"
+                    action="#{navigationBean.doLogout}" >
+            <f:param name="i" value="4" />
+        </p:menuitem>
+    </p:tabMenu>
 </html>

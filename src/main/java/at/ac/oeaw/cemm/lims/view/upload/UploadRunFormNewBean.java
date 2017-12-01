@@ -16,17 +16,17 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
 @ManagedBean(name = "uploadRunFormNewBean")
-@SessionScoped
+@ViewScoped
 public class UploadRunFormNewBean implements Serializable {
 
     private final static String FORM_ID = "sampleTableUploadProcessForm";
@@ -41,7 +41,12 @@ public class UploadRunFormNewBean implements Serializable {
     
     private String destination;
     private String filename;
+    private ValidatedCSV<Set<SampleRunDTO>> parsedCSV;
 
+    public ValidatedCSV<Set<SampleRunDTO>> getParsedCSV() {
+        return parsedCSV;
+    }
+    
     public UploadRunFormNewBean() {
         System.out.println("Initializing UploadRunFormNewBean");
     }
@@ -60,14 +65,39 @@ public class UploadRunFormNewBean implements Serializable {
     }
     
     public void handleFileUpload(FileUploadEvent event) {
+        String messageBoxComponent = "uploadDialogMsg";
+        
         System.out.println("uploading");
-        UploadedFile file = event.getFile();
-        if (file != null) {
-            FacesMessage msg = new FacesMessage("Successful", file.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
+        UploadedFile file = event.getFile();       
         System.out.println("getting data");
         transferFile(file);
+        System.out.println("Parsing data");
+        parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
+        //--------------LOG PARSING STATUS ------------------------------------
+        System.out.println("---------Parsed file " + filename + "----------");
+        System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
+        System.out.println("Errors");
+        for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+            System.out.println(message.getSummary() + ":" + message.getMessage());
+        }
+        System.out.println("Warnings");
+        for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+            System.out.println(message.getSummary() + ":" + message.getMessage());
+        }
+        //----------------------------------------------------------------------
+        
+        if (parsedCSV.getValidationStatus().isFailed()) {
+            for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                System.out.println("Failed validation");
+            }
+        }else{
+            NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+            for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+            }
+        }
+
     }
     
     private void transferFile(UploadedFile file) {
@@ -95,43 +125,27 @@ public class UploadRunFormNewBean implements Serializable {
 
     public void submitSampleRun() {
         if (roleManager.getHasRunAddPermission()) {
-            ValidatedCSV<Set<SampleRunDTO>> parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
+         
+            if (!parsedCSV.getValidationStatus().isFailed()) {
 
-            System.out.println("---------Parsed file " + filename + "----------");
-            System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
-            System.out.println("Errors");
-            for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
-                System.out.println(message.getSummary() + ":" + message.getMessage());
-            }
-            System.out.println("Warnings");
-            for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
-                System.out.println(message.getSummary() + ":" + message.getMessage());
-            }
-
-            if (parsedCSV.getValidationStatus().isFailed()) {
-                for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
-                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
-                    System.out.println("Failed validation");
-                }
-            } else {
                 Set<SampleRunDTO> sampleRuns = parsedCSV.getRequestObj();
 
                 try {
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns,true);
 
-                    for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
-                        NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
-                    }
-                   NgsLimsUtility.setSuccessMessage(FORM_ID, COMPONENT, "Success", "Run form uploaded correctly");
-
+                   NgsLimsUtility.setSuccessMessage(null, null, "Success", "Run form uploaded correctly");
+                   ((DeleteRunBean) FacesContext.getCurrentInstance().getViewRoot().getViewMap().get("deleteRunBean")).init();
+                           
                 } catch (Exception e) {
-                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request", e.getMessage());
+                    NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());
                     System.out.println("Failed upload to DB");
                     e.printStackTrace();
                 }
+            }else{
+                NgsLimsUtility.setFailMessage(null, null, "Error while parsing the request", "Malformed CSV");
             }
         } else {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User role error", "You do not have permission to submit runs.");
+            NgsLimsUtility.setFailMessage(null, null, "User role error", "You do not have permission to submit runs.");
         }
     }
     

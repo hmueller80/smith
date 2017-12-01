@@ -6,7 +6,79 @@
                 template="/template.xhtml">
 
     <ui:define name="runsSearch">
-        <h:form id="runsTableForm">
+        
+        <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="uploadDialogHeader" value="#{uploadRunFormNewBean.filename}"/>
+            </f:facet>
+            <h:form id="uploadDialog">
+                <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Please correct the file and re-upload' : 'Do you want to load data in the DB?'}"/>
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton 
+                        value="Yes" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{!uploadRunFormNewBean.parsedCSV.validationStatus.failed}"
+                        actionListener ="#{uploadRunFormNewBean.submitSampleRun}"
+                        update="uploadDialog deleteDialog runsTableForm"
+                        oncomplete="PF('uploadDialog').hide()"
+                        />
+                    <p:commandButton 
+                        value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Back' : 'No'}" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('uploadDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+         <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="deleteDialogHeader" value="Delete Complete Run"/>
+            </f:facet>
+            <h:form id="deleteDialog">
+
+                <p:messages id="messages" for="deleteDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="Please select a run to delete"/>
+                <br/><br/>
+                <p:selectOneMenu  
+                    converter="genericConverter"
+                    value ="#{deleteRunBean.selectedRun}"
+                    immediate="true"
+                    disabled="#{!deleteRunBean.roleManager.hasUserAddPermission}"
+                    filter="true" 
+                    filterMatchMode="contains">
+                    <f:selectItems 
+                        id="run" 
+                        value="#{deleteRunBean.runsAvailable}" 
+                        var="run" 
+                        itemLabel="#{run.id} - #{run.flowCell} (created by #{run.operator.login})" itemValue="#{run}" />
+                    <p:ajax />
+                </p:selectOneMenu>     
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton 
+                        value="Delete" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{deleteRunBean.roleManager.hasRunAddPermission}"
+                        actionListener ="#{deleteRunBean.deleteRun}"
+                        update="uploadDialog deleteDialog runsTableForm"
+                        oncomplete="PF('deleteDialog').hide()"
+                        />
+                    <p:commandButton 
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('deleteDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        <h:form id="runsTableForm">            
+            
             <p:dataTable id="runsTable" 
                          var="run" 
                          value="#{runsSearchBeanLazy.runDataModel}" 
@@ -28,7 +100,27 @@
                             <h:outputText value="Search all SampleRun fields: " />
                             <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
                         </div>
-                        <div class ="ui-g-3" />
+                        <div class ="ui-g-1" />
+                           <div class ="ui-g-1">
+                            <p:commandButton 
+                                value="Delete" 
+                                icon="ui-icon-trash" 
+                                rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
+                                onclick="PF('deleteDialog').show()"/>
+                        </div>
+                        <div class ="ui-g-1">
+                                <p:fileUpload 
+                                        fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
+                                        label="Upload"
+                                        multiple="false"                                               
+                                        mode="advanced" 
+                                        auto="true"
+                                        sizeLimit="100000000" 
+                                        allowTypes="/(\.|\/)(csv|txt)$/" 
+                                        oncomplete="PF('uploadDialog').show()"
+                                        rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}"
+                                        update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
+                        </div>
                         <div class ="ui-g-1">
                             <p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s">
                                 <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
@@ -107,33 +199,7 @@
             </ui:remove>
             
         </h:form>
-
-
-
-        <p:separator/>
-        <h:outputLink rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}" id="runUploadFormDownload" value="../downloads/examplerunform.csv">
-            <h:outputText value="#{bundle['runs.exampleform']}" />
-        </h:outputLink>
-
-        <h:form id="runTableUploadForm" rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}">
-            <h2>Upload Run Form</h2>
-
-            <p:panelGrid columns="3">
-                <p:fileUpload immediate="true"  id="fu3"  style="margin-top: 10px" 
-                              fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"  
-                              sizeLimit="100000000" 
-                              allowTypes="/(\.|\/)(csv|txt)$/" 
-                              mode="advanced"  
-                              update="ufilename">
-                </p:fileUpload>
-
-                <h:outputText id="ufilename"  value="#{uploadRunFormNewBean.filename}" ></h:outputText>
-
-            </p:panelGrid>
-            <p:commandButton id="RunUploadProcessButton" action="#{uploadRunFormNewBean.submitSampleRun()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
-            </p:commandButton>
-        </h:form>
-
+    
     </ui:define>
 
 </ui:composition>

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
+import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
 
 /**
  *
@@ -121,5 +122,10 @@ public class DTOMapper {
         
         return myDTOFactory.getNewsDTO(news.getId(), news.getHeader(), news.getBody(), news.getDate());
     }
+     
+     protected MinimalRunDTO getCompleteRunDTOFromEntity(Integer id, String flowCell, UserEntity operatorEntity){
+         UserDTO operator = getUserDTOFromEntity(operatorEntity);
+         return myDTOFactory.getMinimalRunDTO(id, flowCell, operator);
+     }
 
 }

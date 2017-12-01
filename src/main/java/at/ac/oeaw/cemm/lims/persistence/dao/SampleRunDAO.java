@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,9 +23,11 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 /**
  *
@@ -266,6 +269,24 @@ public class SampleRunDAO {
                 .add(Restrictions.eq("flowcell", FCID))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return query.list();
+    }
+
+    public List<MinimalRunEntity> getRunsMinimalInfo() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleRunEntity.class);
+        
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("id.runId").as("id"));
+        projList.add(Projections.property("flowcell").as("flowCell"));
+        projList.add(Projections.property("user").as("operator"));
+        query.addOrder(Order.desc("id.runId"));
+
+        query.setProjection(Projections.distinct(projList))
+                .setResultTransformer(Transformers.aliasToBean(MinimalRunEntity.class));
+        
+        
+        return query.list();
+
     }
     
 }

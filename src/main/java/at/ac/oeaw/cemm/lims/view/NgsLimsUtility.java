@@ -34,7 +34,7 @@ public class NgsLimsUtility {
         message.setSummary(summary);
         message.setDetail(details);
         if (formId != null) {
-            context.addMessage(formId + ":" + component, message);
+            context.addMessage(formId, message);
         } else {
             context.addMessage(null, message);
         }
@@ -57,7 +57,7 @@ public class NgsLimsUtility {
         message.setSummary(summary);
         message.setDetail(details);
         if (formId != null) {
-            context.addMessage(formId + ":" + component, message);
+            context.addMessage(formId, message);
         } else {
             context.addMessage(null, message);
         }
@@ -80,7 +80,7 @@ public class NgsLimsUtility {
         message.setSummary(summary);
         message.setDetail(details);
         if (formId != null) {
-            context.addMessage(formId + ":" + component, message);
+            context.addMessage(formId, message);
         } else {
             context.addMessage(null, message);
         }

@@ -22,8 +22,10 @@ import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import java.util.HashSet;
 import java.util.Set;
+import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
 
 
 /**
@@ -328,6 +330,38 @@ public class LazyRunService implements RunService {
         
         return new PersistedEntityReceipt(sampleRunEntity.getId().getRunId(), sampleEntity.getName());
 
+    }
+
+    @Override
+    public List<MinimalRunDTO> getAllRunsMinimalInfo() {
+        final List<MinimalRunDTO> runs = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<MinimalRunEntity> runEntities = runDAO.getRunsMinimalInfo();
+
+                    if (runEntities != null) {
+                        for (MinimalRunEntity entity : runEntities) {
+                            runs.add(myDTOMapper.getCompleteRunDTOFromEntity(entity.getId(), entity.getFlowCell(), entity.getOperator()));
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Runs retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+       
+
+        return runs;
     }
 
   
