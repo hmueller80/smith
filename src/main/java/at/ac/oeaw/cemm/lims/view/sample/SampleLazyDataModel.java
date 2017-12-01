@@ -62,7 +62,12 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
         }
         
         this.setRowCount(services.getSampleService().getSamplesCount(filters));
-        List<SampleDTO> result =  services.getSampleService().getSamples(first, pageSize, sortField, ascending, filters);
+        List<SampleDTO> result;
+        if (pageSize==this.getRowCount()){
+            result =  services.getSampleService().getSamples(sortField, ascending, filters);
+        }else{
+            result =  services.getSampleService().getSamples(first, pageSize, sortField, ascending, filters);
+        }
         return result;
     }
 

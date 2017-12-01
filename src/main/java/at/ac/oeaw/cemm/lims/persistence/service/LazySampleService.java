@@ -94,7 +94,37 @@ public class LazySampleService implements SampleService {
                 @Override
                 public Void execute() throws Exception {
 
-                    List<SampleEntity> sampleEntities = sampleDAO.getSamples(first, pageSize, sortField, ascending, filters);
+                    List<SampleEntity> sampleEntities = sampleDAO.getSamplesPaginated(first, pageSize, sortField, ascending, filters);
+
+                    for (SampleEntity entity : sampleEntities) {
+                        samples.add(myDTOMapper.getSampleDTOfromEntity(entity));
+                    }
+                    
+                    return null;
+                }
+
+            });
+            System.out.println("Samples retrieval took " + (System.currentTimeMillis() - currentTime));
+
+            return samples;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return samples;
+    }
+    
+    @Override
+    public List<SampleDTO> getSamples(final String sortField, final boolean ascending, final Map<String, Object> filters) {
+        final List<SampleDTO> samples = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<SampleEntity> sampleEntities = sampleDAO.getAllSamples(sortField, ascending, filters);
 
                     for (SampleEntity entity : sampleEntities) {
                         samples.add(myDTOMapper.getSampleDTOfromEntity(entity));

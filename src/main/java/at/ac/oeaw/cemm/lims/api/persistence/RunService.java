@@ -21,6 +21,8 @@ public interface RunService {
 
     public List<SampleRunDTO> getRuns(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters);
     
+    public List<SampleRunDTO> getRuns(String sortField, boolean ascending, Map<String, Object> filters);
+  
     public Integer getRunsCount(Map<String, Object> filters);
 
     public SampleRunDTO getSampleRunById(int runId, int samId);

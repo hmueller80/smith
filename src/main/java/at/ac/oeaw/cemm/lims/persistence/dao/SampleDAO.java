@@ -73,7 +73,7 @@ public class SampleDAO {
         return result;
     }
 
-    public List<SampleEntity> getSamples(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters)
+    public List<SampleEntity> getSamplesPaginated(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters)
             throws HibernateException {
 
         List<SampleEntity> resultList = null;
@@ -89,6 +89,27 @@ public class SampleDAO {
         query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleEntity.class)
                 .add(Restrictions.in("id", idsToFetch))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        if (sortField != null) {
+            if (ascending) {
+                query.addOrder(Order.asc(sortField));
+            } else {
+                query.addOrder(Order.desc(sortField));
+            }
+        }
+
+        resultList = (List<SampleEntity>) query.list();
+
+        return resultList;
+    }
+    
+     public List<SampleEntity> getAllSamples(String sortField, boolean ascending, Map<String, Object> filters)
+            throws HibernateException {
+
+        List<SampleEntity> resultList = null;
+
+        Criteria query = assembleQuery(sortField,ascending,filters)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        
         if (sortField != null) {
             if (ascending) {
                 query.addOrder(Order.asc(sortField));

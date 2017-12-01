@@ -23,13 +23,20 @@
                          sortOrder="descending"
                          lazy="true">
 
-                <f:facet name="header">            
+                <f:facet name="header">
                     <div class="ui-g">
-                        <div class ="ui-g-12">
+                        <div class ="ui-g-4"/>
+                        <div class ="ui-g-4">
                             <h:outputText value="Search all Sample fields: " />
                             <p:inputText id="globalFilter" onkeyup="PF('samplesTable').filter()" style="width:150px" placeholder="Enter keyword"/>
                         </div>
-                    </div>
+                        <div class ="ui-g-3" />
+                        <div class ="ui-g-1">
+                            <p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="false" />
+                            </p:commandButton>
+                        </div>
+                    </div>                      
                 </f:facet> 
 
                 <p:column id="idSamColumn" filterBy="#{sample.id}"                     
@@ -97,21 +104,7 @@
                 </p:column>
 
             </p:dataTable>
-            <h:panelGrid columns="2">
-                <p:panel header="#{bundle['export.All']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="false" />
-                    </h:commandLink>
-
-                </p:panel>
-                <p:panel header="#{bundle['export.Page']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="true" />
-                    </h:commandLink>
-                </p:panel>
-            </h:panelGrid>
+          
             <ui:remove>
             <p:commandButton action="#{singleSampleBean.loadNew}" 
                              value="#{bundle['button.text.new.sample']}" 

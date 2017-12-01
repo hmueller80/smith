@@ -23,11 +23,17 @@
 
                 <f:facet name="header">             
                     <div class="ui-g">
-                        <div class ="ui-g-12">
+                        <div class ="ui-g-4"/>
+                        <div class ="ui-g-4">
                             <h:outputText value="Search all SampleRun fields: " />
                             <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
                         </div>
-
+                        <div class ="ui-g-3" />
+                        <div class ="ui-g-1">
+                            <p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
+                            </p:commandButton>
+                        </div>
                     </div>                      
                 </f:facet>
 
@@ -93,23 +99,7 @@
 
 
             </p:dataTable>
-            <h:panelGrid columns="2">
-                <p:panel header="#{bundle['export.All']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
-                    </h:commandLink>
-
-                </p:panel>
-                <p:panel header="#{bundle['export.Page']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="true" />
-                    </h:commandLink>
-
-                </p:panel>
-
-            </h:panelGrid>    
+      
             
             <ui:remove>
                  <h3> #{bundle['runs.hint']} </h3>

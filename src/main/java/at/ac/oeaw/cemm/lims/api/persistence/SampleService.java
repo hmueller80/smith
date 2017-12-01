@@ -26,6 +26,8 @@ public interface SampleService {
     SampleDTO getFullSampleById(final int sampleId);
 
     List<SampleDTO> getSamples(final int first, final int pageSize, final String sortField, final boolean ascending, final Map<String, Object> filters);
+    
+    List<SampleDTO> getSamples(final String sortField, final boolean ascending, final Map<String, Object> filters);
 
     int getSamplesCount(final Map<String, Object> filters);
 

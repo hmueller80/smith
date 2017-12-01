@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunIdEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,8 +83,8 @@ public class SampleRunDAO {
         return result;
     }
 
-    public List<SampleRunEntity> getRuns(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters) {
-        List<SampleRunEntity> resultList = null;
+    public List<SampleRunEntity> getRunsPaginated(int first, int pageSize, String sortField, boolean ascending, Map<String, Object> filters) {
+        List<SampleRunEntity> resultList = new LinkedList<>();
 
         //1. Get the ids of the distinct runs satisfying the query
         Criteria query = assembleQuery(sortField,ascending,filters);
@@ -91,12 +92,12 @@ public class SampleRunDAO {
         query.setFirstResult(first);
         query.setMaxResults(pageSize);
         List idsToFetch = query.list();
-        
+
         //2. Fetch the distinct sample runs in the query
         query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleRunEntity.class)
                 .add(Restrictions.in("id", idsToFetch))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
+
         if (sortField != null) {
             if (ascending) {
                 query.addOrder(Order.asc(sortField));
@@ -104,9 +105,31 @@ public class SampleRunDAO {
                 query.addOrder(Order.desc(sortField));
             }
         }
-          
+
         resultList = (List<SampleRunEntity>) query.list();
-        
+
+
+        System.out.println("Returning "+resultList.size()+" sample runs");
+        return resultList;
+    }
+    
+     public List<SampleRunEntity> getAllRuns(String sortField, boolean ascending, Map<String, Object> filters) {
+        List<SampleRunEntity> resultList = new LinkedList<>();
+
+        //1. Get the ids of the distinct runs satisfying the query
+        Criteria query = assembleQuery(sortField,ascending,filters);
+        query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        if (sortField != null) {
+            if (ascending) {
+                query.addOrder(Order.asc(sortField));
+            } else {
+                query.addOrder(Order.desc(sortField));
+            }
+        }
+
+        resultList = (List<SampleRunEntity>) query.list();
+
 
         System.out.println("Returning "+resultList.size()+" sample runs");
         return resultList;
@@ -162,13 +185,15 @@ public class SampleRunDAO {
                             switch (filteredField) {
                                 case "id.runId":
                                 case "id.samId":
-                                    globalFiltersCriterion.add(Restrictions.eq(filteredField, Integer.parseInt((String) filters.get(filteredField))));
+                                    globalFiltersCriterion.add(Restrictions.eq(filteredField, Integer.parseInt((String)globalFilter)));                                                                        
                                     break;
                                 case "isControl":
-                                    globalFiltersCriterion.add(Restrictions.eq(filteredField, Boolean.parseBoolean((String) filters.get(filteredField))));
+                                    if (globalFilter.equals("true") || globalFilter.equals("false")){
+                                        globalFiltersCriterion.add(Restrictions.eq(filteredField, Boolean.parseBoolean((String)globalFilter)));
+                                    }
                                     break;
                                 default:
-                                    globalFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
+                                    globalFiltersCriterion.add(Restrictions.like(filteredField,globalFilter, MatchMode.ANYWHERE));
                                     break;
                             }
                         }catch(NumberFormatException e){}
@@ -186,7 +211,7 @@ public class SampleRunDAO {
                 Criterion userCriterion = Restrictions.in("sampleUser.id", restrictedUsers);
                 filterCriterion = Restrictions.conjunction().add(filterCriterion).add(userCriterion);
             }
-  
+            
             query.add(filterCriterion);
         }
         
@@ -197,7 +222,7 @@ public class SampleRunDAO {
                 query.addOrder(Order.desc(sortField));
             }
         }
-   
+
         return query;
     }
 

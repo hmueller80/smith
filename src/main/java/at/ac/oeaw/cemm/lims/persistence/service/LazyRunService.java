@@ -74,7 +74,7 @@ public class LazyRunService implements RunService {
                 @Override
                 public Void execute() throws Exception {
 
-                    List<SampleRunEntity> runEntities = runDAO.getRuns(first, pageSize, sortField, ascending, filters);
+                    List<SampleRunEntity> runEntities = runDAO.getRunsPaginated(first, pageSize, sortField, ascending, filters);
 
                     if (runEntities != null) {
                         for (SampleRunEntity entity : runEntities) {
@@ -95,6 +95,36 @@ public class LazyRunService implements RunService {
 
         return runs;
     }
+    
+    public List<SampleRunDTO> getRuns(final String sortField, final boolean ascending, final Map<String, Object> filters) {
+        final List<SampleRunDTO> runs = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<SampleRunEntity> runEntities = runDAO.getAllRuns(sortField, ascending, filters);
+
+                    if (runEntities != null) {
+                        for (SampleRunEntity entity : runEntities) {
+                            runs.add(myDTOMapper.getSampleRunDTOFromEntity(entity));
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Runs retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+       
+        return runs;
+    }
 
     @Override
     public Integer getRunsCount(final Map<String, Object> filters) {
@@ -109,7 +139,7 @@ public class LazyRunService implements RunService {
                     return runDAO.getRunsCount(filters);
                 }
             });
-            System.out.println("Samples count took "+(System.currentTimeMillis()-currentTime));
+            System.out.println("Runs count took "+(System.currentTimeMillis()-currentTime));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,6 +3,7 @@ package at.ac.oeaw.cemm.lims.persistence.entity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,7 +30,7 @@ public class LaneEntity implements Serializable {
     @Column(name = "lane_name")
     private String laneName;
     
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name = "run_id", referencedColumnName = "run_id"),
         @JoinColumn(name = "sam_id", referencedColumnName = "sam_id")})
