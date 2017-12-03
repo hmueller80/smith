@@ -279,6 +279,8 @@ public class SampleRunDAO {
         projList.add(Projections.property("id.runId").as("id"));
         projList.add(Projections.property("flowcell").as("flowCell"));
         projList.add(Projections.property("user").as("operator"));
+        projList.add(Projections.property("runFolder").as("runFolder"));
+
         query.addOrder(Order.desc("id.runId"));
 
         query.setProjection(Projections.distinct(projList))

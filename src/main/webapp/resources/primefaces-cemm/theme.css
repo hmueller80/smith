@@ -571,7 +571,6 @@ a.ui-button:active,
 /*.ui-fileupload 
 
 .ui-fileupload-choose Browse button
-.ui-fileupload-upload Upload button
 .ui-fileupload-cancel Cancel button*/
 .ui-fileupload-content {
     display: none;
@@ -580,4 +579,14 @@ a.ui-button:active,
     background-color: #ffffff;
     border: none;
     padding:0;
+}
+.ui-fileupload .ui-button {
+	margin:0 !important;
+} 
+.run-detail-title {
+   font-family: 'sysbold';
+   color: #40b9d4;
+   text-align: center;
+   font-size: 4vmin;
+   display: block;
 }

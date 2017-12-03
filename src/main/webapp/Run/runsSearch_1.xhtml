@@ -93,47 +93,39 @@
                          sortOrder="descending"
                          lazy="true">
 
-                <f:facet name="header">             
-                    <div class="ui-g">
-                        <div class ="ui-g-4"/>
-                        <div class ="ui-g-4">
-                            <h:outputText value="Search all SampleRun fields: " />
-                            <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()" style="width:150px" placeholder="Enter keyword"/>
-                        </div>
-                        <div class ="ui-g-1" />
-                           <div class ="ui-g-1">
-                            <p:commandButton 
-                                value="Delete" 
-                                icon="ui-icon-trash" 
-                                rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
-                                onclick="PF('deleteDialog').show()"/>
-                        </div>
-                        <div class ="ui-g-1">
-                                <p:fileUpload 
-                                        fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
-                                        label="Upload"
-                                        multiple="false"                                               
-                                        mode="advanced" 
-                                        auto="true"
-                                        sizeLimit="100000000" 
-                                        allowTypes="/(\.|\/)(csv|txt)$/" 
-                                        oncomplete="PF('uploadDialog').show()"
-                                        rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}"
-                                        update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
-                        </div>
-                        <div class ="ui-g-1">
-                            <p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s">
-                                <p:dataExporter type="csv" target="runsTable" fileName="Runs" pageOnly="false" />
-                            </p:commandButton>
-                        </div>
-                    </div>                      
-                </f:facet>
+                <f:facet name="header">
+					<div class="ui-g">
+						<div class="ui-g-4" />
+						<div class="ui-g-4">
+							<h:outputText value="Search all SampleRun fields: " />
+							<p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()"
+								style="width:150px" placeholder="Enter keyword" />
+						</div>
+						<div class="ui-g-4">
+							<p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
+								rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
+								onclick="PF('deleteDialog').show()" />
+							<p:fileUpload style="float:right;margin:1px"
+								fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
+								label="Upload" multiple="false" mode="advanced" auto="true"
+								sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/"
+								oncomplete="PF('uploadDialog').show()"
+								rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}"
+								update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
+							<p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
+								icon="ui-icon-arrowthick-1-s">
+								<p:dataExporter type="csv" target="runsTable" fileName="Runs"
+									pageOnly="false" />
+							</p:commandButton>
+						</div>
+					</div>
+				</f:facet>
 
                 <p:column id="idRunsColumn"                 
                           headerText="#{bundle['runs.run.id']}"
                           filterBy="#{run.id.runId}"
                           sortBy="#{run.id.runId}">
-                        <h:link  outcome="runDetails_1.jsf" value="#{run.runId}">
+                        <h:link  outcome="runDetails.jsf" value="#{run.runId}">
                             <f:param name="rid" value="#{run.runId}"/>
                         </h:link>
                 </p:column>

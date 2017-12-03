@@ -12,7 +12,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import javax.annotation.PostConstruct;
 
@@ -28,8 +28,8 @@ public class DeleteRunBean {
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
-    private MinimalRunDTO selectedRun = null;
-    private  List<MinimalRunDTO> runs;
+    private RunDTO selectedRun = null;
+    private  List<RunDTO> runs;
     
     @PostConstruct
     public void init() {
@@ -45,15 +45,15 @@ public class DeleteRunBean {
         this.roleManager = roleManager;
     }
 
-    public List<MinimalRunDTO> getRunsAvailable() {
+    public List<RunDTO> getRunsAvailable() {
         return runs;
     }
 
-    public MinimalRunDTO getSelectedRun() {
+    public RunDTO getSelectedRun() {
         return selectedRun;
     }
 
-    public void setSelectedRun(MinimalRunDTO selectedRun) {
+    public void setSelectedRun(RunDTO selectedRun) {
         this.selectedRun = selectedRun;
         System.out.println("Selected run is "+selectedRun.getId());
     }

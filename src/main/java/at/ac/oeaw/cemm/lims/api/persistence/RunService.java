@@ -10,7 +10,7 @@ import java.util.Map;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.Set;
-import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
 
 /**
  *
@@ -36,6 +36,8 @@ public interface RunService {
 
     public List<SampleRunDTO> getRunsByFlowCell(String FCID);
 
-    public List<MinimalRunDTO> getAllRunsMinimalInfo();
+    public List<RunDTO> getAllRunsMinimalInfo();
+    
+    public RunDTO getAllRunInfo(Integer runId);
     
 }

@@ -18,12 +18,13 @@ import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity;
 import java.util.HashSet;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
 
 /**
  *
@@ -123,9 +124,14 @@ public class DTOMapper {
         return myDTOFactory.getNewsDTO(news.getId(), news.getHeader(), news.getBody(), news.getDate());
     }
      
-     protected MinimalRunDTO getCompleteRunDTOFromEntity(Integer id, String flowCell, UserEntity operatorEntity){
-         UserDTO operator = getUserDTOFromEntity(operatorEntity);
-         return myDTOFactory.getMinimalRunDTO(id, flowCell, operator);
+     protected RunDTO getMinimalRunDTOFromEntity(MinimalRunEntity runEntity){
+         UserDTO operator = getUserDTOFromEntity(runEntity.getOperator());
+         return myDTOFactory.getRunDTO(runEntity.getId(), runEntity.getFlowCell(), operator, runEntity.getRunFolder() );
      }
+     
+     protected RunDTO getMinimalRunDTO(UserDTO operator, Integer runId, String flowCell, String runFolder){
+         return myDTOFactory.getRunDTO(runId, flowCell, operator, runFolder);
+     }
+
 
 }

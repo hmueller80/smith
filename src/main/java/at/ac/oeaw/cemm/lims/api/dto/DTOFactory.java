@@ -44,7 +44,7 @@ public interface DTOFactory {
 
     UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole);
     
-    MinimalRunDTO getMinimalRunDTO(Integer id, String flowcell, UserDTO operator);
+    RunDTO getRunDTO(Integer id, String flowcell, UserDTO operator, String runFolder);
 
     public NewsDTO createEmptyNews();
     

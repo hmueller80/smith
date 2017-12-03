@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.inject.Inject;;
+import javax.inject.Inject;
 import org.primefaces.event.DragDropEvent;
 
 

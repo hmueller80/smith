@@ -13,6 +13,7 @@ public class MinimalRunEntity {
     Integer id;
     UserEntity operator;
     String flowCell;
+	private String runFolder;
 
     public Integer getId() {
         return id;
@@ -37,6 +38,14 @@ public class MinimalRunEntity {
     public void setFlowCell(String flowCell) {
         this.flowCell = flowCell;
     }
+
+    public void setRunFolder(String runFolder) {
+		this.runFolder=runFolder;
+	}
+
+	public String getRunFolder() {
+		return this.runFolder;
+	}
 
  
     

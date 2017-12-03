@@ -44,7 +44,7 @@ Contributor(s):
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</property>
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/smithdemo?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngslims?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">smith</property>
     <property name="hibernate.connection.password">smith</property>
     <!--

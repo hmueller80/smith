@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LaneDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
@@ -25,7 +26,7 @@ import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import java.util.HashSet;
 import java.util.Set;
-import at.ac.oeaw.cemm.lims.api.dto.MinimalRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
 
 
 /**
@@ -333,8 +334,8 @@ public class LazyRunService implements RunService {
     }
 
     @Override
-    public List<MinimalRunDTO> getAllRunsMinimalInfo() {
-        final List<MinimalRunDTO> runs = new LinkedList<>();
+    public List<RunDTO> getAllRunsMinimalInfo() {
+        final List<RunDTO> runs = new LinkedList<>();
 
         try {
             Long currentTime = System.currentTimeMillis();
@@ -346,7 +347,7 @@ public class LazyRunService implements RunService {
 
                     if (runEntities != null) {
                         for (MinimalRunEntity entity : runEntities) {
-                            runs.add(myDTOMapper.getCompleteRunDTOFromEntity(entity.getId(), entity.getFlowCell(), entity.getOperator()));
+                            runs.add(myDTOMapper.getMinimalRunDTOFromEntity(entity));
                         }
                     }
 
@@ -364,5 +365,36 @@ public class LazyRunService implements RunService {
         return runs;
     }
 
+	@Override
+	public RunDTO getAllRunInfo(final Integer runId) {
+        try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RunDTO>() {
+                @Override
+                public RunDTO execute() throws Exception {
+                		RunDTO result = null;
+                		
+                    List<SampleRunEntity> sampleRuns = runDAO.getSampleRunsById(runId);
+                    if (sampleRuns!=null){
+                        for (SampleRunEntity sampleRun: sampleRuns){
+                        		if (result==null) {
+                        			UserDTO operator = myDTOMapper.getUserDTOFromEntity(sampleRun.getUser());
+                        			result = myDTOMapper.getMinimalRunDTO(operator, runId, sampleRun.getFlowcell(), sampleRun.getRunFolder());
+                        		}
+                        		for (LaneEntity lane: sampleRun.getLanes()) {
+                        			result.addSample(lane.getLaneName(), myDTOMapper.getSampleDTOfromEntity(sampleRun.getsample()));
+                        		}
+                        }
+                    }
+                    
+                    return result;
+                }
+
+            });
+        } catch (Exception e) {
+        		e.printStackTrace();
+            return null;
+        }
+ 
+	}
   
 }
