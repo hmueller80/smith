@@ -56,6 +56,7 @@ public class SingleRunBean {
 					this.flowcell = sampleRun.getFlowcell();
 					this.runFolder = sampleRun.getRunFolder();
 					this.operator = sampleRun.getOperator();
+					firstResult = false;
 				}
 				for (String lane: sampleRun.getLanes()) {
 					allSamples.add(new SingleRunTableRow(lane,sampleRun.getSample().getLibraryName(),sampleRun.getSample()));
