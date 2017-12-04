@@ -16,7 +16,8 @@
                 <p:outputLabel value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Please correct the file and re-upload' : 'Do you want to load data in the DB?'}"/>
                 <br /><br/>
                 <div style="width:100%;text-align: center;">
-                    <p:commandButton 
+                    <p:commandButton
+                        widgetVar='confirmUploadButton'
                         value="Yes" 
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
@@ -24,8 +25,10 @@
                         actionListener ="#{uploadRunFormNewBean.submitSampleRun}"
                         update="uploadDialog deleteDialog runsTableForm"
                         oncomplete="PF('uploadDialog').hide()"
+                         onclick="PF('confirmUploadButton').disable();PF('cancelUploadButton').disable()"
                         />
                     <p:commandButton 
+                        widgetVar='cancelUploadButton'
                         value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Back' : 'No'}" 
                         styleClass="ui-confirmdialog-no" 
                         icon="ui-icon-close" 
@@ -59,7 +62,8 @@
                 </p:selectOneMenu>     
                 <br /><br/>
                 <div style="width:100%;text-align: center;">
-                    <p:commandButton 
+                    <p:commandButton
+                        widgetVar='confirmDeleteButton'
                         value="Delete" 
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
@@ -67,8 +71,11 @@
                         actionListener ="#{deleteRunBean.deleteRun}"
                         update="uploadDialog deleteDialog runsTableForm"
                         oncomplete="PF('deleteDialog').hide()"
+                        onclick="PF('confirmDeleteButton').disable();PF('cancelDeleteButton').disable()"
+
                         />
-                    <p:commandButton 
+                    <p:commandButton
+                        widgetVar='cancelDeleteButton'
                         value="Cancel" 
                         styleClass="ui-confirmdialog-no" 
                         icon="ui-icon-close" 

@@ -134,7 +134,6 @@ public class UploadRunFormNewBean implements Serializable {
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns,true);
 
                    NgsLimsUtility.setSuccessMessage(null, null, "Success", "Run form uploaded correctly");
-                   ((DeleteRunBean) FacesContext.getCurrentInstance().getViewRoot().getViewMap().get("deleteRunBean")).init();
                            
                 } catch (Exception e) {
                     NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());

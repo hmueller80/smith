@@ -15,11 +15,18 @@
 						styleClass="run-detail-title" />
 				</div>
 				<div class="ui-g-4">
+                                    <h:form>
 					<p:commandButton style="float:right;margin:1px" value="Delete Run"
 						icon="ui-icon-trash"
 						rendered="#{singleRunBean.roleManager.hasRunAddPermission}"
-						action="#{singleRunBean.deleteRun}" />
-
+                                                action="#{singleRunBean.deleteRun}">
+                                                <p:confirm header="Confirmation" message="Are you sure to delete run #{singleRunBean.runId}?" icon="ui-icon-alert" />
+                                        </p:commandButton>
+                                        <p:confirmDialog global="true">
+                                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                        </p:confirmDialog>
+                                    </h:form>
 				</div>
 			</div>
 			

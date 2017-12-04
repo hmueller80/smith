@@ -9,7 +9,7 @@ package at.ac.oeaw.cemm.lims.view.user;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.HashMap;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -22,7 +22,7 @@ import javax.faces.convert.FacesConverter;
 @FacesConverter(value = "genericConverter")
 public class PickListConverter implements Converter {
 
-    private static Map<Object, String> entities = new WeakHashMap<Object, String>();
+    private static Map<Object, String> entities = new HashMap<Object, String>();
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object entity) {

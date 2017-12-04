@@ -33,8 +33,7 @@ public class DeleteRunBean {
     
     @PostConstruct
     public void init() {
-        runs =services.getRunService().getAllRunsMinimalInfo();
-        selectedRun = runs.get(0);
+        selectedRun = services.getRunService().getAllRunsMinimalInfo().get(0);
     }
     
     public NewRoleManager getRoleManager() {
@@ -46,7 +45,7 @@ public class DeleteRunBean {
     }
 
     public List<RunDTO> getRunsAvailable() {
-        return runs;
+        return services.getRunService().getAllRunsMinimalInfo();
     }
 
     public RunDTO getSelectedRun() {
