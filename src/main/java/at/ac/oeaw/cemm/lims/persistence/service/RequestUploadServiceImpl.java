@@ -8,7 +8,6 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
@@ -45,7 +44,7 @@ public class RequestUploadServiceImpl implements UploadService {
         TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
             @Override
             public Void execute() throws Exception {
-                UserEntity user = userDAO.getUserByLogin(request.getRequestor());
+                UserEntity user = userDAO.getUserByLogin(request.getRequestor().getLogin());
                 if (user == null) {
                     throw new Exception("User with login " + request.getRequestor() + " not found in DB");
                 }

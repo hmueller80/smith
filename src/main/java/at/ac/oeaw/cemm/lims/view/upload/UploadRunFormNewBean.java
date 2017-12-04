@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -29,10 +31,6 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class UploadRunFormNewBean implements Serializable {
 
-    private final static String FORM_ID = "sampleTableUploadProcessForm";
-    private final static String COMPONENT = "RequestUploadProcessButton";
-
-
     @ManagedProperty("#{newRoleManager}")
     protected NewRoleManager roleManager;
 
@@ -41,7 +39,7 @@ public class UploadRunFormNewBean implements Serializable {
     
     private String destination;
     private String filename;
-    private ValidatedCSV<Set<SampleRunDTO>> parsedCSV;
+    private ValidatedCSV<Set<SampleRunDTO>> parsedCSV=null;
 
     public ValidatedCSV<Set<SampleRunDTO>> getParsedCSV() {
         return parsedCSV;
@@ -66,61 +64,73 @@ public class UploadRunFormNewBean implements Serializable {
     
     public void handleFileUpload(FileUploadEvent event) {
         String messageBoxComponent = "uploadDialogMsg";
-        
-        System.out.println("uploading");
-        UploadedFile file = event.getFile();       
-        System.out.println("getting data");
-        transferFile(file);
-        System.out.println("Parsing data");
-        parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
-        //--------------LOG PARSING STATUS ------------------------------------
-        System.out.println("---------Parsed file " + filename + "----------");
-        System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
-        System.out.println("Errors");
-        for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
-            System.out.println(message.getSummary() + ":" + message.getMessage());
-        }
-        System.out.println("Warnings");
-        for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
-            System.out.println(message.getSummary() + ":" + message.getMessage());
-        }
-        //----------------------------------------------------------------------
-        
-        if (parsedCSV.getValidationStatus().isFailed()) {
+
+        if (roleManager.getHasRunAddPermission()) {
+
+            System.out.println("uploading");
+            UploadedFile file = event.getFile();
+            if (file == null) {
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, "File upload", "the File is null");
+                return;
+            }
+            System.out.println("getting data");
+            try {
+                transferFile(file);
+            } catch (Exception ex) {
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, "File transfer", "Error while transfering the file: " + ex.getMessage());
+                ex.printStackTrace();
+                return;
+            }
+            System.out.println("Parsing data");
+            parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
+            //--------------LOG PARSING STATUS ------------------------------------
+            System.out.println("---------Parsed file " + filename + "----------");
+            System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
+            System.out.println("Errors");
             for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
-                NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
-                System.out.println("Failed validation");
+                System.out.println(message.getSummary() + ":" + message.getMessage());
             }
-        }else{
-            NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+            System.out.println("Warnings");
             for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
-                NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                System.out.println(message.getSummary() + ":" + message.getMessage());
             }
+            //----------------------------------------------------------------------
+
+            if (parsedCSV.getValidationStatus().isFailed()) {
+                for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+                    NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                    System.out.println("Failed validation");
+                }
+            } else {
+                NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+                for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                    NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                }
+            }
+        } else {
+            NgsLimsUtility.setFailMessage(messageBoxComponent, null, "User role error", "You do not have permission to submit runs.");
         }
 
     }
     
-    private void transferFile(UploadedFile file) {
+    private void transferFile(UploadedFile file) throws Exception {
         //writes uploaded file to upload directory
         //String fileName = file.getFileName();
         String fileName = (new File(file.getFileName())).getName();
         filename = fileName;
-        try {
-            InputStream in = file.getInputstream();
-            OutputStream out = new FileOutputStream(new File(destination + fileName));
 
-            int reader = 0;
-            byte[] bytes = new byte[(int) file.getSize()];
-            while ((reader = in.read(bytes)) != -1) {
-                out.write(bytes, 0, reader);
-            }
-            in.close();
-            out.flush();
-            out.close();
+        InputStream in = file.getInputstream();
+        OutputStream out = new FileOutputStream(new File(destination + fileName));
 
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        int reader = 0;
+        byte[] bytes = new byte[(int) file.getSize()];
+        while ((reader = in.read(bytes)) != -1) {
+            out.write(bytes, 0, reader);
         }
+        in.close();
+        out.flush();
+        out.close();
+
     }
 
     public void submitSampleRun() {

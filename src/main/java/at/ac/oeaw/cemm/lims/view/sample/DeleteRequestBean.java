@@ -3,38 +3,38 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.oeaw.cemm.lims.view.upload;
+package at.ac.oeaw.cemm.lims.view.sample;
 
+import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
+import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
-import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
-import javax.annotation.PostConstruct;
 
 /**
  *
  * @author dbarreca
  */
-@ManagedBean(name="deleteRunBean")
+@ManagedBean(name="deleteRequestBean")
 @ViewScoped
-public class DeleteRunBean {
+public class DeleteRequestBean {
     @Inject ServiceFactory services;
-    
+
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
-    private RunDTO selectedRun = null;
+    private RequestDTO selectedRequest = null;
     
     @PostConstruct
     public void init() {
-        selectedRun = services.getRunService().getAllRunsMinimalInfo().get(0);
+        selectedRequest = services.getSampleService().getDeleatableRequests().get(0);
     }
-    
+
     public NewRoleManager getRoleManager() {
         return roleManager;
     }
@@ -42,28 +42,27 @@ public class DeleteRunBean {
     public void setRoleManager(NewRoleManager roleManager) {
         this.roleManager = roleManager;
     }
-
-    public List<RunDTO> getRunsAvailable() {
-        return services.getRunService().getAllRunsMinimalInfo();
+    
+      public List<RequestDTO> getRequestsAvailable() {
+        return services.getSampleService().getDeleatableRequests();
     }
 
-    public RunDTO getSelectedRun() {
-        return selectedRun;
+    public RequestDTO getSelectedRequest() {
+        return selectedRequest;
     }
 
-    public void setSelectedRun(RunDTO selectedRun) {
-        this.selectedRun = selectedRun;
-        System.out.println("Selected run is "+selectedRun.getId());
+    public void setSelectedRequest(RequestDTO selectedRequest) {
+        this.selectedRequest = selectedRequest;
+        System.out.println("Selected request is "+selectedRequest.getRequestId());
     }
     
-    public void deleteRun() {
+    public void deleteRequest() {
         try{
-            services.getRunService().bulkDeleteRun(selectedRun.getId());
-            NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted run for flowcell "+selectedRun.getFlowCell()+"("+selectedRun.getId()+")");
+            services.getSampleService().deleteAllSamplesForRequest(selectedRequest.getRequestId());
+            NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+selectedRequest.getRequestId());
             init();
         }catch(Exception e){
             NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
         }
     }
-            
 }

@@ -46,9 +46,9 @@ public class ApplicationCSVParser extends DTOCSVParser<ApplicationDTO> {
         if (appName == null || appName.trim().isEmpty()) {
             warningMessages.add(new ParsingMessage("Application Name Warning", "Application is empty in line" + record.getRecordNumber()));
             appName = "";
-        } else if (!Arrays.asList(prefs.getNgsapplication()).contains(appName)) {
-                warningMessages.add(new ParsingMessage("Application Name Warning", "Unknown application name ("+appName+") in line" + record.getRecordNumber()));
-        }
+        } /*else if (!Arrays.asList(prefs.getNgsapplication()).contains(appName)) {
+            warningMessages.add(new ParsingMessage("Application Name Warning", "Unknown application name ("+appName+") in line" + record.getRecordNumber()));
+        }*/
             
         String recipeString = record.get(SampleRequestCSVHeader.Receipe);
         parseRecipeString(recipeString);

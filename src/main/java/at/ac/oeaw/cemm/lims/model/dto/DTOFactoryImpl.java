@@ -53,8 +53,8 @@ public class DTOFactoryImpl implements DTOFactory {
     }
     
     @Override
-    public RequestDTO getRequestDTO(String requestor){
-        return new RequestDTOImpl(requestor);
+    public RequestDTO getRequestDTO(UserDTO requestor,Integer requestId){
+        return new RequestDTOImpl(requestor,requestId);
     }
     
     @Override

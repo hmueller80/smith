@@ -7,6 +7,82 @@
 
     <ui:define name="sampleSearch">
 
+          <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="uploadDialogHeader" value="#{uploadSampleRequestNewBean.filename}"/>
+            </f:facet>
+            <h:form id="uploadDialog">
+                <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="#{(empty uploadSampleRequestNewBean.parsedCSV or uploadSampleRequestNewBean.parsedCSV.validationStatus.failed) ? 'Please correct the file and re-upload' : 'Do you want to load data in the DB?'}"/>
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmUploadButton'
+                        value="Yes" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{(not empty uploadSampleRequestNewBean.parsedCSV) and (not uploadSampleRequestNewBean.parsedCSV.validationStatus.failed)}"
+                        actionListener ="#{uploadSampleRequestNewBean.submitRequest}"
+                        update="uploadDialog deleteDialog sampleTableForm"
+                        oncomplete="PF('uploadDialog').hide()"
+                         onclick="PF('confirmUploadButton').disable();PF('cancelUploadButton').disable()"
+                        />
+                    <p:commandButton 
+                        widgetVar='cancelUploadButton'
+                        value="#{(empty uploadSampleRequestNewBean.parsedCSV or uploadSampleRequestNewBean.parsedCSV.validationStatus.failed) ? 'Back' : 'No'}" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('uploadDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+         <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="deleteDialogHeader" value="Delete Request"/>
+            </f:facet>
+            <h:form id="deleteDialog">
+
+                <p:messages id="messages" for="deleteDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="Please select a request to delete"/>
+                <br/><br/>
+                <p:selectOneMenu  
+                    converter="genericConverter"
+                    value ="#{deleteRequestBean.selectedRequest}"
+                    immediate="true"
+                    disabled="#{!deleteRequestBean.roleManager.hasSampleLoadPermission()}"
+                    filter="true" 
+                    filterMatchMode="contains">
+                    <f:selectItems 
+                        id="sample" 
+                        value="#{deleteRequestBean.requestsAvailable}" 
+                        var="sampleRequest" 
+                        itemLabel="#{sampleRequest.requestId} (requestedBy by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                </p:selectOneMenu>     
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmDeleteButton'
+                        value="Delete" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{deleteRequestBean.roleManager.hasSampleLoadPermission()}"
+                        actionListener ="#{deleteRequestBean.deleteRequest}"
+                        update="uploadDialog deleteDialog sampleTableForm"
+                        oncomplete="PF('deleteDialog').hide()"
+                        onclick="PF('confirmDeleteButton').disable();PF('cancelDeleteButton').disable()"
+
+                        />
+                    <p:commandButton
+                        widgetVar='cancelDeleteButton'
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('deleteDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>        
+        
         <h:form id="sampleTableForm">
 
             <p:dataTable id="sampleTable"
@@ -25,18 +101,30 @@
 
                 <f:facet name="header">
                     <div class="ui-g">
-                        <div class ="ui-g-4"/>
-                        <div class ="ui-g-4">
-                            <h:outputText value="Search all Sample fields: " />
-                            <p:inputText id="globalFilter" onkeyup="PF('samplesTable').filter()" style="width:150px" placeholder="Enter keyword"/>
+                        <div class="ui-g-4" />
+                        <div class="ui-g-4">
+                            <h:outputText value="Search all Samples fields: " />
+                            <p:inputText id="globalFilter" onkeyup="PF('sampleTable').filter()"
+                                         style="width:150px" placeholder="Enter keyword" />
                         </div>
-                        <div class ="ui-g-3" />
-                        <div class ="ui-g-1">
-                            <p:commandButton value="Download" ajax="false" icon="ui-icon-arrowthick-1-s">
-                                <p:dataExporter type="csv" target="sampleTable" fileName="Samples" pageOnly="false" />
+                        <div class="ui-g-4">
+                            <p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
+                                             rendered="#{deleteRequestBean.roleManager.hasSampleLoadPermission()}"
+                                             onclick="PF('deleteDialog').show()" />
+                            <p:fileUpload style="float:right;margin:1px"
+                                          fileUploadListener="#{uploadSampleRequestNewBean.handleFileUpload}"
+                                          label="Upload" multiple="false" mode="advanced" auto="true"
+                                          sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/"
+                                          oncomplete="PF('uploadDialog').show()"
+                                          rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}"
+                                          update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
+                            <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
+                                             icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="sampleTable" fileName="Samples"
+                                                pageOnly="false" />
                             </p:commandButton>
                         </div>
-                    </div>                      
+                    </div>                   
                 </f:facet> 
 
                 <p:column id="idSamColumn" filterBy="#{sample.id}"                     
@@ -110,29 +198,7 @@
                              value="#{bundle['button.text.new.sample']}" 
                              rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}" />
             </ui:remove>
-        </h:form>
-
-        <p:separator/>
-
-        <h:form id="sampleTableUploadForm" rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}" >
-            <h2>Upload request form</h2>
-
-            <h:outputLink id="requestform" value="../downloads/example.csv">
-                <h:outputText value="Example request form" />
-            </h:outputLink>
-
-            <p:panelGrid columns="3">
-                <p:fileUpload immediate="true"  id="fu2"  style="margin-top: 10px" fileUploadListener="#{uploadSampleRequestNewBean.handleFileUpload}"  
-                              sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/" mode="advanced"  update="sampleTableUploadForm">
-                </p:fileUpload>
-
-                <h:outputText id="i22"  value="#{uploadSampleRequestNewBean.filename}" ></h:outputText>
-            </p:panelGrid>
-        </h:form>
-        <h:form  id="sampleTableUploadProcessForm" rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}">
-            <p:commandButton id="RequestUploadProcessButton" actionListener="#{uploadSampleRequestNewBean.submitRequest()}" value="#{bundle['button.text.new.sample.upload']}" update="@all" >
-            </p:commandButton>
-        </h:form>
+        </h:form>     
 
     </ui:define>
 

@@ -167,7 +167,7 @@
                 </h:panelGrid>
 
                 <p:commandButton action="#{singleSampleBean.delete}" 
-                                 disabled="#{!singleSampleBean.modifyPermission}" 
+                                 disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.deleatable}" 
                                  id="SampleDeletionButton" 
                                  value="#{bundle['button.text.delete']}" 
                                  update="SampledetailsForm" 

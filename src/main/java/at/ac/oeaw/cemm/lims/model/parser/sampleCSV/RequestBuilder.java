@@ -14,6 +14,7 @@ import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
@@ -21,9 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.commons.csv.CSVFormat;
@@ -37,6 +36,7 @@ import org.apache.commons.csv.CSVRecord;
 public class RequestBuilder {
     
     @Inject private DTOFactory myDTOFactory;
+    @Inject private ServiceFactory services;
     
     public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, ServiceFactory services) {
         RequestDTO requestObj = null;
@@ -45,37 +45,40 @@ public class RequestBuilder {
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord());
+            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord().withIgnoreEmptyLines());
             List<CSVRecord> records = parser.getRecords();
-            String user = getUserFromCSVRecords(records);
-            requestObj= myDTOFactory.getRequestDTO(user);
+            UserDTO requestor = getUserFromCSVRecords(records);
+            Integer requestId = getSubmissionIdFromCSVRecords(records);
             
-            for (CSVRecord record: records){
-                SampleDTO sample= getObject(new SampleCSVParser(record,myDTOFactory),validationStatus);
+            requestObj = myDTOFactory.getRequestDTO(requestor,requestId);
 
-                IndexDTO index = getObject(new IndexCSVParser(record,services,myDTOFactory),validationStatus);
+            for (CSVRecord record : records) {
+                SampleDTO sample = getObject(new SampleCSVParser(record, myDTOFactory,requestId), validationStatus);
+
+                IndexDTO index = getObject(new IndexCSVParser(record, services, myDTOFactory), validationStatus);
                 sample.setIndex(index);
 
-                ApplicationDTO application= getObject(new ApplicationCSVParser(record,myDTOFactory),validationStatus);
+                ApplicationDTO application = getObject(new ApplicationCSVParser(record, myDTOFactory), validationStatus);
                 sample.setApplication(application);
                 sample.setExperimentName(application.getApplicationName());
-                
-                LibraryDTO library = requestObj.addOrGetLibrary(getObject(new LibraryCSVParser(record,myDTOFactory),validationStatus));
+
+                LibraryDTO library = requestObj.addOrGetLibrary(getObject(new LibraryCSVParser(record, myDTOFactory), validationStatus));
                 library.addSample(sample);
-                
-            }
-            
+
+            }         
         } catch (ParsingException e) {
             validationStatus.addFailMessage(e.getSummary(), e.getMessage());
         } catch (IOException e){
+            validationStatus.addFailMessage("CSV Parsing", e.getMessage());
+        } catch (Exception e){
             validationStatus.addFailMessage("CSV Parsing", e.getMessage());
         }
         
         return new ValidatedCSV(requestObj,validationStatus);
     }
     
-    private static String getUserFromCSVRecords(List<CSVRecord> records) throws ParsingException{
-        Set<String> usersFound = new HashSet<> ();
+    private UserDTO getUserFromCSVRecords(List<CSVRecord> records) throws ParsingException{
+        String previousUser = null;
         
         for (CSVRecord record: records){
             String sampleUserLogin = record.get(SampleRequestCSVHeader.UserLogin);
@@ -83,14 +86,48 @@ public class RequestBuilder {
             if (sampleUserLogin==null || sampleUserLogin.trim().isEmpty()){
                 throw new ParsingException("User error","Missing user in line "+record.getRecordNumber());
             }
-            usersFound.add(sampleUserLogin);
+            if (previousUser==null){
+                previousUser = sampleUserLogin;
+            }else if (!previousUser.equals(sampleUserLogin)){
+                throw new ParsingException("User error","Multiple users found in file");
+            }
         }
         
-        if (usersFound.size()!=1){
-            throw new ParsingException("User error","Multiple users found in file");
-        }else{
-            return (String) usersFound.toArray()[0];
+        UserDTO requestor =  services.getUserService().getUserByLogin(previousUser);
+        if (requestor == null){
+            throw new ParsingException("User error","Requestor is not in the user DB");
         }
+        
+        return requestor;       
+    }
+    
+    private Integer getSubmissionIdFromCSVRecords(List<CSVRecord> records) throws ParsingException {
+        Integer previousId = null;
+
+        for (CSVRecord record : records) {
+            String submissionIdString = record.get(SampleRequestCSVHeader.submissionId);
+            if (submissionIdString == null || submissionIdString.trim().isEmpty()) {
+                throw new ParsingException("Submission ID", "Missing submission ID in line " + record.getRecordNumber());
+            } else {
+                try {
+                    Integer submissionId = Integer.parseInt(submissionIdString);
+                    if (previousId==null){
+                        previousId = submissionId;
+                    }else if (!previousId.equals(submissionId)){
+                        throw new ParsingException("Submission ID","Multiple submission IDs found in file");
+                    }                
+                } catch (NumberFormatException e) {
+                    throw new ParsingException("Submission ID", "Error in parsing submission id (" + submissionIdString + ") in line " + record.getRecordNumber());
+                }
+            }
+
+        }
+        
+        if(services.getSampleService().checkRequestExistence(previousId)){
+            throw new ParsingException("Submission ID", "A request with id "+previousId+" already exists in the DB");
+        }
+        
+        return previousId;
     }
     
     private static <T> T getObject(DTOCSVParser<T> parser,  CSVValidationStatus validationStatus) throws ParsingException {

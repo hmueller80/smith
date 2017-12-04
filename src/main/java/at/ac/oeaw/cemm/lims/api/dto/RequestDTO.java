@@ -17,6 +17,8 @@ public interface RequestDTO {
 
     Map<String, LibraryDTO> getLibraries();
 
-    String getRequestor();
+    UserDTO getRequestor();
+    
+    Integer getRequestId();
     
 }

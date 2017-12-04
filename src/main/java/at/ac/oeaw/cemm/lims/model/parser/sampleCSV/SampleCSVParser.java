@@ -24,9 +24,11 @@ import org.apache.commons.csv.CSVRecord;
  * @author dbarreca
  */
 public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
+    Integer submissionId;
     
-    public SampleCSVParser(CSVRecord record, DTOFactory myDTOFactory) {
+     public SampleCSVParser(CSVRecord record, DTOFactory myDTOFactory,Integer submissionId) {
         super(record,myDTOFactory);
+        this.submissionId = submissionId;
     }
 
     @Override
@@ -36,9 +38,9 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
         
         String sampleType = record.get(SampleRequestCSVHeader.SampleType);
         if (sampleType != null && !sampleType.trim().isEmpty()) {
-            if (!Arrays.asList(prefs.getSampletype()).contains(sampleType)) {
+            /*if (!Arrays.asList(prefs.getSampletype()).contains(sampleType)) {
                 returnValue.addMessage("Sample type", "Unknown sample Type ("+sampleType + ") in line " + record.getRecordNumber());
-            }
+            }*/
             sample.setType(sampleType);
         } else {
             sample.setType("");
@@ -55,9 +57,9 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
 
         String organism = record.get(SampleRequestCSVHeader.Organism);
         if (organism != null && !organism.trim().isEmpty()) {
-            if (!Arrays.asList(prefs.getOrganisms()).contains(organism)) {
+            /*if (!Arrays.asList(prefs.getOrganisms()).contains(organism)) {
                 returnValue.addMessage("Organism", "Unknown organism ("+organism + ") in line " + record.getRecordNumber());
-            }
+            }*/
             sample.setOrganism(organism);
         } else {
             sample.setOrganism("undefined");
@@ -162,20 +164,9 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
             throw new ParsingException("Request Date","Error in parsing request Date ("+requestDateString+") in line "+record.getRecordNumber());
         }
 
-        String submissionIdString = record.get(SampleRequestCSVHeader.submissionId);
-        Integer submissionId = null;
-        if (submissionIdString != null && !submissionIdString.trim().isEmpty()) {
-            try {
-                submissionId = Integer.parseInt(submissionIdString);
-            } catch (NumberFormatException e) {
-            }
-        }
-        if (submissionId != null) {
-            sample.setSubmissionId(submissionId);
-        } else {
-            throw new ParsingException("Submission ID","Error in parsing submission id ("+submissionIdString+") in line "+record.getRecordNumber());
-        }
-
+        
+        sample.setSubmissionId(submissionId);
+       
         String costCenter = record.get(SampleRequestCSVHeader.PI);
         if (costCenter != null && !costCenter.trim().isEmpty()) {
             sample.setCostcenter(costCenter);

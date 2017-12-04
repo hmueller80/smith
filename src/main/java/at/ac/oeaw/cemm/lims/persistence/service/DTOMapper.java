@@ -11,6 +11,7 @@ import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
@@ -25,6 +26,7 @@ import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 
 /**
  *
@@ -133,5 +135,9 @@ public class DTOMapper {
          return myDTOFactory.getRunDTO(runId, flowCell, operator, runFolder);
      }
 
+     protected RequestDTO getMinimalRequestDTOFromEntity(MinimalRequestEntity requestEntity) {
+        UserDTO requestor = getUserDTOFromEntity(requestEntity.getRequestor());
+        return myDTOFactory.getRequestDTO(requestor, requestEntity.getRequestId());
+    }
 
 }

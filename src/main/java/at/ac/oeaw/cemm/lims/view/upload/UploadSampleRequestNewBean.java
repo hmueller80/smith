@@ -13,15 +13,12 @@ import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -46,175 +43,113 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class UploadSampleRequestNewBean implements Serializable {
 
-    private final static String FORM_ID = "sampleTableUploadProcessForm";
-    private final static String COMPONENT = "RequestUploadProcessButton";
-
-    private final static Set<String> ALLOWED_ROLES = new HashSet<String>() {
-        {
-            add(Preferences.ROLE_ADMIN);
-            add(Preferences.ROLE_TECHNICIAN);
-            add(Preferences.ROLE_GROUPLEADER);
-        }
-    };
-
-    protected UserDTO loggeduser;
-    protected String userLogin;
     private String destination;
-
     private String filename = "test";
-
+    private ValidatedCSV<RequestDTO> parsedCSV = null;
+    
     @ManagedProperty("#{newRoleManager}")
     protected NewRoleManager roleManager;
 
     @Inject private MailBean mailBean;
     @Inject private ServiceFactory services;
     @Inject private RequestBuilder sampleRequestBuilder;
-    
-    int progress;
-    
-    public UploadSampleRequestNewBean() {
-        System.out.println("Initializing UploadSampleRequestNewBean");
-    }
-    
+        
+   
     @PostConstruct
     public void init() {
-        System.out.println("UploadSampleRequestNewBean post construct");
-
         FacesContext context = FacesContext.getCurrentInstance();
-        loggeduser = roleManager.getCurrentUser();
-        userLogin = this.loggeduser.getLogin();
-        try {
-            String applicationPath = context.getExternalContext().getRealPath("/");
-            destination = applicationPath + "upload" + File.separator;
-            if (Preferences.getVerbose()) {
-                System.out.println(destination);
-            }
-
-        } catch (UnsupportedOperationException uoe) {
-            uoe.printStackTrace();
-        }
+        String applicationPath = context.getExternalContext().getRealPath("/");
+        destination = applicationPath + "upload" + File.separator;
     }
 
-    /**
-     * Action listener for FileUploadEvent.
-     *
-     * @author Heiko Muller
-     * @param event - a file upload event
-     * @since 1.0
-     */
+
     public void handleFileUpload(FileUploadEvent event) {
-        System.out.println("uploading");
-        UploadedFile uploadedFile = event.getFile();
-        if (uploadedFile != null) {
-            FacesMessage msg = new FacesMessage("Successful", uploadedFile.getFileName() + " is uploaded.");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-        }
-        System.out.println("getting data");
-        transferFile(uploadedFile);
-        System.out.println(filename);
-        System.out.println("upload completed");
-    }
+        String messageBoxComponent = "uploadDialogMsg";
 
-    /**
-     * Submits uploaded sample requests.
-     *
-     * @author Heiko Muller
-     * @since 1.0
-     */
-    public void submitRequest() {
-
-        ValidatedCSV<RequestDTO> request = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename),services);
-
-        System.out.println("---------Parsed file " + filename + "----------");
-        System.out.println("Is Valid: " + !request.getValidationStatus().isFailed());
-        System.out.println("Errors");
-        for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
-            System.out.println(message.getSummary() + ":" + message.getMessage());
-        }
-        System.out.println("Warnings");
-        for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
-            System.out.println(message.getSummary() + ":" + message.getMessage());
-        }
-
-        if (request.getValidationStatus().isFailed()) {
-            for (ParsingMessage message : request.getValidationStatus().getFailMessages()) {
-                NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
-                System.out.println("Failed validation");
+        if (roleManager.hasSampleLoadPermission()) {
+            System.out.println("uploading");
+            UploadedFile file = event.getFile();
+            if (file == null) {
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, "File upload", "the File is null");
+                return;
             }
-        } else {
-            RequestDTO requestObj = request.getRequestObj();
-            UserDTO requestor = checkPermission(requestObj.getRequestor());
-            if (requestor != null) {
-                try {
-                    for (ParsingMessage message : request.getValidationStatus().getWarningMessages()) {
-                        NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getMessage());
-                    }
-                    Set<PersistedEntityReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
-                    sendMailWithReceipts(requestor, receipts);
-                } catch (Exception e) {
-                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Error while persisting request", e.getMessage());
-                    System.out.println("Failed upload to DB");
+            System.out.println("getting data");
+            try {
+                transferFile(file);
+            } catch (Exception ex) {
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, "File transfer", "Error while transfering the file: " + ex.getMessage());
+                ex.printStackTrace();
+                return;
+            }
 
+            parsedCSV = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename), services);
+            //--------------LOG PARSING STATUS ------------------------------------
+            System.out.println("---------Parsed file " + filename + "----------");
+            System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
+            System.out.println("Errors");
+            for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+                System.out.println(message.getSummary() + ":" + message.getMessage());
+            }
+            System.out.println("Warnings");
+            for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                System.out.println(message.getSummary() + ":" + message.getMessage());
+            }
+            //----------------------------------------------------------------------
+
+            if (parsedCSV.getValidationStatus().isFailed()) {
+                for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+                    NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                    System.out.println("Failed validation");
                 }
             } else {
-                System.out.println("Failed user verification");
+                NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+                for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                    NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                }
             }
-        }
-
-    }
-
-    private UserDTO checkPermission(String userInCSV) {
-
-        UserDTO u = services.getUserService().getUserByLogin(userInCSV);
-        if (u == null) {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "User " + userInCSV + " not found in DB");
-            return null;
-        }
-
-        String userRole = u.getUserRole();
-        if (userRole.equals(Preferences.ROLE_GUEST)) {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User error", "Guest cannot submit samples");
-            return null;
-        }
-
-        if (u.getLogin().equals(userLogin)) {
-            //TODO: double check if this is valid: This means that the user is able to upload its own data!!!!
-            return u;
-        } else if (ALLOWED_ROLES.contains(this.loggeduser.getUserRole())) {
-            return u;
         } else {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "User role error", "You do not have permission to submit samples for this user.");
-            return null;
+            NgsLimsUtility.setFailMessage(messageBoxComponent, null, "User role error", "You do not have permission to submit samples");
         }
     }
 
-    /**
-     * Copies uploaded file to local disk.
-     *
-     * @author Heiko Muller
-     * @param file - UploadedFile
-     * @since 1.0
-     */
-    private void transferFile(UploadedFile file) {
+   
+    public void submitRequest() {
+        if (roleManager.hasSampleLoadPermission()) {
+            if (!parsedCSV.getValidationStatus().isFailed()) {
+                RequestDTO requestObj = parsedCSV.getRequestObj();
+                try {                   
+                    Set<PersistedEntityReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
+                    sendMailWithReceipts(requestObj.getRequestor(), receipts);
+                    NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Samples uploaded correctly");
+                } catch (Exception e) {
+                    NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());
+                    System.out.println("Failed upload to DB");
+                    e.printStackTrace();
+                }
+            } else {
+                NgsLimsUtility.setFailMessage(null, null, "Error while parsing the request", "Malformed CSV");
+            }
+        } else {
+            NgsLimsUtility.setFailMessage(null, null, "User role error", "You do not have permission to submit samples for this user.");
+        }
+    }
+
+   
+    private void transferFile(UploadedFile file) throws Exception {
         //String fileName = file.getFileName();
         String fileName = (new File(file.getFileName())).getName();
         this.filename = fileName;
-        try {
-            InputStream in = file.getInputstream();
-            OutputStream out = new FileOutputStream(new File(destination + fileName));
+        InputStream in = file.getInputstream();
+        OutputStream out = new FileOutputStream(new File(destination + fileName));
 
-            int reader = 0;
-            byte[] bytes = new byte[(int) file.getSize()];
-            while ((reader = in.read(bytes)) != -1) {
-                out.write(bytes, 0, reader);
-            }
-            in.close();
-            out.flush();
-            out.close();
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        int reader = 0;
+        byte[] bytes = new byte[(int) file.getSize()];
+        while ((reader = in.read(bytes)) != -1) {
+            out.write(bytes, 0, reader);
         }
+        in.close();
+        out.flush();
+        out.close();
     }
 
     private void sendMailWithReceipts(UserDTO user, Set<PersistedEntityReceipt> receipts) {
@@ -229,33 +164,20 @@ public class UploadSampleRequestNewBean implements Serializable {
         recipient[0] = user.getMailAddress();
         recipient[1] = Preferences.getSentByMailAddress();
 
-        //for testing
-        //recipient[0] = "heiko.muller@ieo.eu";
-        //recipient[1] = "heiko.muller@ieo.eu";
         try {
             mailBean.sendRequestIDMail(recipient, message);
         } catch (MessagingException me) {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Email error", "Sending email acknowledgement failed: MessagingException");
+            NgsLimsUtility.setWarningMessage(null, null, "Email error", "Sending email acknowledgement failed: MessagingException");
         } catch (UnsupportedEncodingException uee) {
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "Email error", "Sending email acknowledgement failed: UnsupportedEncodingException");
+            NgsLimsUtility.setWarningMessage(null, null, "Email error", "Sending email acknowledgement failed: UnsupportedEncodingException");
         }
     }
 
-    /**
-     * Getter for filename.
-     *
-     * @author Heiko Muller
-     * @return String
-     * @since 1.0
-     */
     public String getFilename() {
         return filename;
     }
 
-    public int getProgress() {
-        return progress;
-    }
-
+   
     public NewRoleManager getRoleManager() {
         return roleManager;
     }
@@ -264,15 +186,7 @@ public class UploadSampleRequestNewBean implements Serializable {
         this.roleManager = roleManager;
     }
 
-    public ServiceFactory getServices() {
-        return services;
-    }
-
-    public void setServices(ServiceFactory services) {
-        this.services = services;
-    }
-
-
+ 
     public MailBean getMailBean() {
         return mailBean;
     }
@@ -281,4 +195,11 @@ public class UploadSampleRequestNewBean implements Serializable {
         this.mailBean = mailBean;
     }
 
+    public ValidatedCSV<RequestDTO> getParsedCSV() {
+        return parsedCSV;
+    }
+
+    public void setParsedCSV(ValidatedCSV<RequestDTO> parsedCSV) {
+        this.parsedCSV = parsedCSV;
+    }
 }

@@ -34,7 +34,7 @@ public interface DTOFactory {
 
     NewsDTO getNewsDTO(Integer id, String header, String body, Date date);
 
-    RequestDTO getRequestDTO(String requestor);
+    RequestDTO getRequestDTO(UserDTO requestor, Integer requestId);
 
     SampleDTO getSampleDTO(Integer id);
 

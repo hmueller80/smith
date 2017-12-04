@@ -21,6 +21,25 @@
                          emptyMessage="#{bundle['user.emptymessage']}" 
                          filteredValue="#{filteredUserView.filteredUsers}">
 
+                <f:facet name="header">
+                    <div class="ui-g">
+                        <div class="ui-g-8" />                         
+                        <div class="ui-g-4">
+                            <p:button style="float:right;margin:1px"
+                                      value="#{bundle['user.add.button.text']}" 
+                                      icon="ui-icon-plus"
+                                      rendered="#{newRoleManager.hasUserAddPermission}"
+                                      outcome="userDetails.jsf" />                            
+                            <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
+                                             icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="dataTable" fileName="Users"
+                                                pageOnly="false" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </f:facet>                              
+                     
+                
                 <p:column id="idColumn" filterBy="#{user.id}" 
                           headerText="#{bundle['user.id']}"
                           filterMatchMode="contains">
@@ -67,34 +86,9 @@
 
 
             </p:dataTable>
-
-            <h:panelGrid columns="2">
-                <p:panel header="#{bundle['export.All']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="dataTable" fileName="Users" pageOnly="false" />
-                    </h:commandLink>
-
-                </p:panel>
-
-                <p:panel header="#{bundle['export.Page']}">
-                    <h:commandLink>
-                        <p:graphicImage value="/img/csv.png" />
-                        <p:dataExporter type="csv" target="dataTable" fileName="Users" pageOnly="true" />
-                    </h:commandLink>
-
-                </p:panel>
-
-            </h:panelGrid> 
-
-            <p:button outcome="userDetails.jsf" value="#{bundle['user.add.button.text']}" rendered="#{newRoleManager.hasUserAddPermission}">
-            </p:button>
-
+            
         </h:form>
-
-
-
-
+        
     </ui:define>
 
 </ui:composition>

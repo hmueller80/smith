@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -42,4 +43,10 @@ public interface SampleService {
     List<ApplicationDTO> getAllApplications();
         
     List<SampleDTO> getAllPooledSamples(SampleDTO sample);
+
+    public boolean checkRequestExistence(Integer requestId);
+    
+    List<RequestDTO> getDeleatableRequests();
+    
+    void deleteAllSamplesForRequest(Integer requestId) throws Exception;
 }

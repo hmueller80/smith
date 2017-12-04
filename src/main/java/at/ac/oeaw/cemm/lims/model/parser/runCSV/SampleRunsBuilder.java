@@ -46,10 +46,12 @@ public class SampleRunsBuilder {
         CSVValidationStatus validationStatus = new CSVValidationStatus();
         
         Integer previousRunId = null;
+        String previousFlowcell = null;
+        
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(RunFormCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord());
+            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(RunFormCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord().withIgnoreEmptyLines());
             List<CSVRecord> records = parser.getRecords();            
             
             for (CSVRecord record: records){             
@@ -94,13 +96,20 @@ public class SampleRunsBuilder {
                     }
                 }
                 
+                String flowCell= getStringFromField(record,RunFormCSVHeader.Flowcell);
+                if (previousFlowcell==null){
+                    previousFlowcell = flowCell;
+                }else if (!previousFlowcell.equals(flowCell)){
+                    validationStatus.addFailMessage("Flowcell", "Multiple flowcells found in the same request:" +previousFlowcell+","+flowCell);
+                    break;
+                }
+                
                 if (!samples.containsKey(sampleId)){
-                    String flowCell= getStringFromField(record,RunFormCSVHeader.Flowcell);
                     SampleRunDTO newSampleRun = myDTOFactory.getSampleRunDTO(
                             runId, 
                             sample, 
                             operator, 
-                            flowCell, 
+                            previousFlowcell, 
                             null, 
                             runFolder,
                             false);

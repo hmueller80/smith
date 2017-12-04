@@ -13,7 +13,7 @@
             </f:facet>
             <h:form id="uploadDialog">
                 <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
-                <p:outputLabel value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Please correct the file and re-upload' : 'Do you want to load data in the DB?'}"/>
+                <p:outputLabel value="#{(empty uploadRunFormNewBean.parsedCSV or uploadRunFormNewBean.parsedCSV.validationStatus.failed) ? 'Please correct the file and re-upload' : 'Do you want to load data in the DB?'}"/>
                 <br /><br/>
                 <div style="width:100%;text-align: center;">
                     <p:commandButton
@@ -21,7 +21,7 @@
                         value="Yes" 
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
-                        rendered = "#{!uploadRunFormNewBean.parsedCSV.validationStatus.failed}"
+                        rendered = "#{not empty uploadRunFormNewBean.parsedCSV and not uploadRunFormNewBean.parsedCSV.validationStatus.failed}"
                         actionListener ="#{uploadRunFormNewBean.submitSampleRun}"
                         update="uploadDialog deleteDialog runsTableForm"
                         oncomplete="PF('uploadDialog').hide()"
@@ -29,7 +29,7 @@
                         />
                     <p:commandButton 
                         widgetVar='cancelUploadButton'
-                        value="#{uploadRunFormNewBean.parsedCSV.validationStatus.failed ? 'Back' : 'No'}" 
+                        value="#{(empty uploadRunFormNewBean.parsedCSV or uploadRunFormNewBean.parsedCSV.validationStatus.failed) ? 'Back' : 'No'}" 
                         styleClass="ui-confirmdialog-no" 
                         icon="ui-icon-close" 
                         onclick="PF('uploadDialog').hide()"/>
@@ -58,7 +58,6 @@
                         value="#{deleteRunBean.runsAvailable}" 
                         var="run" 
                         itemLabel="#{run.id} - #{run.flowCell} (created by #{run.operator.login})" itemValue="#{run}" />
-                    <p:ajax />
                 </p:selectOneMenu>     
                 <br /><br/>
                 <div style="width:100%;text-align: center;">
@@ -101,32 +100,32 @@
                          lazy="true">
 
                 <f:facet name="header">
-					<div class="ui-g">
-						<div class="ui-g-4" />
-						<div class="ui-g-4">
-							<h:outputText value="Search all SampleRun fields: " />
-							<p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()"
-								style="width:150px" placeholder="Enter keyword" />
-						</div>
-						<div class="ui-g-4">
-							<p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
-								rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
-								onclick="PF('deleteDialog').show()" />
-							<p:fileUpload style="float:right;margin:1px"
-								fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
-								label="Upload" multiple="false" mode="advanced" auto="true"
-								sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/"
-								oncomplete="PF('uploadDialog').show()"
-								rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}"
-								update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
-							<p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
-								icon="ui-icon-arrowthick-1-s">
-								<p:dataExporter type="csv" target="runsTable" fileName="Runs"
-									pageOnly="false" />
-							</p:commandButton>
-						</div>
-					</div>
-				</f:facet>
+                    <div class="ui-g">
+                        <div class="ui-g-4" />
+                        <div class="ui-g-4">
+                            <h:outputText value="Search all SampleRun fields: " />
+                            <p:inputText id="globalFilter" onkeyup="PF('runsTable').filter()"
+                                         style="width:150px" placeholder="Enter keyword" />
+                        </div>
+                        <div class="ui-g-4">
+                            <p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
+                                             rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
+                                             onclick="PF('deleteDialog').show()" />
+                            <p:fileUpload style="float:right;margin:1px"
+                                          fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
+                                          label="Upload" multiple="false" mode="advanced" auto="true"
+                                          sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt)$/"
+                                          oncomplete="PF('uploadDialog').show()"
+                                          rendered="#{uploadRunFormNewBean.roleManager.hasRunAddPermission}"
+                                          update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
+                            <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
+                                             icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="runsTable" fileName="Runs"
+                                                pageOnly="false" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </f:facet>
 
                 <p:column id="idRunsColumn"                 
                           headerText="#{bundle['runs.run.id']}"
@@ -157,7 +156,6 @@
                           filterBy="#{run.sampleUser.login}">
                     <h:outputText value="#{run.sample.user.login}" />
                 </p:column>
-
 
                 <p:column id="flowcellColumn"                  
                           headerText="#{bundle['runs.flowcell']}"

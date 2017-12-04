@@ -7,23 +7,29 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
+import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 /**
  *
@@ -237,6 +243,65 @@ public class SampleDAO {
                  .add(Restrictions.eq("status", status));
          
          return query.list();
+    }
+
+    public Boolean checkRequestExistence(Integer id) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleEntity.class)
+                .add(Restrictions.eq("submissionId", id))
+                .setProjection(Projections.rowCount());
+        
+        long count = (Long) query.uniqueResult();
+        if(count != 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isRequestDeleatable(Integer requestId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleEntity.class);
+        query.add(Restrictions.conjunction(
+                Restrictions.ne("status",SampleEntity.status_requested),
+                Restrictions.ne("status",SampleEntity.status_queued),
+                Restrictions.eq("submissionId", requestId)));
+        query.setProjection(Projections.rowCount());
+        long count = (Long) query.uniqueResult();
+        
+        return count == 0;
+                      
+    }
+    
+     public List<MinimalRequestEntity> getDeleatableRequests() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
+                .add(Restrictions.conjunction(
+                    Restrictions.ne("status",SampleEntity.status_requested),
+                    Restrictions.ne("status",SampleEntity.status_queued)))
+                .setProjection(Projections.distinct(Projections.property("submissionId")));
+        
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("submissionId").as("requestId"));
+        projList.add(Projections.property("user").as("requestor"));
+        
+        Criteria query = session.createCriteria(SampleEntity.class)
+                .add(Subqueries.propertyNotIn("submissionId", subquery))
+                .addOrder(Order.desc("submissionId"))
+                .setProjection(Projections.distinct(projList))
+                .setResultTransformer(Transformers.aliasToBean(MinimalRequestEntity.class));
+
+        return query.list();
+     }
+                      
+
+    public List<SampleEntity> getSamplesByRequestId(Integer requestId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(SampleEntity.class);
+        query.add(Restrictions.eq("submissionId", requestId));
+             
+        return query.list();
     }
 
 }

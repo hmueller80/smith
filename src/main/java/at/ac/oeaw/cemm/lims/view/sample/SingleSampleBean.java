@@ -365,7 +365,7 @@ public class SingleSampleBean implements Serializable {
             return null;
         }
 
-        if (currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued)) {
+        if (isDeleatable()) {
             try {
                 services.getSampleService().deleteSample(currentSample);
             } catch (Exception ex) {
@@ -386,6 +386,10 @@ public class SingleSampleBean implements Serializable {
         System.out.println("Deletion success");
 
         return "sampleDeleted_1?faces-redirect=true";
+    }
+    
+    public boolean isDeleatable() {
+        return currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued);
     }
 
     private boolean persist() {

@@ -7,20 +7,24 @@ package at.ac.oeaw.cemm.lims.model.dto;
 
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
  * @author dbarreca
  */
-class RequestDTOImpl implements RequestDTO
-{
-    private String requestor;
+class RequestDTOImpl implements RequestDTO {   
+    
+    private Integer requestId;
+    private UserDTO requestor;
     private Map<String,LibraryDTO> libraries=new HashMap<>();
     
-    public RequestDTOImpl(String requestor){
+    public RequestDTOImpl(UserDTO requestor,Integer requestId){
         this.requestor=requestor;
+        this.requestId = requestId;
     }
     
    
@@ -34,7 +38,7 @@ class RequestDTOImpl implements RequestDTO
     }
 
     @Override
-    public String getRequestor() {
+    public UserDTO getRequestor() {
         return requestor;
     }
 
@@ -42,5 +46,26 @@ class RequestDTOImpl implements RequestDTO
     public Map<String,LibraryDTO> getLibraries() {
         return libraries;
     }
+
+    @Override
+    public Integer getRequestId() {
+        return requestId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+       if (obj == null) return false;
+       if (obj instanceof RequestDTO){
+           return Objects.equals(((RequestDTO) obj).getRequestId(), this.getRequestId());
+       }
+       return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.requestId);
+        return hash;
+    }      
     
 }
