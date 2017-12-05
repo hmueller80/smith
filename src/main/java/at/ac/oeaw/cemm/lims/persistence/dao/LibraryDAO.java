@@ -7,14 +7,21 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
-import at.ac.oeaw.cemm.lims.persistence.entity.LibraryIdEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 /**
  *
@@ -33,9 +40,19 @@ public class LibraryDAO {
         return libraryCriteria.list();
     }
 
-    public Integer getMaxLibraryId() throws HibernateException {
+    public void persistLibrary(LibraryEntity library) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria libraryCriteria = session.createCriteria(LibraryEntity.class).setProjection(Projections.max("id.libraryId"));
+        Integer libraryId = this.getMaxLibraryId() + 1;
+        library.setId(libraryId);
+        session.save(library);
+        String libraryName = library.getLibraryName() + "_L" + library.getId();
+        library.setLibraryName(libraryName);
+        session.update(library);
+    }
+
+    private Integer getMaxLibraryId() throws HibernateException {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria libraryCriteria = session.createCriteria(LibraryEntity.class).setProjection(Projections.max("id"));
         Integer id = (Integer) libraryCriteria.uniqueResult();
         if (id == null) {
             id = 0;
@@ -43,16 +60,50 @@ public class LibraryDAO {
         return id;
     }
 
-    public void persistLibrary(LibraryEntity library) {
+    public LibraryEntity getLibraryByName(String libraryName) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.save(library);
+        Criteria query = session.createCriteria(LibraryEntity.class)
+                .add(Restrictions.eq("libraryName", libraryName));
+        return  (LibraryEntity) query.uniqueResult();
+    }
+    
+    public LibraryEntity getLibraryById(Integer libraryId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(LibraryEntity.class)
+                .add(Restrictions.eq("id", libraryId));
+        return  (LibraryEntity) query.uniqueResult();
     }
 
-    public List<LibraryEntity> getAllLibrariesByLibID(int id) {
-         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-         Criteria query = session.createCriteria(LibraryEntity.class)
-                 .add(Restrictions.eq("id.libraryId", id));
-         
-         return query.list();
-    }
+    public void deleteLibrary(LibraryEntity library) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.delete(library);
+    }   
+
+    public List<MinimalLibraryEntity> getDeleatableLibraries() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
+                .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.conjunction(
+                    Restrictions.ne("status",SampleEntity.status_requested),
+                    Restrictions.ne("status",SampleEntity.status_queued)))
+                .setProjection(Projections.distinct(Projections.property("library.id")));
+        
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("sample.submissionId").as("requestId"));
+        projList.add(Projections.property("sample.user").as("requestor"));
+        projList.add(Projections.property("id").as("libraryId"));
+        projList.add(Projections.property("libraryName").as("libraryName"));
+
+        Criteria query = session.createCriteria(LibraryEntity.class)
+                .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
+                .add(Subqueries.propertyNotIn("id", subquery))
+                .addOrder(Order.desc("sample.submissionId"))
+                .addOrder(Order.desc("sample.id"))
+                .setProjection(Projections.distinct(projList))
+                .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
+
+        return query.list();
+     }
+    
 }

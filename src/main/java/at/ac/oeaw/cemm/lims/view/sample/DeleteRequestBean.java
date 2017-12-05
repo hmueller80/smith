@@ -5,10 +5,13 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
+import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -23,16 +26,23 @@ import javax.inject.Inject;
 @ManagedBean(name="deleteRequestBean")
 @ViewScoped
 public class DeleteRequestBean {
+    private final static String DEFAULT_LIBRARY_NAME = "All libraries in request";
+    
+    private LibraryDTO defaultLibrary;
+    
     @Inject ServiceFactory services;
+    @Inject DTOFactory myDTOFactory;
 
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
     private RequestDTO selectedRequest = null;
+    private LibraryDTO selectedLibrary = null;    
     
     @PostConstruct
     public void init() {
-        selectedRequest = services.getSampleService().getDeleatableRequests().get(0);
+        selectedRequest = services.getRequestService().getDeleatableLibrariesInRequests().get(0);
+        defaultLibrary = myDTOFactory.getLibraryDTO(DEFAULT_LIBRARY_NAME, null);
     }
 
     public NewRoleManager getRoleManager() {
@@ -43,8 +53,8 @@ public class DeleteRequestBean {
         this.roleManager = roleManager;
     }
     
-      public List<RequestDTO> getRequestsAvailable() {
-        return services.getSampleService().getDeleatableRequests();
+    public List<RequestDTO> getRequestsAvailable() {
+        return services.getRequestService().getDeleatableLibrariesInRequests();
     }
 
     public RequestDTO getSelectedRequest() {
@@ -58,11 +68,39 @@ public class DeleteRequestBean {
     
     public void deleteRequest() {
         try{
-            services.getSampleService().deleteAllSamplesForRequest(selectedRequest.getRequestId());
+            if (selectedLibrary == null){
+                services.getRequestService().deleteAllLibrariesInRequest(selectedRequest);
+            }else{
+                services.getRequestService().deleteAllSamplesForLibraryAndRequest(selectedLibrary.getId(),selectedRequest.getRequestId());
+            }
             NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+selectedRequest.getRequestId());
             init();
         }catch(Exception e){
+            e.printStackTrace();
             NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
         }
     }
+    
+    public List<LibraryDTO> getDeleatableLibraries() {
+        List<LibraryDTO> returnValue = new LinkedList<>();
+        returnValue.add(defaultLibrary);
+        returnValue.addAll(selectedRequest.getLibraries().values());
+        return returnValue;
+    }
+
+    public LibraryDTO getSelectedLibrary() {
+        if (selectedLibrary == null) {
+            return defaultLibrary;
+        }
+        return selectedLibrary;
+    }
+
+    public void setSelectedLibrary(LibraryDTO selectedLibrary) {
+         if (selectedLibrary.equals(defaultLibrary)) {
+            this.selectedLibrary = null;
+        }else {
+            this.selectedLibrary = selectedLibrary;
+         }
+    }  
+  
 }

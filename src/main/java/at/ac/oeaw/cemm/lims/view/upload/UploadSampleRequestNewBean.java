@@ -118,7 +118,7 @@ public class UploadSampleRequestNewBean implements Serializable {
             if (!parsedCSV.getValidationStatus().isFailed()) {
                 RequestDTO requestObj = parsedCSV.getRequestObj();
                 try {                   
-                    Set<PersistedEntityReceipt> receipts = services.getRequestUploadService().uploadRequest(requestObj);
+                    Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestObj);
                     sendMailWithReceipts(requestObj.getRequestor(), receipts);
                     NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Samples uploaded correctly");
                 } catch (Exception e) {

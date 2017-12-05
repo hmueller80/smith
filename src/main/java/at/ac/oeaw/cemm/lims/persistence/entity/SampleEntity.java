@@ -20,7 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "sample")
-public class SampleEntity implements Serializable {
+public class SampleEntity implements Serializable, EntityWithSettableId {
 
     private static final long serialVersionUID = 1L;
     public static final String status_requested = "requested";
@@ -104,68 +104,17 @@ public class SampleEntity implements Serializable {
     @JoinColumn(name = "sam_id")
     private Set<SampleRunEntity> sampleRuns = new HashSet<SampleRunEntity>(0);
     
-    @OneToMany(mappedBy = "sample", fetch = FetchType.EAGER)
-    private Set<LibraryEntity> library = new HashSet<LibraryEntity>(0);
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "library_id", unique=true, nullable = false)
+    private LibraryEntity library;
 
-
-    public SampleEntity() {
-    }
-
-    public SampleEntity(ApplicationEntity application, UserEntity user, String organism,
-            String type, Boolean librarysynthesisneeded, Double concentration,
-            Double totalamount, Double bulkfragmentsize, String costcenter,
-            String status, String name, String comment, String description) {
-        this.application = application;
-        this.user = user;
-        this.organism = organism;
-        this.type = type;
-        this.librarySynthesisNeeded = librarysynthesisneeded;
-        this.concentration = concentration;
-        this.totalAmount = totalamount;
-        this.bulkFragmentSize = bulkfragmentsize;
-        this.costCenter = costcenter;
-        this.status = status;
-        this.name = name;
-        this.comment = comment;
-        this.description = description;
-    }
-
-    public SampleEntity(ApplicationEntity application, UserEntity user,
-            SequencingIndexEntity sequencingindexes, String organism, String type,
-            String antibody, Boolean librarysynthesisneeded,
-            Double concentration, Double totalamount, Double bulkfragmentsize,
-            String costcenter, String status, String name, String comment,
-            String description, Date requestdate, Date bioanalyzerdate,
-            Double bionalyzerbiomolarity, Integer submissionid,
-            String experimentName, Set<SampleRunEntity> sampleruns) {
-        this.application = application;
-        this.user = user;
-        this.sequencingIndexes = sequencingindexes;
-        this.organism = organism;
-        this.type = type;
-        this.antibody = antibody;
-        this.librarySynthesisNeeded = librarysynthesisneeded;
-        this.concentration = concentration;
-        this.totalAmount = totalamount;
-        this.bulkFragmentSize = bulkfragmentsize;
-        this.costCenter = costcenter;
-        this.status = status;
-        this.name = name;
-        this.comment = comment;
-        this.description = description;
-        this.requestDate = requestdate;
-        this.bioanalyzerDate = bioanalyzerdate;
-        this.bionalyzerBiomolarity = bionalyzerbiomolarity;
-        this.submissionId = submissionid;
-        this.experimentName = experimentName;
-        this.sampleRuns = sampleruns;
-    }
-
+    @Override
     public Integer getId() {
       
         return this.id;
     }
 
+    @Override
     public void setId(Integer samId) {
         this.id = samId;
     }
@@ -372,35 +321,14 @@ public class SampleEntity implements Serializable {
         this.sampleRuns = sampleruns;
     }
 
-    public Set<LibraryEntity> getLibrary() {
+    public LibraryEntity getLibrary() {
         return this.library;
     }
     
-    public String getLibraryName() {
-        if(library == null){
-            return "";
-        }
-        if(library.size() == 0){
-            return "";
-        }
-        if(library.size() == 1){
-            StringBuilder sb = new StringBuilder();
-            Object[] la = library.toArray();
-            for(Object o : la){
-                sb.append(((LibraryEntity)o).getLibraryName());
-            }
-            return sb.toString();
-        }
-        if(library.size() > 1){
-            StringBuilder sb = new StringBuilder();
-            Object[] la = library.toArray();
-            for(Object o : la){
-                sb.append(((LibraryEntity)o).getLibraryName() + " ");
-            }
-            return sb.toString();
-        }
-        return "";
-    }
+     public void setLibrary(LibraryEntity library) {
+        this.library=library;
+    }      
+   
    
     @Override
     public int hashCode() {

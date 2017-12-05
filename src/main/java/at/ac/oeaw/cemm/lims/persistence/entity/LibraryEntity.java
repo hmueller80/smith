@@ -1,57 +1,54 @@
 package at.ac.oeaw.cemm.lims.persistence.entity;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "library")
-public class LibraryEntity implements java.io.Serializable {
+public class LibraryEntity implements java.io.Serializable, EntityWithSettableId {
 
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private LibraryIdEntity id;
-
-    @ManyToOne
-    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
-    private SampleEntity sample;
+    @Id 
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
+    @GenericGenerator(name="IdOrGenerated", strategy="at.ac.oeaw.cemm.lims.persistence.entity.UseIdOrGenerate")
+    @Column(name = "library_id", nullable = false, columnDefinition = "serial")    
+    private Integer id;
+ 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "library")
+    private Set<SampleEntity> samples = new HashSet<>();
     
     @Column(name = "libraryName")
     private String libraryName;
 
     public LibraryEntity() {
-    }
+    }    
     
-     public LibraryEntity(LibraryIdEntity id, String libname) {
-        this.id = id;
-        this.libraryName = libname;
-    }
-
-
-    public LibraryEntity(LibraryIdEntity id, SampleEntity sample, String libname) {
-        this.id = id;
-        this.sample = sample;
-        this.libraryName = libname;
-    }
-
-    public LibraryIdEntity getId() {
+    @Override
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(LibraryIdEntity id) {
+    @Override
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public SampleEntity getSample() {
-        return this.sample;
+    public Set<SampleEntity> getSamples() {
+        return this.samples;
     }
 
-    public void setSample(SampleEntity sample) {
-        this.sample = sample;
+    public void setSample(Set<SampleEntity> samples) {
+        this.samples = samples;
     }
 
     public String getLibraryName() {

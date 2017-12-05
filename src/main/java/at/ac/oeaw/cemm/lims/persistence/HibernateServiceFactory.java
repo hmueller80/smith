@@ -11,10 +11,10 @@ import at.ac.oeaw.cemm.lims.api.persistence.RunService;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
-import at.ac.oeaw.cemm.lims.api.persistence.UploadService;
 import at.ac.oeaw.cemm.lims.persistence.service.LazySampleService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
 
 /**
  *
@@ -25,7 +25,7 @@ public class HibernateServiceFactory implements ServiceFactory {
 
     @Inject LazySampleService sampleService;
     @Inject UserService userService;
-    @Inject UploadService requestUploadService;
+    @Inject RequestService requestUploadService;
     @Inject RunService runService;
     @Inject NewsService newsService;
 
@@ -40,7 +40,7 @@ public class HibernateServiceFactory implements ServiceFactory {
     }
 
     @Override
-    public UploadService getRequestUploadService() {
+    public RequestService getRequestService() {
         return requestUploadService;
     }
     

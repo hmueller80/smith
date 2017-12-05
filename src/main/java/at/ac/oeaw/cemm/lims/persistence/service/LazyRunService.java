@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LaneDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
@@ -360,41 +359,7 @@ public class LazyRunService implements RunService {
             e.printStackTrace();
 
         }
-       
 
         return runs;
-    }
-
-	@Override
-	public RunDTO getAllRunInfo(final Integer runId) {
-        try {
-            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RunDTO>() {
-                @Override
-                public RunDTO execute() throws Exception {
-                		RunDTO result = null;
-                		
-                    List<SampleRunEntity> sampleRuns = runDAO.getSampleRunsById(runId);
-                    if (sampleRuns!=null){
-                        for (SampleRunEntity sampleRun: sampleRuns){
-                        		if (result==null) {
-                        			UserDTO operator = myDTOMapper.getUserDTOFromEntity(sampleRun.getUser());
-                        			result = myDTOMapper.getMinimalRunDTO(operator, runId, sampleRun.getFlowcell(), sampleRun.getRunFolder());
-                        		}
-                        		for (LaneEntity lane: sampleRun.getLanes()) {
-                        			result.addSample(lane.getLaneName(), myDTOMapper.getSampleDTOfromEntity(sampleRun.getsample()));
-                        		}
-                        }
-                    }
-                    
-                    return result;
-                }
-
-            });
-        } catch (Exception e) {
-        		e.printStackTrace();
-            return null;
-        }
- 
-	}
-  
+    }  
 }

@@ -123,7 +123,7 @@ public class RequestBuilder {
 
         }
         
-        if(services.getSampleService().checkRequestExistence(previousId)){
+        if(services.getRequestService().checkRequestExistence(previousId)){
             throw new ParsingException("Submission ID", "A request with id "+previousId+" already exists in the DB");
         }
         

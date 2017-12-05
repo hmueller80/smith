@@ -18,13 +18,13 @@ public class UseIdOrGenerate extends IdentityGenerator {
 public Serializable generate(SessionImplementor session, Object obj) throws HibernateException {
     if (obj == null) throw new HibernateException(new NullPointerException()) ;
     //ALTER TABLE sample AUTO_INCREMENT = 1;
-    if ((((SampleEntity) obj).getId()) == 0) {        
+    if ((((EntityWithSettableId) obj).getId()) == 0) {        
         Serializable id = super.generate(session, obj) ;
         //System.out.println("generating new sample id");
         return id;
     } else {
         //System.out.println("current sample id " + ((Sample) obj).getId());
-        return ((SampleEntity) obj).getId();
+        return ((EntityWithSettableId) obj).getId();
 
     }
 }

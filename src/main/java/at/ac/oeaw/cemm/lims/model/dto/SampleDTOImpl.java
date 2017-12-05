@@ -304,4 +304,6 @@ class SampleDTOImpl implements SampleDTO {
         this.user=user;
     }
     
+    
+    
 }

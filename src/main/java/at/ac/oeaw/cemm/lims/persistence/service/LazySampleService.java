@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;
@@ -16,7 +15,6 @@ import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
-import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
@@ -269,6 +267,14 @@ public class LazySampleService implements SampleService {
         }
         sampleEntity.setSequencingIndexes(seqIndexEntity);
         
+        LibraryEntity libraryEntity = libraryDAO.getLibraryByName(sample.getLibraryName());
+        if (libraryEntity == null){
+            libraryEntity = new LibraryEntity();
+            libraryEntity.setLibraryName(sample.getLibraryName());
+            libraryDAO.persistLibrary(libraryEntity);
+        }
+        sampleEntity.setLibrary(libraryEntity);
+
         sampleEntity.setApplication(persistApplication(sample.getApplication()));
         
         sampleEntity.setType(sample.getType());
@@ -396,19 +402,15 @@ public class LazySampleService implements SampleService {
                 @Override
                 public Void execute() throws Exception {
                     SampleEntity sampleEntity = sampleDAO.getSampleById(sample.getId());
-                    for (LibraryEntity library: sampleEntity.getLibrary()){
-                        List<LibraryEntity>  allPooledLibraries = libraryDAO.getAllLibrariesByLibID(library.getId().getLibraryId());
-                        for (LibraryEntity pooledLibrary: allPooledLibraries ){
-                            SampleEntity pooledSample = pooledLibrary.getSample();
+                    LibraryEntity libraryEntity = sampleEntity.getLibrary();
+                    for (SampleEntity pooledSample: libraryEntity.getSamples() ){
                             Hibernate.initialize(pooledSample.getApplication());
                             Hibernate.initialize(pooledSample.getSequencingIndexes());
                             samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
                         }
-                    }
                      return null;
                 }
             });
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -420,68 +422,6 @@ public class LazySampleService implements SampleService {
         return samples;
     }
 
-    @Override
-    public boolean checkRequestExistence(final Integer id) {
-        try {
-            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Boolean>() {
-                @Override
-                public Boolean execute() throws Exception {
-                    return (sampleDAO.checkRequestExistence(id));
-                }
-            });
-        } catch (Exception ex) {
-           return false;
-        }
-    }
-
-    @Override
-    public List<RequestDTO> getDeleatableRequests() {
-        final List<RequestDTO> requests = new LinkedList<>();
-
-        try {
-            Long currentTime = System.currentTimeMillis();
-            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-                @Override
-                public Void execute() throws Exception {
-
-                    List<MinimalRequestEntity> requestEntities = sampleDAO.getDeleatableRequests();
-
-                    if (requestEntities != null) {
-                        for (MinimalRequestEntity entity : requestEntities) {
-                            requests.add(myDTOMapper.getMinimalRequestDTOFromEntity(entity));
  
-                        }
-                    }
-
-                    return null;
-                }
-
-            });
-            System.out.println("Deleatable requests retrieval took " + (System.currentTimeMillis() - currentTime));
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        }       
-
-        return requests;
-    }
-    
-    @Override
-    public void deleteAllSamplesForRequest(final Integer requestId) throws Exception{
-        TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-            @Override
-            public Void execute() throws Exception {
-                if (sampleDAO.isRequestDeleatable(requestId)){
-                    for(SampleEntity sample: sampleDAO.getSamplesByRequestId(requestId)){
-                        sampleDAO.deleteSample(sample);
-                    }
-                }else{
-                    throw new Exception("Request with Id "+requestId+" contains samples in status different than "+SampleEntity.status_requested+" or "+SampleEntity.status_queued);
-                }
-                
-                return null;
-            }
-        });        
-    }
   
 }

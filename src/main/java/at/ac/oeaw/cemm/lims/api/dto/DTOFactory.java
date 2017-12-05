@@ -5,14 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto;
 
-import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -30,7 +23,7 @@ public interface DTOFactory {
 
     IndexDTO getIndexDTO(String index);
 
-    LibraryDTO getLibraryDTO(String libraryName);
+    LibraryDTO getLibraryDTO(String libraryName, Integer Id);
 
     NewsDTO getNewsDTO(Integer id, String header, String body, Date date);
 

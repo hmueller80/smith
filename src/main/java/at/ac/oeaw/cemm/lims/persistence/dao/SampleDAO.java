@@ -7,34 +7,30 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
-import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
-import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
 import org.hibernate.sql.JoinType;
-import org.hibernate.transform.Transformers;
 
 /**
  *
  * @author dbarreca
  */
+
+
 @ApplicationScoped
 public class SampleDAO {
 
@@ -73,7 +69,7 @@ public class SampleDAO {
 
         Criteria query = assembleQuery(filters);
         query.setProjection(Projections.countDistinct("id"));
-                
+
         result = ((Long) query.uniqueResult()).intValue();
 
         return result;
@@ -85,13 +81,13 @@ public class SampleDAO {
         List<SampleEntity> resultList = null;
 
         //1. Get the ids of the distinct samples satisfying the query
-        Criteria query = assembleQuery(sortField,ascending,filters);
+        Criteria query = assembleQuery(sortField, ascending, filters);
         query.setProjection(Projections.distinct(Projections.property("id")));
         query.setFirstResult(first);
         query.setMaxResults(pageSize);
         List idsToFetch = query.list();
 
-         //2. Fetch the distinct sample in the query
+        //2. Fetch the distinct sample in the query
         query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleEntity.class)
                 .add(Restrictions.in("id", idsToFetch))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
@@ -107,15 +103,15 @@ public class SampleDAO {
 
         return resultList;
     }
-    
-     public List<SampleEntity> getAllSamples(String sortField, boolean ascending, Map<String, Object> filters)
+
+    public List<SampleEntity> getAllSamples(String sortField, boolean ascending, Map<String, Object> filters)
             throws HibernateException {
 
         List<SampleEntity> resultList = null;
 
-        Criteria query = assembleQuery(sortField,ascending,filters)
+        Criteria query = assembleQuery(sortField, ascending, filters)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        
+
         if (sortField != null) {
             if (ascending) {
                 query.addOrder(Order.asc(sortField));
@@ -128,12 +124,11 @@ public class SampleDAO {
 
         return resultList;
     }
-    
+
     private Criteria assembleQuery(Map<String, Object> filters) {
-        return assembleQuery(null,null,filters);
+        return assembleQuery(null, null, filters);
     }
 
-    
     private Criteria assembleQuery(String sortField, Boolean ascending, Map<String, Object> filters) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 
@@ -162,7 +157,8 @@ public class SampleDAO {
                                 singleFiltersCriterion.add(selectedLibraries);
                             } else {
                                 singleFiltersCriterion.add(Restrictions.like(filteredField, (String) filterValue, MatchMode.ANYWHERE));
-                            }   break;
+                            }
+                            break;
                         default:
                             singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
                             break;
@@ -186,15 +182,15 @@ public class SampleDAO {
             }
 
             Criterion filterCriterion = Restrictions.conjunction().add(singleFiltersCriterion).add(globalFiltersCriterion);
-            
-            if (filters.containsKey("restrictToUsers")) {                
-                Collection<Integer> restrictedUsers = ( Collection<Integer>) filters.get("restrictToUsers");
+
+            if (filters.containsKey("restrictToUsers")) {
+                Collection<Integer> restrictedUsers = (Collection<Integer>) filters.get("restrictToUsers");
                 Criterion userCriterion = Restrictions.in("user.id", restrictedUsers);
                 filterCriterion = Restrictions.conjunction().add(filterCriterion).add(userCriterion);
             }
-            
+
             query.add(filterCriterion);
-            
+
         }
         if (sortField != null) {
             if (ascending) {
@@ -238,70 +234,10 @@ public class SampleDAO {
     }
 
     public List<SampleEntity> getSamplesByStatus(String status) {
-         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-         Criteria query = session.createCriteria(SampleEntity.class)
-                 .add(Restrictions.eq("status", status));
-         
-         return query.list();
-    }
-
-    public Boolean checkRequestExistence(Integer id) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Criteria query = session.createCriteria(SampleEntity.class)
-                .add(Restrictions.eq("submissionId", id))
-                .setProjection(Projections.rowCount());
-        
-        long count = (Long) query.uniqueResult();
-        if(count != 0){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isRequestDeleatable(Integer requestId) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria query = session.createCriteria(SampleEntity.class);
-        query.add(Restrictions.conjunction(
-                Restrictions.ne("status",SampleEntity.status_requested),
-                Restrictions.ne("status",SampleEntity.status_queued),
-                Restrictions.eq("submissionId", requestId)));
-        query.setProjection(Projections.rowCount());
-        long count = (Long) query.uniqueResult();
-        
-        return count == 0;
-                      
-    }
-    
-     public List<MinimalRequestEntity> getDeleatableRequests() {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        
-        DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
-                .add(Restrictions.conjunction(
-                    Restrictions.ne("status",SampleEntity.status_requested),
-                    Restrictions.ne("status",SampleEntity.status_queued)))
-                .setProjection(Projections.distinct(Projections.property("submissionId")));
-        
-        ProjectionList projList = Projections.projectionList();
-        projList.add(Projections.property("submissionId").as("requestId"));
-        projList.add(Projections.property("user").as("requestor"));
-        
-        Criteria query = session.createCriteria(SampleEntity.class)
-                .add(Subqueries.propertyNotIn("submissionId", subquery))
-                .addOrder(Order.desc("submissionId"))
-                .setProjection(Projections.distinct(projList))
-                .setResultTransformer(Transformers.aliasToBean(MinimalRequestEntity.class));
+                .add(Restrictions.eq("status", status));
 
         return query.list();
-     }
-                      
-
-    public List<SampleEntity> getSamplesByRequestId(Integer requestId) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria query = session.createCriteria(SampleEntity.class);
-        query.add(Restrictions.eq("submissionId", requestId));
-             
-        return query.list();
     }
-
 }

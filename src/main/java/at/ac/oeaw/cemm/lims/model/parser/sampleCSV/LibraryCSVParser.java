@@ -40,7 +40,7 @@ public class LibraryCSVParser extends DTOCSVParser<LibraryDTO> {
         }
         libraryName = NameFilter.legalizeLibrary(libraryName);
         
-        return new ParsedObject<>(myDTOFactory.getLibraryDTO(libraryName),messages);
+        return new ParsedObject<>(myDTOFactory.getLibraryDTO(libraryName,null),messages);
     }
     
 }

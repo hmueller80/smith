@@ -5,8 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto;
 
-import java.util.Set;
-
 /**
  *
  * @author dbarreca
@@ -20,13 +18,5 @@ public interface RunDTO {
     String getFlowCell();
     
     String getRunFolder();
-    
-    Set<LaneDTO> getLanes();     
-    
-    LaneDTO getLane(String lane);
-    
-    void addSample(String lane,SampleDTO sample);
-        
-   
     
 }

@@ -11,7 +11,7 @@ package at.ac.oeaw.cemm.lims.api.persistence;
  */
 public interface ServiceFactory {
 
-    UploadService getRequestUploadService();
+    RequestService getRequestService();
 
     SampleService getSampleService();
 

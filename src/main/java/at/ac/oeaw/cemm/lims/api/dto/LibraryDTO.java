@@ -19,4 +19,6 @@ public interface LibraryDTO {
 
     Set<SampleDTO> getSamples();
     
+    Integer getId();
+    
 }

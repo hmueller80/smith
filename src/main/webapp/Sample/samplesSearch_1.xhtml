@@ -54,12 +54,28 @@
                     filter="true" 
                     filterMatchMode="contains">
                     <f:selectItems 
-                        id="sample" 
+                        id="sampleSelect" 
                         value="#{deleteRequestBean.requestsAvailable}" 
                         var="sampleRequest" 
                         itemLabel="#{sampleRequest.requestId} (requestedBy by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                    <p:ajax update="librarySelector" />
                 </p:selectOneMenu>     
                 <br /><br/>
+                <p:selectOneMenu  
+                    id="librarySelector"
+                    converter="genericConverter"
+                    value ="#{deleteRequestBean.selectedLibrary}"
+                    immediate="true"
+                    disabled="#{!deleteRequestBean.roleManager.hasSampleLoadPermission()}"
+                    filter="true" 
+                    filterMatchMode="contains">
+                    <f:selectItems 
+                        id="librarySelect" 
+                        value="#{deleteRequestBean.deleatableLibraries}" 
+                        var="library" 
+                        itemLabel="#{library.id} - #{library.name}" />
+                </p:selectOneMenu>     
+                <br /><br/>                
                 <div style="width:100%;text-align: center;">
                     <p:commandButton
                         widgetVar='confirmDeleteButton'

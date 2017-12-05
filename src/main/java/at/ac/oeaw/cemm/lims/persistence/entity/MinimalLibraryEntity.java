@@ -9,10 +9,20 @@ package at.ac.oeaw.cemm.lims.persistence.entity;
  *
  * @author dbarreca
  */
-public class MinimalRequestEntity {
+public class MinimalLibraryEntity {
 
+    private Integer libraryId;
     private Integer requestId;
     private UserEntity requestor;
+    private String libraryName;
+
+    public Integer getLibraryId() {
+        return libraryId;
+    }
+
+    public void setLibraryId(Integer libraryId) {
+        this.libraryId = libraryId;
+    }
 
     public Integer getRequestId() {
         return requestId;
@@ -28,7 +38,16 @@ public class MinimalRequestEntity {
 
     public void setRequestor(UserEntity requestor) {
         this.requestor = requestor;
+    }            
+
+    public String getLibraryName() {
+        return libraryName;
     }
+
+    public void setLibraryName(String libraryName) {
+        this.libraryName = libraryName;
+    }
+    
     
     
 }

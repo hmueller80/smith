@@ -44,9 +44,4 @@ public interface SampleService {
         
     List<SampleDTO> getAllPooledSamples(SampleDTO sample);
 
-    public boolean checkRequestExistence(Integer requestId);
-    
-    List<RequestDTO> getDeleatableRequests();
-    
-    void deleteAllSamplesForRequest(Integer requestId) throws Exception;
 }

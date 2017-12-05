@@ -48,8 +48,8 @@ public class DTOFactoryImpl implements DTOFactory {
     }
     
     @Override
-    public LibraryDTO getLibraryDTO(String libraryName) {
-        return new LibraryDTOImpl(libraryName);
+    public LibraryDTO getLibraryDTO(String libraryName,Integer id) {
+        return new LibraryDTOImpl(libraryName,id);
     }
     
     @Override
