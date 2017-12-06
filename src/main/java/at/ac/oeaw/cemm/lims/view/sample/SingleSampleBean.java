@@ -48,10 +48,11 @@ public class SingleSampleBean implements Serializable {
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
     
-    
+
     private SampleDTO currentSample = null;
     private ApplicationDTO currentApplication = null;
     private LibraryDTO currentLibrary = null;
+    
     private UserDTO principalInvestigator = null;
     
     private List<String> possibleIndexes = new LinkedList<>();
@@ -65,6 +66,7 @@ public class SingleSampleBean implements Serializable {
             possibleIndexes.add(index);
         }
         String sid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("sid");
+        
         if (sid != null) {
            Integer sampleId = Integer.parseInt(sid);
            loadId(sampleId);
@@ -251,17 +253,25 @@ public class SingleSampleBean implements Serializable {
     }
 
     //CRUD OPs  
-    public String modify() {
+    public void saveSampleChanges() {
+    		System.out.println("Saving sample Changes...");
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
-            return null;
+            return;
         }
 
-        if(persist()){
-            return "sampleDetails_1?sid="+currentSample.getId()+"&activeMenu=1&faces-redirect=true";
-        }          
-        
-        return null;
+        persist(false);
+    }
+    
+    public void saveLibraryChanges() {
+		System.out.println("Saving Library Changes...");
+
+        if (!getModifyPermission()) {
+            NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
+            return;
+        }
+
+        persist(true);        
     }
 
     public String delete() {
@@ -299,46 +309,59 @@ public class SingleSampleBean implements Serializable {
         return currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued);
     }
 
-    private boolean persist() {
+    private boolean persist(boolean library) {
         try {
-
-            ApplicationValidator appValidator = new ApplicationValidator(currentApplication);
-            ApplicationDTO appToPersist = appValidator.getValidatedObject();
-            currentSample.setApplication(appToPersist);
-            currentSample.setExperimentName(appToPersist.getApplicationName());
-            
             boolean checkLibrary = false;
-            String oldLibraryName = currentSample.getLibraryName();
-            if (!oldLibraryName.equals(currentLibrary.getName())){
-                checkLibrary = true;
-            }
+            String oldLibraryName = null;
+            SampleDTO sampleToPersist = null;
             
-            currentSample.setLibraryName(this.currentLibrary.getName());
-            
-            SampleValidator sampValidator = new SampleValidator(currentSample,myDTOFactory);
-            SampleDTO sampleToPersist = sampValidator.getValidatedObject();
+			if (library) {
+				sampleToPersist = services.getSampleService().getFullSampleById(currentSample.getId());
+				oldLibraryName = sampleToPersist.getLibraryName();
+
+				ApplicationValidator appValidator = new ApplicationValidator(currentApplication);
+				ApplicationDTO appToPersist = appValidator.getValidatedObject();
+				sampleToPersist.setApplication(appToPersist);
+				sampleToPersist.setExperimentName(appToPersist.getApplicationName());
+
+				if (!oldLibraryName.equals(currentLibrary.getName())) {
+					checkLibrary = true;
+					sampleToPersist.setLibraryName(this.currentLibrary.getName());
+				}
+				
+			      
+	            for (ValidatorMessage message : appValidator.getMessages()) {
+	                if (message.getType().equals(ValidatorSeverity.WARNING)) {
+	                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
+	                    System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
+	                }
+	            }
+
+
+			} else {
+				SampleValidator sampValidator = new SampleValidator(currentSample, myDTOFactory);
+				sampleToPersist = sampValidator.getValidatedObject();
+				
+				for (ValidatorMessage message : sampValidator.getMessages()) {
+	                if (message.getType().equals(ValidatorSeverity.WARNING)) {
+	                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
+	                    System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
+	                }
+	            }
+			}            
+      
             PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
-            if (checkLibrary){
+            if (checkLibrary && oldLibraryName!=null){
                 services.getRequestService().deleteLibraryIfEmpty(oldLibraryName);
             }
+            
+            //RESTORE STATUS
             this.currentSample = services.getSampleService().getFullSampleById(receipt.getId());
             this.currentLibrary = services.getRequestService().getLibraryByName(currentSample.getLibraryName());
             this.currentApplication = currentSample.getApplication();
             this.principalInvestigator = services.getUserService().getUserByID(currentSample.getUser().getPi());
+      
             
-            for (ValidatorMessage message : appValidator.getMessages()) {
-                if (message.getType().equals(ValidatorSeverity.WARNING)) {
-                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
-                    System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
-                }
-            }
-
-            for (ValidatorMessage message : sampValidator.getMessages()) {
-                if (message.getType().equals(ValidatorSeverity.WARNING)) {
-                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
-                    System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
-                }
-            }
 
             NgsLimsUtility.setSuccessMessage(null, null,
                     "Sample with id " + receipt.getId() + " updated successfully",

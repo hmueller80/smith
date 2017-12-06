@@ -6,9 +6,11 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
+import javassist.bytecode.Descriptor.Iterator;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +23,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
@@ -82,11 +85,19 @@ public class SampleDAO {
 
         //1. Get the ids of the distinct samples satisfying the query
         Criteria query = assembleQuery(sortField, ascending, filters);
-        query.setProjection(Projections.distinct(Projections.property("id")));
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("id").as("id"));
+        projList.add(Projections.property("library.id"));
+        projList.add(Projections.property("submissionId"));
+        query.setProjection(Projections.distinct(projList));
+        query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
         query.setFirstResult(first);
         query.setMaxResults(pageSize);
-        List idsToFetch = query.list();
-
+        
+        List<Integer> idsToFetch = new LinkedList<>();
+        for (Map item: (List<Map>) query.list()) {
+           idsToFetch.add((Integer) item.get("id"));
+        }        
         //2. Fetch the distinct sample in the query
         query = HibernateUtil.getSessionFactory().getCurrentSession().createCriteria(SampleEntity.class)
                 .add(Restrictions.in("id", idsToFetch))
