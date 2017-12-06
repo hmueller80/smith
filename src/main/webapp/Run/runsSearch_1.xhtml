@@ -140,9 +140,10 @@
                 <p:column id="idSamColumn"                      
                           headerText="#{bundle['runs.sample.id']}"
                           filterBy="#{run.id.samId}">
-                    <h:commandLink id="sampleId" action="#{singleSampleBean.loadId}" value="#{run.sample.id}" >
+                    <h:link id="sampleId" outcome="/Sample/sampleDetails_1.jsf" value="#{run.sample.id}" >
                         <f:param name="sid" value="#{run.sample.id}"/>
-                    </h:commandLink>   
+                        <f:param name="activeMenu" value="1" />         
+                    </h:link>   
                 </p:column>
 
                 <p:column id="operatorColumn"                    

@@ -1,81 +1,81 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.org/ui" template="/template.xhtml">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui" template="/template.xhtml">
 
-	<ui:define name="runDetails">
+    <ui:define name="runDetails">
 
-		<h:form id="rundetailsForm">
-		
-			<div class="ui-g">
-				<div class="ui-g-4" />
-				<div class="ui-g-4">
-					<h:outputText value="Details for run #{singleRunBean.runId}"
-						styleClass="run-detail-title" />
-				</div>
-				<div class="ui-g-4">
-                                    <h:form>
-					<p:commandButton style="float:right;margin:1px" value="Delete Run"
-						icon="ui-icon-trash"
-						rendered="#{singleRunBean.roleManager.hasRunAddPermission}"
-                                                action="#{singleRunBean.deleteRun}">
-                                                <p:confirm header="Confirmation" message="Are you sure to delete run #{singleRunBean.runId}?" icon="ui-icon-alert" />
-                                        </p:commandButton>
-                                        <p:confirmDialog global="true">
-                                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-                                        </p:confirmDialog>
-                                    </h:form>
-				</div>
-			</div>
-			
-			<p:separator />
-			
+        <h:form id="rundetailsForm">
 
-			<h:panelGrid columns="2" cellpadding="3">
-				<h:outputLabel for="flowcell" value="Flowcell: " style="font-family: 'sysbold';"/>
-				<h:outputText style="font-family: 'sysbold';" id="flowcell" value="#{singleRunBean.flowcell}" />
-				
-				<h:outputLabel for="runFolder" value="Run Folder: "/>
-				<h:outputText id="runFolder" value="#{singleRunBean.runFolder}" />
-				
-				<h:outputLabel for="operator" value="Operator: "/>
-				<h:outputText id="operator" value="#{singleRunBean.operator.login}" />
-			</h:panelGrid>
-			
-			<p:separator />
+            <div class="ui-g">
+                <div class="ui-g-4" />
+                <div class="ui-g-4">
+                    <h:outputText value="Details for run #{singleRunBean.runId}"
+                                  styleClass="run-detail-title" />
+                </div>
+                <div class="ui-g-4">
+                    <h:form>
+                        <p:commandButton style="float:right;margin:1px" value="Delete Run"
+                                         icon="ui-icon-trash"
+                                         rendered="#{singleRunBean.roleManager.hasRunAddPermission}"
+                                         action="#{singleRunBean.deleteRun}">
+                            <p:confirm header="Confirmation" message="Are you sure to delete run #{singleRunBean.runId}?" icon="ui-icon-alert" />
+                        </p:commandButton>
+                        <p:confirmDialog global="true">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+
+            <p:separator />
 
 
-			<p:dataTable var="sampleRun" value="#{singleRunBean.allSamples}"
-				sortBy="#{sampleRun.lane}" expandableRowGroups="true">
-				<p:headerRow>
-					<p:column colspan="6">
-						<h:outputText value="Lane #{sampleRun.lane}" />
-					</p:column>
-				</p:headerRow>
-				<p:column headerText="Library" groupRow="true">
-					<h:outputText value="#{sampleRun.libraryName}" />
-				</p:column>
-				<p:column headerText="Index">
-					<h:outputText value="#{sampleRun.sample.index.index}" />
-				</p:column>
-				<p:column headerText="Sample Id">
-					<h:commandLink action="#{singleSampleBean.loadId}"
-						value="#{sampleRun.sample.id}">
-						<f:param name="sid" value="#{sampleRun.sample.id}" />
-					</h:commandLink>
-				</p:column>
-				<p:column headerText="Sample Submission Id">
-					<h:outputText value="#{sampleRun.sample.submissionId}" />
-				</p:column>
-				<p:column headerText="Sample Name">
-					<h:outputText value="#{sampleRun.sample.name}" />
-				</p:column>
-				<p:column headerText="Requestor">
-					<h:outputText value="#{sampleRun.sample.user.userName}" />
-				</p:column>
-			</p:dataTable>
-		</h:form>
-	</ui:define>
+            <h:panelGrid columns="2" cellpadding="3">
+                <h:outputLabel for="flowcell" value="Flowcell: " style="font-family: 'sysbold';"/>
+                <h:outputText style="font-family: 'sysbold';" id="flowcell" value="#{singleRunBean.flowcell}" />
+
+                <h:outputLabel for="runFolder" value="Run Folder: "/>
+                <h:outputText id="runFolder" value="#{singleRunBean.runFolder}" />
+
+                <h:outputLabel for="operator" value="Operator: "/>
+                <h:outputText id="operator" value="#{singleRunBean.operator.login}" />
+            </h:panelGrid>
+
+            <p:separator />
+
+
+            <p:dataTable var="sampleRun" value="#{singleRunBean.allSamples}"
+                         sortBy="#{sampleRun.lane}" expandableRowGroups="true">
+                <p:headerRow>
+                    <p:column colspan="6">
+                        <h:outputText value="Lane #{sampleRun.lane}" />
+                    </p:column>
+                </p:headerRow>
+                <p:column headerText="Library" groupRow="true">
+                    <h:outputText value="#{sampleRun.libraryName}" />
+                </p:column>
+                <p:column headerText="Index">
+                    <h:outputText value="#{sampleRun.sample.index.index}" />
+                </p:column>
+                <p:column headerText="Sample Id">
+                    <h:link id="sampleId" outcome="/Sample/sampleDetails_1.jsf" value="#{sampleRun.sample.id}" >
+                        <f:param name="sid" value="#{sampleRun.sample.id}"/>
+                        <f:param name="activeMenu" value="1" />         
+                    </h:link>   					
+                </p:column>
+                <p:column headerText="Sample Submission Id">
+                    <h:outputText value="#{sampleRun.sample.submissionId}" />
+                </p:column>
+                <p:column headerText="Sample Name">
+                    <h:outputText value="#{sampleRun.sample.name}" />
+                </p:column>
+                <p:column headerText="Requestor">
+                    <h:outputText value="#{sampleRun.sample.user.userName}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
 </ui:composition>
