@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
+import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -26,4 +27,9 @@ public interface RequestService {
 
     public void deleteAllSamplesForLibraryAndRequest(Integer libraryId,Integer requestId) throws Exception;
 
+    public List<LibraryDTO> getEditableLibrariesInRequest(final Integer requestId);
+
+    public LibraryDTO getLibraryByName(String libraryName);
+
+    public void deleteLibraryIfEmpty(String oldLibraryName);
 }

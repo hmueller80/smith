@@ -70,11 +70,11 @@ public interface SampleDTO {
 
     void setBioanalyzerDate(Date bioanalyzerDate);
 
-    void setBulkFragmentSize(double bulkFragmentSize);
+    void setBulkFragmentSize(Double bulkFragmentSize);
 
     void setComment(String comment);
 
-    void setConcentration(double concentration);
+    void setConcentration(Double concentration);
 
     void setCostcenter(String costcenter);
 
@@ -94,9 +94,9 @@ public interface SampleDTO {
 
     void setSubmissionId(Integer submissionId);
 
-    void setSyntehsisNeeded(boolean syntehsisNeeded);
+    void setSyntehsisNeeded(Boolean syntehsisNeeded);
 
-    void setTotalAmount(double totalAmount);
+    void setTotalAmount(Double totalAmount);
 
     void setType(String type);
     

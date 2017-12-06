@@ -6,12 +6,13 @@
 package at.ac.oeaw.cemm.lims.model.dto;
 
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.io.Serializable;
 
 /**
  *
  * @author dbarreca
  */
-public class UserDTOImpl implements UserDTO {
+public class UserDTOImpl implements UserDTO, Serializable {
 
     private Integer id;
     private String userName;

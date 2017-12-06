@@ -11,9 +11,9 @@
 
             
             
-            #{bundle['samples.deleted']}: #{singleSampleBean.sampleID} 
+            #{bundle['samples.deleted']}: #{param['sid']}
             <p></p>
-            <p:button outcome="samplesSearch_1.jsf" value="OK"></p:button>
+            <p:button outcome="samplesSearch_1.jsf?activeMenu=1" value="OK"></p:button>
             
         </h:form>
 

@@ -7,18 +7,19 @@ package at.ac.oeaw.cemm.lims.model.dto;
 
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  *
  * @author dbarreca
  */
-class LibraryDTOImpl implements LibraryDTO  {
+class LibraryDTOImpl implements LibraryDTO,Serializable  {
     private Integer id;
     private String name;
-    private Set<SampleDTO> samples=new HashSet<>();
+    private List<SampleDTO> samples=new LinkedList<>();
  
     LibraryDTOImpl(String name, Integer id){
         this.name=name;
@@ -36,7 +37,7 @@ class LibraryDTOImpl implements LibraryDTO  {
     }
 
     @Override
-    public Set<SampleDTO> getSamples() {
+    public List<SampleDTO> getSamples() {
         return samples;
     }
 

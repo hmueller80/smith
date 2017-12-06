@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -30,9 +31,7 @@ public class SampleValidator extends AbstractValidator<SampleDTO> {
         
         isValid = isValid && stringNotEmpty(objectToValidate.getCostcenter(),true,ValidatorSeverity.FAIL,"Cost Center");
         
-
-
-        if (!objectToValidate.isSyntehsisNeeded()) {           
+       /* if (!objectToValidate.isSyntehsisNeeded()) {           
             isValid = isValid && validPositiveNumber(objectToValidate.getBioAnalyzerMolarity(),ValidatorSeverity.FAIL,"Bioanalyzer Biomolarity");
         } else {
             objectToValidate.setBioanalyzerDate(null);
@@ -41,22 +40,23 @@ public class SampleValidator extends AbstractValidator<SampleDTO> {
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Bioanalyzer Date","Bioanalyzer Date was reset since library synth. is needed"));
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Bioanalyzer Molarity","Bioanalyzer Molarity was reset since library synth. is needed"));
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Sequencing Index","Sequencing Index was reset since library synth. is needed"));
-        }
+        }*/
         
         isValid = isValid && stringNotEmpty(objectToValidate.getName(),true,ValidatorSeverity.FAIL,"Sample Name");
+        
         isValid = isValid && validPositiveNumber(objectToValidate.getConcentration(),ValidatorSeverity.FAIL,"Sample Concentration");
         isValid = isValid && stringNotEmpty(objectToValidate.getOrganism(), false,ValidatorSeverity.FAIL,"Organism");
-        isValid = isValid && stringNotEmpty(objectToValidate.getType(), false,ValidatorSeverity.FAIL,"Sample Type");
+        //isValid = isValid && stringNotEmpty(objectToValidate.getType(), false,ValidatorSeverity.FAIL,"Sample Type");
         isValid = isValid && validPositiveNumber(objectToValidate.getTotalAmount(), ValidatorSeverity.FAIL,"Total Amount");
         isValid = isValid && validPositiveNumber(objectToValidate.getBulkFragmentSize(), ValidatorSeverity.FAIL,"Bulk Fragment Size");
         
-        if (ApplicationDTO.CHIP_SEQ.equals(objectToValidate.getApplication().getApplicationName())){
+        /*if (ApplicationDTO.CHIP_SEQ.equals(objectToValidate.getApplication().getApplicationName())){
              isValid = isValid
                      && stringNotEmpty(objectToValidate.getAntibody(),true,ValidatorSeverity.FAIL,"Antibody");
         }else {
             objectToValidate.setAntibody("");
             messages.add(new ValidatorMessage(ValidatorSeverity.WARNING,"Anitbody","Antibody was reset"));
-        }
+        }*/
        
         if (stringNotEmpty(objectToValidate.getDescription(),true,ValidatorSeverity.WARNING,"Description")){
             isValid = isValid && stringMatchesPattern(objectToValidate.getDescription(),

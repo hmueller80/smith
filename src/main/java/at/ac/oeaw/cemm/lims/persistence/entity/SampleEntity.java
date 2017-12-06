@@ -23,11 +23,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class SampleEntity implements Serializable, EntityWithSettableId {
 
     private static final long serialVersionUID = 1L;
-    public static final String status_requested = "requested";
-    public static final String status_queued = "queued";
-    public static final String status_confirmed = "confirmed";
-    public static final String status_running = "running";
-    public static final String status_analyzed = "analyzed";
  
     @Id 
     @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")

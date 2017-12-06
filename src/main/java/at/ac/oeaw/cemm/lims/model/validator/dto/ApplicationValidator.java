@@ -21,7 +21,11 @@ public class ApplicationValidator extends AbstractValidator<ApplicationDTO> {
 
     @Override
     public boolean objectIsValid() {
-        return stringNotEmpty(objectToValidate.getApplicationName(),false,ValidatorSeverity.FAIL,"Application name");
+        return 
+                stringNotEmpty(objectToValidate.getApplicationName(),false,ValidatorSeverity.FAIL,"Application name") &&
+                validPositiveNumber(objectToValidate.getReadLength(),ValidatorSeverity.FAIL,"Read Length") &&
+                validPositiveNumber(objectToValidate.getDepth(),ValidatorSeverity.FAIL,"Depth") &&
+                stringNotEmpty(objectToValidate.getReadMode(),false,ValidatorSeverity.FAIL,"Read Mode");
     }
     
 }

@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
+import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
@@ -85,8 +86,8 @@ public class LibraryDAO {
         DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
                 .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.conjunction(
-                    Restrictions.ne("status",SampleEntity.status_requested),
-                    Restrictions.ne("status",SampleEntity.status_queued)))
+                    Restrictions.ne("status",SampleDTO.status_requested),
+                    Restrictions.ne("status",SampleDTO.status_queued)))
                 .setProjection(Projections.distinct(Projections.property("library.id")));
         
         ProjectionList projList = Projections.projectionList();
@@ -99,11 +100,32 @@ public class LibraryDAO {
                 .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
                 .add(Subqueries.propertyNotIn("id", subquery))
                 .addOrder(Order.desc("sample.submissionId"))
-                .addOrder(Order.desc("sample.id"))
+                .addOrder(Order.desc("id"))
                 .setProjection(Projections.distinct(projList))
                 .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
 
         return query.list();
      }
+
+    public List<LibraryEntity> getDeleatableLibrariesInRequest(Integer requestId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
+                .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.conjunction(
+                    Restrictions.eq("submissionId", requestId),
+                    Restrictions.ne("status",SampleDTO.status_requested),
+                    Restrictions.ne("status",SampleDTO.status_queued)))
+                .setProjection(Projections.distinct(Projections.property("library.id")));
+               
+        Criteria query = session.createCriteria(LibraryEntity.class)
+                .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.eq("sample.submissionId", requestId))
+                .add(Subqueries.propertyNotIn("id", subquery))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .addOrder(Order.desc("id"));
+
+        return query.list();
+    }
     
 }

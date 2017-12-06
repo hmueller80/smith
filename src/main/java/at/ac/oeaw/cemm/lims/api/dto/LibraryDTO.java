@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  *
@@ -17,7 +17,7 @@ public interface LibraryDTO {
 
     String getName();
 
-    Set<SampleDTO> getSamples();
+    List<SampleDTO> getSamples();
     
     Integer getId();
     

@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -201,4 +203,88 @@ public class RequestServiceImpl implements RequestService {
         });
     }
 
+   
+
+    @Override
+    public List<LibraryDTO> getEditableLibrariesInRequest(final Integer requestId) {        
+        final List<LibraryDTO> result = new LinkedList<>();
+
+        if (requestId==null) return result;
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<LibraryEntity> deleatableLibraries = libraryDAO.getDeleatableLibrariesInRequest(requestId);
+                    
+                    if (deleatableLibraries != null) {
+                        for (LibraryEntity entity : deleatableLibraries) {
+                            LibraryDTO libraryDTO = myDTOMapper.getLibraryDTOFromEntity(entity, true);
+                            result.add(libraryDTO);
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Deleatable requests retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }       
+
+        return result;
+    }
+
+    @Override
+    public LibraryDTO getLibraryByName(final String libraryName) {
+
+        if (libraryName == null || libraryName.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<LibraryDTO>() {
+                @Override
+                public LibraryDTO execute() throws Exception {
+
+                    LibraryEntity library = libraryDAO.getLibraryByName(libraryName);
+
+                    if (library != null) {
+                        return myDTOMapper.getLibraryDTOFromEntity(library, true);
+                    }
+
+                    return null;
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    @Override
+    public void deleteLibraryIfEmpty(final String oldLibraryName) {
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    LibraryEntity library = libraryDAO.getLibraryByName(oldLibraryName);
+                    
+                    if (library.getSamples().isEmpty()) {
+                        libraryDAO.deleteLibrary(library);
+                    }
+                    
+                    return null;
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }    
+    }
 }

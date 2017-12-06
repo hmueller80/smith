@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
@@ -203,9 +204,18 @@ public class LazySampleService implements SampleService {
             public Void execute() throws Exception {
                 Integer sampleId = sample.getId();
                 if (sampleId!=null){
-                    SampleEntity sampleEntity = sampleDAO.getSampleById(sampleId);
+                    SampleEntity sampleEntity = sampleDAO.getSampleById(sampleId);                    
                     if (sampleEntity!=null){
+                        LibraryEntity libraryEntity = sampleEntity.getLibrary();
+
                         sampleDAO.deleteSample(sampleEntity);
+                        
+                        HibernateUtil.getSessionFactory().getCurrentSession().flush();
+                        HibernateUtil.getSessionFactory().getCurrentSession().refresh(libraryEntity);
+
+                        if (libraryEntity.getSamples().isEmpty()) {
+                            libraryDAO.deleteLibrary(libraryEntity);
+                        }
                     }
                 }
                 return null;
@@ -404,9 +414,11 @@ public class LazySampleService implements SampleService {
                     SampleEntity sampleEntity = sampleDAO.getSampleById(sample.getId());
                     LibraryEntity libraryEntity = sampleEntity.getLibrary();
                     for (SampleEntity pooledSample: libraryEntity.getSamples() ){
-                            Hibernate.initialize(pooledSample.getApplication());
-                            Hibernate.initialize(pooledSample.getSequencingIndexes());
-                            samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
+                            if (pooledSample.getSubmissionId().equals(sampleEntity.getSubmissionId())){
+                                Hibernate.initialize(pooledSample.getApplication());
+                                Hibernate.initialize(pooledSample.getSequencingIndexes());
+                                samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
+                            }
                         }
                      return null;
                 }

@@ -6,12 +6,13 @@
 package at.ac.oeaw.cemm.lims.model.dto;
 
 import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
+import java.io.Serializable;
 
 /**
  *
  * @author dbarreca
  */
-class ApplicationDTOImpl implements ApplicationDTO {
+class ApplicationDTOImpl implements ApplicationDTO, Serializable {
     private Integer readLength;
     private String readMode;
     private String instrument;

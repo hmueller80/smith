@@ -590,3 +590,6 @@ a.ui-button:active,
    font-size: 4vmin;
    display: block;
 }
+.highlighted-sample {
+    background-color: #bde7f0;
+}

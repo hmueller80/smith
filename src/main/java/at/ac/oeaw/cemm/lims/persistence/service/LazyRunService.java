@@ -26,6 +26,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import java.util.HashSet;
 import java.util.Set;
 import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 
 
 /**
@@ -184,7 +185,7 @@ public class LazyRunService implements RunService {
                     SampleEntity sampleEntity = sampleDAO.getSampleById(sampleId);
                     if (sampleEntity != null) {
                         if (sampleEntity.getSampleRuns().isEmpty()) {
-                            sampleEntity.setStatus(SampleEntity.status_requested);
+                            sampleEntity.setStatus(SampleDTO.status_requested);
                             sampleDAO.updateSample(sampleEntity);
                         }
                     }
@@ -295,7 +296,7 @@ public class LazyRunService implements RunService {
         sampleRunEntity.setRunFolder(sampleRun.getRunFolder());
         
         //UPDATE SAMPLE ENTITY
-        sampleEntity.setStatus(SampleEntity.status_running);
+        sampleEntity.setStatus(SampleDTO.status_running);
         sampleDAO.updateSample(sampleEntity);
         
         //SAVE OR UPDATE SAMPLE RUN ENTITY

@@ -82,6 +82,18 @@ public abstract class AbstractValidator<T> {
         return true;
     }
     
+    protected boolean validPositiveNumber(Integer toCheck,
+            ValidatorSeverity severity,
+            String parameterName){
+        
+        if (toCheck==null || toCheck<0){
+            messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is undefined or negative"));
+            return false;
+        }
+        
+        return true;
+    }
+    
      protected boolean collectionNotEmpty(
             Collection toCheck, 
             ValidatorSeverity severity,

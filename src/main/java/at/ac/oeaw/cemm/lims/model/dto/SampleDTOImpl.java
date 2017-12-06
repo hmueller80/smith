@@ -9,13 +9,14 @@ import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author dbarreca
  */
-class SampleDTOImpl implements SampleDTO {
+class SampleDTOImpl implements SampleDTO, Serializable {
     
     private final Integer id;
     private ApplicationDTO application;
@@ -210,22 +211,22 @@ class SampleDTOImpl implements SampleDTO {
     }
 
     @Override
-    public void setSyntehsisNeeded(boolean syntehsisNeeded) {
+    public void setSyntehsisNeeded(Boolean syntehsisNeeded) {
         this.syntehsisNeeded = syntehsisNeeded;
     }
 
     @Override
-    public void setConcentration(double concentration) {
+    public void setConcentration(Double concentration) {
         this.concentration = concentration;
     }
 
     @Override
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount(Double totalAmount) {
         this.totalAmount = totalAmount;
     }
 
     @Override
-    public void setBulkFragmentSize(double bulkFragmentSize) {
+    public void setBulkFragmentSize(Double bulkFragmentSize) {
         this.bulkFragmentSize = bulkFragmentSize;
     }
 

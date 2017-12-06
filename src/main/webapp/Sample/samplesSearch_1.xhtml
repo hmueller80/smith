@@ -57,7 +57,7 @@
                         id="sampleSelect" 
                         value="#{deleteRequestBean.requestsAvailable}" 
                         var="sampleRequest" 
-                        itemLabel="#{sampleRequest.requestId} (requestedBy by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
                     <p:ajax update="librarySelector" />
                 </p:selectOneMenu>     
                 <br /><br/>
@@ -99,19 +99,20 @@
             </h:form>
         </p:dialog>        
         
-        <h:form id="sampleTableForm">
-
+        <h:form id="sampleTableForm" style="height:100%">
             <p:dataTable id="sampleTable"
                          var="sample"
                          value="#{sampleSearchBeanLazy.lazyModel}"
                          widgetVar="samplesTable"
                          style="font-size: x-small;"
                          paginator="true" 
-                         rows="20"
+                         rows="100"
+                         scrollable="true"
+                         scrollHeight="100%"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['sample.emptymessage']}"
-                         sortBy="#{sample.id}" 
+                         sortBy="#{sample.submissionId}" 
                          sortOrder="descending"
                          lazy="true">
 
@@ -120,7 +121,7 @@
                         <div class="ui-g-4" />
                         <div class="ui-g-4">
                             <h:outputText value="Search all Samples fields: " />
-                            <p:inputText id="globalFilter" onkeyup="PF('sampleTable').filter()"
+                            <p:inputText id="globalFilter" onkeyup="PF('samplesTable').filter()"
                                          style="width:150px" placeholder="Enter keyword" />
                         </div>
                         <div class="ui-g-4">
@@ -142,39 +143,41 @@
                         </div>
                     </div>                   
                 </f:facet> 
-
+                
+                <p:column id ="submissionId" 
+                          headerText="Submission Id"
+                          filterBy="#{sample.submissionId}"
+                          sortBy="#{sample.submissionId}">
+                        <h:outputText value="#{sample.submissionId}" />
+                </p:column>
+                
+                <p:column id ="requestor" 
+                          headerText="Requestor"
+                          filterBy="#{sample.user.login}" >
+                    <h:outputText value="#{sample.user.login}" />
+                </p:column>
+                
+                <p:column id="libNameColumn" 
+                          headerText="#{bundle['samples.library.name']}"
+                          filterBy="#{sample.library.libraryName}"
+                          sortBy="#{sample.library.id}">
+                    <h:outputText value="#{sample.libraryName}" />
+                </p:column>
+                
+                              
                 <p:column id="idSamColumn" filterBy="#{sample.id}"                     
                           headerText="#{bundle['samples.sample.id']}"
                           sortBy="#{sample.id}">                 
-
-                    <h:commandLink action="#{singleSampleBean.loadId}" value="#{sample.id}" >
-                        <f:param name="sid" value="#{sample.id}"/>
-                    </h:commandLink>   
-
-
+                        <h:link  outcome="sampleDetails_1.jsf" value="#{sample.id}">
+                            <f:param name="sid" value="#{sample.id}"/>
+                            <f:param name="activeMenu" value="1" />                           
+                        </h:link>
                 </p:column>
 
                 <p:column id="nameColumn" filterBy="#{sample.name}"                      
                           headerText="#{bundle['samples.sample.name']}">
-                    <h:outputText value="#{sample.name}" />
-                </p:column>
-
-                <p:column id="libNameColumn" 
-                          headerText="#{bundle['samples.library.name']}"
-                          filterBy="#{sample.library.libraryName}">
-                    <ui:remove>
-                        <f:facet name="filter">
-                            <p:selectCheckboxMenu label="Libraries" onchange="PF('samplesTable').filter()" panelStyle="width:300px" scrollHeight="200">
-                                <f:selectItems value="#{sampleSearchBeanLazy.allLibraries}" />
-                            </p:selectCheckboxMenu>
-                        </f:facet>
-                    </ui:remove>
-                    <h:outputText value="#{sample.libraryName}" />
-                </p:column>
-
-                <p:column id="userColumn" filterBy="#{sample.user.login}"                      
-                          headerText="#{bundle['samples.requester']}">
-                    <h:outputText value="#{sample.user.login}" />
+                    <h:outputText value="#{sample.name}" id="sampleNameValue"/>
+                    <p:tooltip id="toolTipName" value="#{sample.name}" for = "sampleNameValue" position="top"/>
                 </p:column>
 
                 <p:column id="statusColumn" filterBy="#{sample.status}"                     
@@ -192,10 +195,7 @@
                     <h:outputText value="#{sample.experimentName}" />
                 </p:column>
 
-                <p:column id="antibodyColumn" filterBy="#{sample.submissionId}"                  
-                          headerText="#{bundle['samples.annotation']}">
-                     <h:outputLink  value="../SampleAnnotationSheets/#{sample.submissionId}.xlsx">#{sample.submissionId}</h:outputLink>
-                </p:column>
+             
 
                 <p:column id="costCenterColumn" filterBy="#{sample.costCenter}"                    
                           headerText="#{bundle['samples.cost.center']}">
@@ -204,7 +204,8 @@
 
                 <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
                           headerText="#{bundle['samples.description']}">
-                    <h:outputText value="#{sample.description}" />
+                    <h:outputText value="#{sample.description}" id="sampleDescriptionValue"/>
+                    <p:tooltip id="toolTipDescription" value="#{sample.description}" for = "sampleDescriptionValue" position="top"/>
                 </p:column>
 
             </p:dataTable>
