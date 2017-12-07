@@ -593,3 +593,9 @@ a.ui-button:active,
 .highlighted-sample {
     background-color: #bde7f0;
 }
+.index-collision-red{
+    background-color:#fddfdf;
+}
+.index-collision-yellow{
+    background-color: #fffa90;
+}
