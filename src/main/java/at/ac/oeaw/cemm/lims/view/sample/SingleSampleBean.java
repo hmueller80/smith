@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -75,8 +76,11 @@ public class SingleSampleBean implements Serializable {
            Integer sampleId = Integer.parseInt(sid);
            refreshExisting(sampleId);
         }else{
-            refreshNew();
-            isNewForm = false;
+            String rid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rid");
+            if (rid==null || rid.trim().isEmpty()){              
+                    throw new IllegalStateException("Cannot instantiate new sample without request");
+            }
+            refreshNew(Integer.parseInt(rid));
         }
         
         if (!isEditable()) {
@@ -228,13 +232,14 @@ public class SingleSampleBean implements Serializable {
     }
     
     public String getLibraryRowClass(SampleDTO sample) {
+        Integer editDistance;
         if (Objects.equals(sample.getId(), currentSample.getId())) {
             return "highlighted-sample";
         } else if (getEditDistance(sample.getIndex().getIndex()) == 0) {            
             NgsLimsUtility.setFailMessage("indexCollisionMsg", null, "Index Collision", "The index is equal to another index in the library");
             return "index-collision-red";
-        } else if (getEditDistance(sample.getIndex().getIndex()) < minimumDistanceThreshold) {         
-            NgsLimsUtility.setWarningMessage("indexCollisionMsg", null, "Index Collision", "The edit distance with another index in the library is less than " + minimumDistanceThreshold);
+        } else if ((editDistance=getEditDistance(sample.getIndex().getIndex())) < minimumDistanceThreshold) {         
+            NgsLimsUtility.setWarningMessage("indexCollisionMsg", null, "Index Collision", "The edit distance with another index in the library is " + editDistance);
             return "index-collision-yellow";
         }
         return null;
@@ -263,7 +268,7 @@ public class SingleSampleBean implements Serializable {
     }
     
     public void saveLibraryChanges() {
-		System.out.println("Saving Library Changes...");
+	System.out.println("Saving Library Changes...");
 
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
@@ -312,9 +317,12 @@ public class SingleSampleBean implements Serializable {
         try {
             boolean checkLibrary = false;
             String oldLibraryName = null;
-            SampleDTO sampleToPersist = null;
+            SampleDTO sampleToPersist;
             
-            if (library) {
+            if (library ) {
+                if (isNewForm){
+                    return false;
+                }
                 sampleToPersist = services.getSampleService().getFullSampleById(currentSample.getId());
                 oldLibraryName = sampleToPersist.getLibraryName();
 
@@ -322,7 +330,8 @@ public class SingleSampleBean implements Serializable {
                 ApplicationDTO appToPersist = appValidator.getValidatedObject();
                 sampleToPersist.setApplication(appToPersist);
                 sampleToPersist.setExperimentName(appToPersist.getApplicationName());
-
+                sampleToPersist.setIndex(currentSample.getIndex());
+                        
                 if (!oldLibraryName.equals(currentLibrary.getName())) {
                     checkLibrary = true;
                     sampleToPersist.setLibraryName(this.currentLibrary.getName());
@@ -380,7 +389,7 @@ public class SingleSampleBean implements Serializable {
     
     public void refresh() {
         if (isNewForm) {
-            refreshNew();
+            refreshNew(currentSample.getSubmissionId());
         } else {
             refreshExisting(currentSample.getId());
         }
@@ -396,19 +405,28 @@ public class SingleSampleBean implements Serializable {
 
     }
 
-    private void refreshNew() {
+    private void refreshNew(Integer rid) {
+        RequestDTO existingRequest = services.getRequestService().getMinimalRequestById(rid);
+        if (existingRequest==null){
+            throw new IllegalStateException("Request with id "+rid+" not existing");
+        }
+        UserDTO requestor = existingRequest.getRequestor();
+        principalInvestigator = services.getUserService().getUserByID(requestor.getPi());
+
         currentSample = myDTOFactory.getSampleDTO(null);
-        UserDTO currentUser = roleManager.getCurrentUser();
-        currentSample.setUser(currentUser);
-        currentSample.setOrganism("HUMAN");
+        currentSample.setUser(requestor);
         currentSample.setCostcenter(principalInvestigator.getUserName());
+        currentSample.setSubmissionId(rid);               
         currentSample.setStatus(SampleDTO.status_requested);
         currentSample.setRequestDate(new Date(System.currentTimeMillis()));
-        currentSample.setBioanalyzerDate(new Date(System.currentTimeMillis()));
+
+        currentLibrary = myDTOFactory.getLibraryDTO("UNDEFINED", null);
+        currentLibrary.addSample(currentSample);
+        currentSample.setLibraryName(currentLibrary.getName());
         currentSample.setIndex(myDTOFactory.getIndexDTO("none"));
         currentApplication = myDTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ);
-        currentLibrary = myDTOFactory.getLibraryDTO("UNDEFINED", null);
-        principalInvestigator = roleManager.getPi();
+        currentSample.setApplication(currentApplication);
+        currentSample.setType("");
         isNewForm = true;
     }
     

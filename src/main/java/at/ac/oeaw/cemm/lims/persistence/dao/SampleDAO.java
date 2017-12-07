@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
-import javassist.bytecode.Descriptor.Iterator;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import java.util.Collection;
 import java.util.HashSet;

@@ -37,7 +37,7 @@
                         <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/loggedUserInfo.xhtml" > #{newRoleManager.currentUser.login} </h:outputLink>
                     </p:column>
                 </p:panelGrid>
-                <h:form class="menubar">
+                <h:form class="menubar" id="menuForm">
                     <ui:include src="menu_1.xhtml"></ui:include>                          
                 </h:form>
             </p:layoutUnit>

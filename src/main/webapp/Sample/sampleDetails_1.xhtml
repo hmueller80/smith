@@ -6,11 +6,11 @@
                 template="/template.xhtml"> 
 
     <ui:define name="sampleDetails">
-
+        
         <p:confirmDialog global="true">
             <h:form>
                 <p:commandButton value="Yes" type="button"
-                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
                 <p:commandButton value="No" type="button"
                                  styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
             </h:form>
@@ -66,14 +66,19 @@
                     <div class="ui-g-4">
                         <p:commandButton 
                             action="#{singleSampleBean.delete}"
-                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
-                            id="SampleDeletionButton" value="#{bundle['button.text.delete']}"
-                            icon="ui-icon-trash" style="float:right;margin:1px">
+                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable or singleSampleBean.isNewForm}"
+                            id="SampleDeletionButton" 
+                            value="#{bundle['button.text.delete']}"
+                            icon="ui-icon-trash" 
+                            style="float:right;margin:1px"
+                            update=":menuForm:messages">
                             <p:confirm header="Confirmation"
                                        message="Are you sure to delete sample #{singleSampleBean.currentSample.id}?"
                                        icon="ui-icon-alert" />
                         </p:commandButton>
-                        <p:button outcome="sampleDetails_1" value="Reset"
+                        <p:button outcome="sampleDetails_1" 
+                                  value="Reset"
+                                  disabled="#{singleSampleBean.isNewForm}"
                                   style="float:right;margin:1px" icon="ui-icon-arrowrefresh-1-e">
                             <f:param name="sid" value="#{singleSampleBean.currentSample.id}" />
                             <f:param name="activeMenu" value="1" />
@@ -86,7 +91,7 @@
 
             <p:spacer/>
             <p:tabView id="tabMenu" dynamic="true">
-                <p:ajax event="tabChange" listener="#{singleSampleBean.refresh}" update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm" />
+                <p:ajax event="tabChange" listener="#{singleSampleBean.refresh}" update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :generalSampleForm" />
                 <p:tab title="Requestor">
                     <h:panelGrid columns="3"> 
 
@@ -124,10 +129,9 @@
                                     disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
                                     id="SampleModbutton" 
                                     value="#{bundle['button.text.save']} Sample"
-                                    rendered="#{!singleSampleBean.isNewForm}" 
                                     validateClient="true"
                                     icon="ui-icon-disk" 
-                                    update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm"
+                                    update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
                                     style="float:right;margin:1px">
                                     <p:confirm header="Confirmation"
                                                message="Are you sure to modify sample #{singleSampleBean.currentSample.id}?"
@@ -145,7 +149,7 @@
                                          requiredMessage="Sample Name is required"
                                          value="#{singleSampleBean.sampleName}"
                                          disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax 	update="@this :tabMenu:libraryForm sampleMessage" />
+                                <p:ajax update="@this :tabMenu:libraryForm sampleMessage" />
                             </p:inputText>
                             <p:message id="sampleMessage" for="sampleName" />
 
@@ -218,18 +222,17 @@
                         </h:panelGrid>
                     </h:form>
                 </p:tab>
-                <p:tab title="Library Details" id="LibraryDetails">
+                <p:tab title="Application Details">
                     <h:form id="libraryForm">
                         <div class="ui-g" style="width: 100%">
                             <div class="ui-g-12">
                                 <p:commandButton
-                                    actionListener="#{singleSampleBean.saveLibraryChanges()}"
-                                    disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
-                                    id="SampleModbutton" value="#{bundle['button.text.save']} Library"
-                                    rendered="#{!singleSampleBean.isNewForm}" 
-                                    validateClient="true"
+                                    actionListener="#{singleSampleBean.saveLibraryChanges}"
+                                    disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable or singleSampleBean.isNewForm}"
+                                    id="LibraryModbutton" 
+                                    value="#{bundle['button.text.save']} Application"
                                     icon="ui-icon-disk" 
-                                    update=":tabMenu:libraryForm"
+                                    update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
                                     style="float:right;margin:1px">
                                     <p:confirm header="Confirmation"
                                                message="Are you sure to modify sample #{singleSampleBean.currentSample.id}?"
@@ -251,7 +254,7 @@
                                                value="#{singleSampleBean.editableLibraries}"
                                                itemLabel="#{library.name}" itemValue="#{library}"
                                                var="library" />
-                                <p:ajax update="@this :tabMenu:libraryForm" />
+                                <p:ajax update=":tabMenu:libraryForm" />
                             </p:selectOneMenu>
 
                             <p:commandButton onclick="PF('addLibraryDialog').show()"
@@ -266,13 +269,14 @@
                                         showDetail="true" autoUpdate="true" />
 
                         </h:panelGrid>
-                        <p:spacer />
-                        <p:messages for="indexCollisionMsg" id="indexCollisionMessages" showDetail="true" autoUpdate="true"/>
+
+                    <p:spacer />
                         <p:dataTable id="libraryTable"
                                      var="sample"
                                      value="#{singleSampleBean.currentLibrary.samples}"
                                      widgetVar="libraryTable"
-                                     style="font-size: x-small;"                                       
+                                     style="font-size: x-small;"
+                                     rows="10"
                                      scrollable="true"
                                      scrollHeight="100%"
                                      emptyMessage="#{bundle['sample.emptymessage']}"
@@ -282,6 +286,10 @@
                                      editMode="cell" 
                                      rowStyleClass="#{singleSampleBean.getLibraryRowClass(sample)}">
 
+                            <p:column id="editColumn" style="width:15px;">
+                                <h:outputText styleClass="ui-icon ui-icon-pencil" rendered="#{sample.id==singleSampleBean.currentSample.id}"/>
+                            </p:column>
+                            
                             <p:column id="idSamColumn" headerText="#{bundle['samples.sample.id']}">                 
                                 <h:outputText value="#{sample.id}" rendered="#{sample.id!=singleSampleBean.currentSample.id }"/>
                                 <h:outputText value="#{singleSampleBean.currentSample.id }" rendered="#{sample.id==singleSampleBean.currentSample.id }"/>
@@ -313,7 +321,7 @@
                                                 value="#{singleSampleBean.possibleIndexes}"
                                                 itemLabel="#{index}" itemValue="#{index}"
                                                 var="index" />
-                                            <p:ajax event="change" update="@this :tabMenu:libraryForm:libraryTable :tabMenu:libraryForm:indexCollisionMessages"/>
+                                            <p:ajax event="change" update=":tabMenu:libraryForm"/>
                                         </p:selectOneMenu>     
                                     </f:facet>               
                                 </p:cellEditor>
@@ -401,8 +409,11 @@
                                 <h:outputText value="#{sample.status}" rendered="#{sample.id!=singleSampleBean.currentSample.id}"/>
                                 <h:outputText value="#{singleSampleBean.currentSample.status}" rendered="#{sample.id==singleSampleBean.currentSample.id}"/>
                             </p:column>       
-
+                            <f:facet name="footer">
+                                <p:messages for="indexCollisionMsg" id="indexCollisionMessages" showDetail="true" autoUpdate="true"/>
+                            </f:facet>
                         </p:dataTable>
+
                     </h:form>
                 </p:tab>
             </p:tabView>

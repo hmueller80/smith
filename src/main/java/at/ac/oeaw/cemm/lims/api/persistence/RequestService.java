@@ -32,4 +32,6 @@ public interface RequestService {
     public LibraryDTO getLibraryByName(String libraryName);
 
     public void deleteLibraryIfEmpty(String oldLibraryName);
+
+    public RequestDTO getMinimalRequestById(Integer rid);
 }

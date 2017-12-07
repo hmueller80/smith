@@ -7,14 +7,17 @@ package at.ac.oeaw.cemm.lims.persistence.dao;
 
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 /**
  *
@@ -44,5 +47,20 @@ public class RequestDAO {
         query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
                      
         return query.list();
+    }  
+    
+    public MinimalRequestEntity getMinimalRequestById(Integer requestId) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+                     
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("user").as("requestor"));
+        projList.add(Projections.property("submissionId").as("requestId"));
+
+        Criteria query = session.createCriteria(SampleEntity.class)
+                .add(Restrictions.eq("submissionId", requestId))
+                .setProjection(Projections.distinct(projList))
+                .setResultTransformer(Transformers.aliasToBean(MinimalRequestEntity.class));
+               
+        return (MinimalRequestEntity) query.uniqueResult();
     }  
 }

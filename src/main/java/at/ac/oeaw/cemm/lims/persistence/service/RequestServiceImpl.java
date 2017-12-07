@@ -23,13 +23,11 @@ import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
 import at.ac.oeaw.cemm.lims.persistence.dao.RequestDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author dbarreca
@@ -286,5 +284,29 @@ public class RequestServiceImpl implements RequestService {
         } catch (Exception ex) {
             ex.printStackTrace();
         }    
+    }
+
+    @Override
+    public RequestDTO getMinimalRequestById(final Integer rid) {
+        try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RequestDTO >() {
+                @Override
+                public RequestDTO  execute() throws Exception {
+
+                    MinimalRequestEntity request = requestDAO.getMinimalRequestById(rid);
+
+                    if (request != null) {
+                        return myDTOMapper.getRequestDTOFromEntity(request);
+                    }
+
+                    return null;
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

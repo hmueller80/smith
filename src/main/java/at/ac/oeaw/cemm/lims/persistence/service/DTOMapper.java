@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 
 /**
  *
@@ -153,6 +154,11 @@ public class DTOMapper {
         LibraryDTO library = myDTOFactory.getLibraryDTO(libraryEntity.getLibraryName(), libraryEntity.getLibraryId());
         
         return library;
+    }
+
+    RequestDTO getRequestDTOFromEntity(MinimalRequestEntity request) {
+        UserDTO requestor = getUserDTOFromEntity(request.getRequestor());
+        return myDTOFactory.getRequestDTO(requestor, request.getRequestId());
     }
 
 }

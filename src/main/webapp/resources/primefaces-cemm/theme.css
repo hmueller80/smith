@@ -599,3 +599,8 @@ a.ui-button:active,
 .index-collision-yellow{
     background-color: #fffa90;
 }
+.ui-datatable-footer {
+         background-color: #ffffff;
+     color: #40b9d4;
+     border:none;
+}
