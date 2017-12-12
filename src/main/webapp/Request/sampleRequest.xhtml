@@ -1,0 +1,313 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="sampleRequest">
+
+        <h:form id="requestWizard">
+            <p:messages id="formMessages" for="validationMessages"/>
+            <p:wizard flowListener="#{requestBean.onFlowProcess}">
+                
+                <p:tab id="personal" title="Personal">
+                    <p:panelGrid columns="3">
+
+                        <h:outputLabel for="userName" value="User Name: " />
+                        <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.userName}"/>
+                        <p:message for="userName" />
+
+                        <h:outputLabel for="userEmail" value="User Email: " />
+                        <h:outputText style="width:300px;"  id="userEmail" value="#{requestBean.request.requestor.user.mailAddress}"/>
+                        <p:message for="userEmail" />
+
+                        <h:outputLabel for="userPhone" value="User Phone: " />
+                        <h:outputText style="width:300px;"  id="userPhone" value="#{requestBean.request.requestor.user.phone}"/>
+                        <p:message for="userPhone" />
+
+                        <h:outputLabel for="userPiName" value="Principal Investigator: " />
+                        <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.userName}"/>
+                        <p:message for="userPiName" />
+
+                        <h:outputLabel for="userPiEmail" value="Principal Investigator Email: " />
+                        <h:outputText style="width:300px;"  id="userPiEmail" value="#{requestBean.request.requestor.pi.mailAddress}"/>
+                        <p:message for="userPiEmail" />
+
+                        <h:outputLabel for="userPiPhone" value="Principal Investigator Phone: " />
+                        <h:outputText style="width:300px;"  id="userPiPhone" value="#{requestBean.request.requestor.pi.phone}"/>
+                        <p:message for="userPiPhone" />         
+                    </p:panelGrid>
+                    <p:separator />
+                    <p:panelGrid columns="3">
+                        <p:outputLabel for="orgaName" value="Organization: " />
+                        <p:inputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
+                        <p:message for="orgaName" />      
+
+                        <p:outputLabel for="orgaDept" value="Department " />
+                        <p:inputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.deptartment}"/>
+                        <p:message for="orgaDept" />   
+
+                        <p:outputLabel for="orgaAddress" value="Address: " />
+                        <p:inputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
+                        <p:message for="orgaAddress" />   
+
+                        <p:outputLabel for="orgaUrl" value="URL: " />
+                        <p:inputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
+                        <p:message for="orgaUrl" />   
+
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab id="samples" title="samples">
+                    <p:inputText type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
+                        <p:ajax event="change" update="@this sampleMessage" oncomplete="refresh()" partialSubmit="true"/>
+                    </p:inputText>
+                    <p:messages for="sampleMessage" id="sampleMessage" showDetail="true" closable="true" />
+
+                    <div id="example" />
+                    <script type="text/javascript">
+                        var data;
+                        var $ = jQuery;
+                        var table;
+
+                        var refresh = function () {
+                            data = JSON.parse(PF('tableData').getJQ().val());
+                            console.log('AJAX action completed with data ' + JSON.stringify(data));
+                            table.loadData(data);
+                        }
+
+                        var dataChangeCallback = function (change, source) {
+                            if (source === 'loadData') {
+                                return; //don't save this change
+                            }
+                            console.log('Setting data ' + JSON.stringify(data));
+                            cleanedData = [];
+                            $.each(data, function (rowKey, object) {
+                                if (!table.isEmptyRow(rowKey))
+                                    cleanedData.push(object);
+                            });
+                            PF('tableData').getJQ().val(JSON.stringify(cleanedData));
+                            console.log('trigger change');
+                            PF('tableData').getJQ().change();
+                        }
+
+                        $(document).ready(function () {
+                            data = JSON.parse(PF('tableData').getJQ().val());
+                            var container = document.getElementById('example');
+                            var settings = {
+                                data: data,
+                                columns: [
+                                    {
+                                        data: 'sampleName',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'sampleDescription',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'organism',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'library',
+                                        type: 'text'
+
+                                    },
+                                    {
+                                        data: 'i7Index',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'i7Adapter',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'i5Index',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'i5Adapter',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'primerType',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'primerName',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data: 'primerSequence',
+                                        type: 'text'
+                                    }
+
+                                ],
+                                rowHeaders: true,
+                                colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
+                                contextMenu: true,
+                                manualRowResize: true,
+                                minSpareRows: 1,
+                                afterChange: dataChangeCallback,
+                                afterRemoveRow: dataChangeCallback
+                            };
+
+                            table = new Handsontable(container, settings);
+                        });
+
+                    </script>  
+                </p:tab>
+
+                <p:tab id="libraries" title="Libraries">
+                    <p:dataTable 
+                        id="libraryTable"
+                        var="library"
+                        value="#{requestBean.request.libraries}"
+                        style="font-size: x-small;"
+                        editable="true"
+                        emptyMessage="No libraries set" >
+
+                        <p:ajax event="rowEdit" update="@this" />
+                        <p:ajax event="rowEditCancel" update="@this" />
+
+                        <p:column style="width:35px" headerText="Edit">
+                            <p:rowEditor />
+                        </p:column>
+                        
+                        <p:column id="libraryNameColumn" headerText="Name">
+                             <p:cellEditor>
+                             <f:facet name="output"><h:outputText value="#{library.name}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.name}" 
+                                                 required ="true"
+                                                 requiredMessage="Library Name is required"
+                                                 style="width:80%;display:block;margin:0 auto;"/>
+                                </f:facet>
+                             </p:cellEditor>
+                        </p:column>x
+
+                        <p:column id="libraryTypeColumn" headerText="Application">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.type}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.type}" 
+                                                 required ="true"
+                                                 requiredMessage="Application is required"
+                                                 style="width:80%;display:block;margin:0 auto;"/>
+                                </f:facet>
+                            </p:cellEditor>
+
+                        </p:column>
+
+                        <p:column id="libraryReadModeColumn" headerText="Read Mode">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.readMode}" /></f:facet>
+                                <f:facet name="input">  
+                                    <p:selectOneMenu id="readMode" 
+                                                     value="#{library.readMode}" 
+                                                     required ="true"
+                                                     requiredMessage="Read Mode is required"
+                                                     style="width:80%;display:block;margin:0 auto;">
+                                        <f:selectItems value="#{['SR','PE']}" />
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column id="libraryReadLengthColumn" headerText="Read Length">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.readLength}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.readLength}"
+                                                 required ="true"
+                                                 requiredMessage="Read Length is required"
+                                                 converterMessage="Read Length must be an integer"
+                                                 validatorMessage ="Read Length must be more than 5bp"
+                                                 style="width:80%;display:block;margin:0 auto;">
+                                        <f:validateDoubleRange minimum="5"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column id="libraryLanesColumn" headerText="Lanes">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.lanes}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.lanes}"                                                      
+                                                 required ="true"
+                                                 requiredMessage="Lanes are required"
+                                                 converterMessage="Lanes must be an integer"
+                                                 validatorMessage ="Lanes must be between 1 and 8"
+                                                 style="width:80%;display:block;margin:0 auto;">
+                                        <f:validateDoubleRange minimum="1" maximum="8"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column id="libraryVolumeColumn" headerText="Volume">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.volume}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.volume}"                                                      
+                                                 required ="true"
+                                                 requiredMessage="Volume is required"
+                                                 converterMessage="Volume must be a number"
+                                                 validatorMessage ="Volume must be posive"
+                                                 style="width:80%;display:block;margin:0 auto;">
+                                        <f:validateDoubleRange minimum="0.0"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column id="libraryConenctrationColumn" headerText="DNA Concentration">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.dnaConcentration}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.dnaConcentration}" 
+                                                 required ="true"
+                                                 requiredMessage="DNA Concentration is required"
+                                                 converterMessage="DNA Concentration must be a number"
+                                                 validatorMessage ="DNA Concentration must be posive"
+                                                 style="width:80%;display:block;margin:0 auto;">
+                                        <f:validateDoubleRange minimum="0.0"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column id="librarySizeColumn" headerText="Library Total Size">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.totalSize}" /></f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{library.totalSize}" 
+                                                 required ="true"
+                                                 requiredMessage="Library Total Size is required"
+                                                 converterMessage="Library Total Size must be a number"
+                                                 validatorMessage ="Library Total Size must be posive"
+                                                 style="width:80%;display:block;margin:0 auto;">
+                                        <f:validateDoubleRange minimum="0.0"/>
+                                    </p:inputText>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:commandButton value="Submit" update="formMessages" process="@this"/>
+
+                </p:tab>
+
+
+            </p:wizard>
+
+
+        </h:form>
+
+
+
+    </ui:define>
+
+</ui:composition>

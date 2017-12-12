@@ -5,7 +5,7 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:p="http://primefaces.org/ui"> 
 
-    <p:growl id="messages" autoUpdate="true" sticky="true" showDetail="true" />
+    <p:growl id="messages" autoUpdate="true" showDetail="true" />
 
     <p:tabMenu id="topMenu" activeIndex="#{param.activeMenu}">
 
@@ -35,6 +35,13 @@
                     icon="ui-icon ui-icon-arrowreturnthick-1-w"
                     action="#{navigationBean.doLogout}" >
             <f:param name="activeMenu" value="4" />
+        </p:menuitem>
+        
+        
+        <p:menuitem value="Request"
+                    icon="ui-icon ui-icon-arrowreturnthick-1-w"
+                    outcome="/Request/sampleRequest.jsf">
+            <f:param name="activeMenu" value="5" />
         </p:menuitem>
     </p:tabMenu>
 </html>
