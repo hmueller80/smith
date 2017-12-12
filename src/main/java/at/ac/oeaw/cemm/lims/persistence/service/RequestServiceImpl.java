@@ -108,7 +108,7 @@ public class RequestServiceImpl implements RequestService {
             TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
                 @Override
                 public Void execute() throws Exception {
-
+                    
                     List<MinimalLibraryEntity> deleatableLibraries = libraryDAO.getDeleatableLibraries();
                     
                     if (deleatableLibraries != null) {
@@ -121,7 +121,7 @@ public class RequestServiceImpl implements RequestService {
                             request.addOrGetLibrary(myDTOMapper.getLibraryDTOFromMinimalEntity(entity));
                         }
                     }
-
+                   
                     return null;
                 }
 

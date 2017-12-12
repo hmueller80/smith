@@ -98,7 +98,11 @@
     <context-param>
         <param-name>primefaces.UPLOADER</param-name>
         <param-value>commons</param-value>
-    </context-param>
+    </context-param> 
+    <mime-mapping>
+        <extension>woff</extension>
+        <mime-type>font/woff</mime-type>
+    </mime-mapping>   
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

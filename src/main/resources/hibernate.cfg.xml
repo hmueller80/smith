@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <!--
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 Copyright (c) 2008, 2016 Oracle and/or its affiliates. All rights reserved.
@@ -44,11 +45,15 @@ Contributor(s):
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</property>
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngslims?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">smith</property>
-    <property name="hibernate.connection.password">smith</property>
+    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">hmueller</property>
+    <property name="hibernate.connection.password"></property>
     <!--
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">hmueller</property>
+    <property name="hibernate.connection.password"></property>
+    
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.password">mzsqlroot</property>
     
@@ -68,6 +73,7 @@ Contributor(s):
     <property name="hibernate.c3p0.maxIdleTimeExcessConnections">5</property>
     <property name="hibernate.c3p0.idleConnectionTestPeriod">300</property>
     <property name="hibernate.id.new_generator_mappings">false</property>
+    <property name="hibernate.generate_statistics">false</property>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity"/>
