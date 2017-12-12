@@ -84,18 +84,18 @@ public class RequestBuilder {
             String sampleUserLogin = record.get(SampleRequestCSVHeader.UserLogin);
             System.out.println(sampleUserLogin);
             if (sampleUserLogin==null || sampleUserLogin.trim().isEmpty()){
-                throw new ParsingException("User error","Missing user in line "+record.getRecordNumber());
+                throw new ParsingException("User error ","Missing user in line "+record.getRecordNumber());
             }
             if (previousUser==null){
                 previousUser = sampleUserLogin;
             }else if (!previousUser.equals(sampleUserLogin)){
-                throw new ParsingException("User error","Multiple users found in file");
+                throw new ParsingException("User error ","Multiple users found in file");
             }
         }
         
         UserDTO requestor =  services.getUserService().getUserByLogin(previousUser);
         if (requestor == null){
-            throw new ParsingException("User error","Requestor is not in the user DB");
+            throw new ParsingException("User error ","Requestor is not in the user DB");
         }
         
         return requestor;       
@@ -107,24 +107,24 @@ public class RequestBuilder {
         for (CSVRecord record : records) {
             String submissionIdString = record.get(SampleRequestCSVHeader.submissionId);
             if (submissionIdString == null || submissionIdString.trim().isEmpty()) {
-                throw new ParsingException("Submission ID", "Missing submission ID in line " + record.getRecordNumber());
+                throw new ParsingException("Submission ID ", "Missing submission ID in line " + record.getRecordNumber());
             } else {
                 try {
                     Integer submissionId = Integer.parseInt(submissionIdString);
                     if (previousId==null){
                         previousId = submissionId;
                     }else if (!previousId.equals(submissionId)){
-                        throw new ParsingException("Submission ID","Multiple submission IDs found in file");
+                        throw new ParsingException("Submission ID ","Multiple submission IDs found in file");
                     }                
                 } catch (NumberFormatException e) {
-                    throw new ParsingException("Submission ID", "Error in parsing submission id (" + submissionIdString + ") in line " + record.getRecordNumber());
+                    throw new ParsingException("Submission ID ", "Error in parsing submission id (" + submissionIdString + ") in line " + record.getRecordNumber());
                 }
             }
 
         }
         
         if(services.getRequestService().checkRequestExistence(previousId)){
-            throw new ParsingException("Submission ID", "A request with id "+previousId+" already exists in the DB");
+            throw new ParsingException("Submission ID ", "A request with id "+previousId+" already exists in the DB");
         }
         
         return previousId;
