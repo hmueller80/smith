@@ -23,7 +23,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -31,8 +30,6 @@ import org.apache.log4j.Logger;
  */
 @ApplicationScoped
 public class LibraryDAO {
-    //https://www.thoughts-on-java.org/tips-to-boost-your-hibernate-performance/
-    //final static Logger logger = Logger.getLogger("org.hibernate.stat");    
     
     public LibraryDAO() {
         System.out.println("Initializing LibraryDAO");
@@ -89,8 +86,8 @@ public class LibraryDAO {
         DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
                 .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.conjunction(
-                    Restrictions.ne("status",SampleDTO.status_running),
-                    Restrictions.ne("status",SampleDTO.status_analyzed)))
+                    Restrictions.ne("status",SampleDTO.status_requested),
+                    Restrictions.ne("status",SampleDTO.status_queued)))
                 .setProjection(Projections.distinct(Projections.property("library.id")));
         
         ProjectionList projList = Projections.projectionList();
@@ -101,8 +98,8 @@ public class LibraryDAO {
         
         Criteria query = session.createCriteria(LibraryEntity.class)
                 .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
-                .add(Subqueries.propertyIn("id", subquery))
-                //.addOrder(Order.desc("sample.submissionId"))
+                .add(Subqueries.propertyNotIn("id", subquery))
+                .addOrder(Order.desc("sample.submissionId"))
                 .addOrder(Order.desc("id"))
                 .setProjection(Projections.distinct(projList))
                 .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
