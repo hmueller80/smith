@@ -39,8 +39,9 @@ import org.primefaces.event.FlowEvent;
 public class RequestBean {
     private ObjectMapper objectMapper = new ObjectMapper();
     private RequestForm request;
-    private Library newLibrary;
+    private Library newLibrary;    
     private boolean isFailed=false;
+    private String wizardStep = "personal";
                 
     @ManagedProperty(value = "#{newRoleManager}") private NewRoleManager roleManager;
     
@@ -101,10 +102,11 @@ public class RequestBean {
     
     public String onFlowProcess(FlowEvent event) {
         if(isFailed) {
-            return event.getOldStep();
+            wizardStep = event.getOldStep();
         }else {
-            return event.getNewStep();
+            wizardStep = event.getNewStep();
         }
+        return wizardStep;
     }
     
   
@@ -126,6 +128,10 @@ public class RequestBean {
     
     public void saveLibrary(){
         request.addLibrary(newLibrary);
-    }        
+    }
+    
+    public String getWizStep() {
+        return wizardStep;
+    }
       
 }

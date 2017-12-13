@@ -604,3 +604,29 @@ a.ui-button:active,
      color: #40b9d4;
      border:none;
 }
+.wizard-custom-title {
+    margin: 0 3px 0 0;
+    padding: .4em;
+    display:inline-block;
+    border-bottom-right-radius: 2px;
+    text-align: center;
+}
+.wizard-custom-default {
+    border: 1px solid #1f7285;
+    background: #40b9d4;
+    font-weight: bold;
+    color: #ffffff;
+}
+.wizard-custom-highlight {
+    border: 1px solid #1f7285;
+    background: #bde7f0;
+    color: #6e6e6e;
+}
+
+.wizard-panel-grid {
+    display:inline-block;
+    text-align: left
+}
+.wizard-panel-grid td,  .wizard-panel-grid tr{
+    border-style: none !important
+}

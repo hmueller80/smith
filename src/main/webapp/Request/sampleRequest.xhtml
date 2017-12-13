@@ -9,11 +9,60 @@
 
         <h:form id="requestWizard">
             <p:messages id="formMessages" for="validationMessages"/>
-            <p:wizard flowListener="#{requestBean.onFlowProcess}">
-                
-                <p:tab id="personal" title="Personal">
-                    <p:panelGrid columns="3">
+            <h:panelGroup id="wizNav">
+                <div class="ui-g">
+                    <div class="ui-g-2"/>
+                    <div class="ui-g-2" style="text-align:right">
+                        <p:commandButton 
+                            icon="ui-icon-arrow-1-w"
+                            iconPos="left"
+                            value="Back" 
+                            onclick="PF('theWiz').back();" 
+                            rendered="#{requestBean.wizStep!='personal'}"
+                            update="wizNav"/>
 
+                    </div>
+                    <div class="ui-g-4" style="text-align: center;">
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Requestor</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='samples' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Samples</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='libraries' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Libraries</p:outputPanel>
+                    </div>
+                    <div class="ui-g-2">
+                        <p:commandButton 
+                            icon="ui-icon-arrow-1-e"
+                            iconPos="right"
+                            value="Next" 
+                            onclick="PF('theWiz').next();" 
+                            update="wizNav"
+                            rendered="#{requestBean.wizStep!='libraries'}"/>
+                        <p:commandButton
+                            icon="ui-icon-disk"
+                            iconPos="right"
+                            id="wizSubmitButton"
+                            value="Submit" 
+                            rendered="#{requestBean.wizStep=='libraries'}"/>
+                    </div>
+                    <div class="ui-g-2" />
+                </div>
+            </h:panelGroup>
+
+            <p:wizard widgetVar="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false">
+                
+                <p:tab id="personal" title="Personal" >
+                    <div style="width: 100%; text-align:center" >
+                    <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
+                        
+                         <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                        
+                         <p:outputPanel style="display:inline-block">
+                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Requestor" />
+                         </p:outputPanel>                       
+                                                <p:outputPanel style="display:inline-block"/>
+
+                        <p:outputPanel style="display:inline-block"/>
+                        
                         <h:outputLabel for="userName" value="User Name: " />
                         <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.userName}"/>
                         <p:message for="userName" />
@@ -25,7 +74,17 @@
                         <h:outputLabel for="userPhone" value="User Phone: " />
                         <h:outputText style="width:300px;"  id="userPhone" value="#{requestBean.request.requestor.user.phone}"/>
                         <p:message for="userPhone" />
-
+                            
+                        <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                        
+                         <p:outputPanel style="display:inline-block">
+                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Principal Investigator" />
+                         </p:outputPanel>                       
+                        <p:separator />
+                        <p:outputPanel style="display:inline-block"/>
+                        
                         <h:outputLabel for="userPiName" value="Principal Investigator: " />
                         <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.userName}"/>
                         <p:message for="userPiName" />
@@ -37,9 +96,17 @@
                         <h:outputLabel for="userPiPhone" value="Principal Investigator Phone: " />
                         <h:outputText style="width:300px;"  id="userPiPhone" value="#{requestBean.request.requestor.pi.phone}"/>
                         <p:message for="userPiPhone" />         
-                    </p:panelGrid>
-                    <p:separator />
-                    <p:panelGrid columns="3">
+                        
+                         <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                         <p:outputPanel style="display:inline-block"/>
+                        
+                         <p:outputPanel style="display:inline-block">
+                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size: 2.1vh" value="Affiliation Details" />
+                         </p:outputPanel>                       
+                        <p:separator />
+                        <p:outputPanel style="display:inline-block"/>
+                        
                         <p:outputLabel for="orgaName" value="Organization: " />
                         <p:inputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
                         <p:message for="orgaName" />      
@@ -57,6 +124,7 @@
                         <p:message for="orgaUrl" />   
 
                     </p:panelGrid>
+                    </div>
                 </p:tab>
                 <p:tab id="samples" title="samples">
                     <p:inputText type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
@@ -295,8 +363,6 @@
                             </p:cellEditor>
                         </p:column>
                     </p:dataTable>
-
-                    <p:commandButton value="Submit" update="formMessages" process="@this"/>
 
                 </p:tab>
 

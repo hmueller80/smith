@@ -131,8 +131,10 @@ public class RequestForm {
 
             
             for (RequestedSample otherSample : library.getSamples()) {
+                RequestedSample thisSample = sample;
               
-                if (DEFAULT_INDEX.equals(otherSample.getI7Index()) && DEFAULT_INDEX.equals(otherSample.getI5Index())) {
+                if (DEFAULT_INDEX.equals(otherSample.getI7Index()) && DEFAULT_INDEX.equals(otherSample.getI5Index())||
+                        DEFAULT_INDEX.equals(thisSample.getI7Index()) && DEFAULT_INDEX.equals(thisSample.getI5Index())) {
                     String failMessage
                             = "There is more than one sample"
                             + " in library " + library.getName()
@@ -142,7 +144,6 @@ public class RequestForm {
                     continue;
                 }
                 
-                RequestedSample thisSample = sample;
                 if (sample.getSampleName().compareTo(otherSample.getSampleName()) > 0) {
                     RequestedSample temp = otherSample;
                     otherSample = thisSample;
