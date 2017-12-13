@@ -40,7 +40,7 @@
                             <p:message for="userEmail" />
 
                             <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="genericConverter"
+                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="#{genericConverter}"
                                              disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
                                 <f:selectItems id="pi" value="#{singleUserBean.userPIs}" var="pi" itemLabel="#{pi.userName}" itemValue="#{pi}" />                                
                             </h:selectOneMenu>     
@@ -65,7 +65,7 @@
                                         itemLabel="#{communication.userName}" 
                                         itemValue="#{communication}" 
                                         disabled="#{!singleUserBean.roleManager.hasUserAddPermission}"
-                                        converter="genericConverter"
+                                        converter="#{genericConverter}"
                                         showSourceFilter="true" 
                                         showTargetFilter="true"
                                         filterMatchMode="contains"/>

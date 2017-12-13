@@ -131,7 +131,7 @@
                                     value="#{bundle['button.text.save']} Sample"
                                     validateClient="true"
                                     icon="ui-icon-disk" 
-                                    update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
+                                    update=":tabMenu :tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
                                     style="float:right;margin:1px">
                                     <p:confirm header="Confirmation"
                                                message="Are you sure to modify sample #{singleSampleBean.currentSample.id}?"
@@ -222,7 +222,7 @@
                         </h:panelGrid>
                     </h:form>
                 </p:tab>
-                <p:tab title="Application Details">
+                <p:tab title="Application Details" rendered="#{!singleSampleBean.isNewForm}">
                     <h:form id="libraryForm">
                         <div class="ui-g" style="width: 100%">
                             <div class="ui-g-12">
@@ -246,7 +246,7 @@
                                            value="#{bundle['samples.library.name']}:  " />
 
                             <p:selectOneMenu id="librarySelector"
-                                             converter="genericConverter"
+                                             converter="#{genericConverter}"
                                              value="#{singleSampleBean.currentLibrary}" filter="true"
                                              filterMatchMode="contains"
                                              rendered="#{singleSampleBean.modifyPermission and singleSampleBean.editable}">
@@ -254,7 +254,7 @@
                                                value="#{singleSampleBean.editableLibraries}"
                                                itemLabel="#{library.name}" itemValue="#{library}"
                                                var="library" />
-                                <p:ajax update=":tabMenu:libraryForm" />
+                                <p:ajax update=":tabMenu:libraryForm libraryTable @this" />
                             </p:selectOneMenu>
 
                             <p:commandButton onclick="PF('addLibraryDialog').show()"
@@ -276,7 +276,6 @@
                                      value="#{singleSampleBean.currentLibrary.samples}"
                                      widgetVar="libraryTable"
                                      style="font-size: x-small;"
-                                     rows="10"
                                      scrollable="true"
                                      scrollHeight="100%"
                                      emptyMessage="#{bundle['sample.emptymessage']}"

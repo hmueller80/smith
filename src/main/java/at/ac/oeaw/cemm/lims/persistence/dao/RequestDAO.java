@@ -13,6 +13,7 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -49,7 +50,7 @@ public class RequestDAO {
         return query.list();
     }  
     
-    public MinimalRequestEntity getMinimalRequestById(Integer requestId) {
+    public MinimalRequestEntity getMinimalRequestByIdAndRequestor(Integer requestId, String requestor) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
                      
         ProjectionList projList = Projections.projectionList();
@@ -57,10 +58,27 @@ public class RequestDAO {
         projList.add(Projections.property("submissionId").as("requestId"));
 
         Criteria query = session.createCriteria(SampleEntity.class)
+                .createAlias("user", "user")
                 .add(Restrictions.eq("submissionId", requestId))
+                .add(Restrictions.eq("user.login", requestor))
                 .setProjection(Projections.distinct(projList))
                 .setResultTransformer(Transformers.aliasToBean(MinimalRequestEntity.class));
                
         return (MinimalRequestEntity) query.uniqueResult();
-    }  
+    }
+    
+    public List<MinimalRequestEntity> getAllMinimalRequests() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+                     
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("user").as("requestor"));
+        projList.add(Projections.property("submissionId").as("requestId"));
+
+        Criteria query = session.createCriteria(SampleEntity.class)
+                .setProjection(Projections.distinct(projList))
+                .addOrder(Order.desc("submissionId"))
+                .setResultTransformer(Transformers.aliasToBean(MinimalRequestEntity.class));
+               
+        return query.list();
+    }
 }

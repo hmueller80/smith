@@ -3,24 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package at.ac.oeaw.cemm.lims.view.user;
-
+package at.ac.oeaw.cemm.lims.view;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.HashMap;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 
 /**
  *
  * @author dbarreca
  */
-@FacesConverter(value = "genericConverter")
-public class PickListConverter implements Converter {
+@ManagedBean(name = "genericConverter")
+@ViewScoped
+public class GenericConverter implements Converter {
 
     private static Map<Object, String> entities = new HashMap<Object, String>();
 
@@ -32,7 +33,10 @@ public class PickListConverter implements Converter {
                 entities.put(entity, uuid);
                 return uuid;
             } else {
-                return entities.get(entity);
+                String uuid = entities.get(entity);
+                entities.remove(entity);
+                entities.put(entity, uuid);
+                return uuid;
             }
         }
     }
