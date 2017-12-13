@@ -18,9 +18,8 @@
                             iconPos="left"
                             value="Back" 
                             onclick="PF('theWiz').back();" 
-                            rendered="#{requestBean.wizStep!='personal'}"
-                            update="wizNav"/>
-
+                            update="wizNav"
+                            rendered="#{requestBean.wizStep!='personal'}"/>
                     </div>
                     <div class="ui-g-4" style="text-align: center;">
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Requestor</p:outputPanel>
@@ -127,12 +126,12 @@
                     </div>
                 </p:tab>
                 <p:tab id="samples" title="samples">
-                    <p:inputText type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
-                        <p:ajax event="change" update="@this sampleMessage" oncomplete="refresh()" partialSubmit="true"/>
+                    <p:inputText id="samplesData" type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
+                        <p:ajax event="change" update="@this sampleMessage :requestWizard:libraryData" oncomplete="refresh()" partialSubmit="true"/>
                     </p:inputText>
                     <p:messages for="sampleMessage" id="sampleMessage" showDetail="true" closable="true" />
 
-                    <div id="example" />
+                    <div id="example"/>
                     <script type="text/javascript">
                         var data;
                         var $ = jQuery;
@@ -228,144 +227,93 @@
                 </p:tab>
 
                 <p:tab id="libraries" title="Libraries">
-                    <p:dataTable 
-                        id="libraryTable"
-                        var="library"
-                        value="#{requestBean.request.libraries}"
-                        style="font-size: x-small;"
-                        editable="true"
-                        emptyMessage="No libraries set" >
+                    <p:inputText id="libraryData" type="hidden" widgetVar="tableDataLib" value="#{requestBean.libraries}" >    
+                        <p:ajax event="change" update="@this libraryMessage :requestWizard:samplesData" oncomplete="refreshLib()" partialSubmit="true"/>
+                    </p:inputText>
+                    <p:messages for="libraryMessage" id="libraryMessage" showDetail="true" closable="true" />
 
-                        <p:ajax event="rowEdit" update="@this" />
-                        <p:ajax event="rowEditCancel" update="@this" />
+                    <div id="exampleLib" />
+                    <script type="text/javascript">
+                        var dataLib;
+                        var $ = jQuery;
+                        var tableLib;
 
-                        <p:column style="width:35px" headerText="Edit">
-                            <p:rowEditor />
-                        </p:column>
-                        
-                        <p:column id="libraryNameColumn" headerText="Name">
-                             <p:cellEditor>
-                             <f:facet name="output"><h:outputText value="#{library.name}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.name}" 
-                                                 required ="true"
-                                                 requiredMessage="Library Name is required"
-                                                 style="width:80%;display:block;margin:0 auto;"/>
-                                </f:facet>
-                             </p:cellEditor>
-                        </p:column>x
+                        var refreshLib = function () {
+                            dataLib = JSON.parse(PF('tableDataLib').getJQ().val());
+                            console.log('AJAX action completed with data ' + JSON.stringify(dataLib));
+                            tableLib.loadData(dataLib);
+                        };
 
-                        <p:column id="libraryTypeColumn" headerText="Application">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.type}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.type}" 
-                                                 required ="true"
-                                                 requiredMessage="Application is required"
-                                                 style="width:80%;display:block;margin:0 auto;"/>
-                                </f:facet>
-                            </p:cellEditor>
+                        var dataChangeCallback = function (change, source) {
+                            if (source === 'loadData') {
+                                return; //don't save this change
+                            }
+                            console.log('Setting data ' + JSON.stringify(dataLib));
+                            cleanedDataLib = [];
+                            $.each(dataLib, function (rowKey, object) {
+                                if (!tableLib.isEmptyRow(rowKey))
+                                    cleanedDataLib.push(object);
+                            });
+                            PF('tableDataLib').getJQ().val(JSON.stringify(cleanedDataLib));
+                            console.log('trigger change');
+                            PF('tableDataLib').getJQ().change();
+                        }
 
-                        </p:column>
+                        $(document).ready(function () {
+                            dataLib = JSON.parse(PF('tableDataLib').getJQ().val());
+                            var container = document.getElementById('exampleLib');
+                            var settings = {
+                                data: dataLib,
+                                columns: [
+                                    {
+                                        data: 'name',
+                                        type: 'text'
+                                    },
+                                    {
+                                        data:'type',
+                                        type:'text'
+                                    },
+                                    {
+                                        data:'readMode',
+                                        type:'dropdown',
+                                        source:['PE','SR']
+                                    },
+                                    {
+                                        data:'readLength',
+                                        type:'numeric'
+                                    },
+                                     {
+                                        data:'lanes',
+                                        type:'numeric'
+                                    },
+                                     {
+                                        data:'volume',
+                                        type:'numeric'
+                                    },
+                                     {
+                                        data:'dnaConcentration',
+                                        type:'numeric'
+                                    },
+                                     {
+                                        data:'totalSize',
+                                        type:'numeric'
+                                    }],
+                                rowHeaders: true,
+                                colHeaders: ['Library Name','Application','Read Mode','Read Length','Lanes','Volume','DNA Concentration','Total size'],
+                                manualRowResize: true,
+                                minSpareRows: 0,
+                                afterChange: dataChangeCallback,
+                                afterRemoveRow: dataChangeCallback,
+                                afterCreateRow: function (index, numberOfRows) {
+                                    dataLib.splice(index, numberOfRows);
+                                }
+                            };
 
-                        <p:column id="libraryReadModeColumn" headerText="Read Mode">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.readMode}" /></f:facet>
-                                <f:facet name="input">  
-                                    <p:selectOneMenu id="readMode" 
-                                                     value="#{library.readMode}" 
-                                                     required ="true"
-                                                     requiredMessage="Read Mode is required"
-                                                     style="width:80%;display:block;margin:0 auto;">
-                                        <f:selectItems value="#{['SR','PE']}" />
-                                    </p:selectOneMenu>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
+                            tableLib = new Handsontable(container, settings);
+                        });
 
-                        <p:column id="libraryReadLengthColumn" headerText="Read Length">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.readLength}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.readLength}"
-                                                 required ="true"
-                                                 requiredMessage="Read Length is required"
-                                                 converterMessage="Read Length must be an integer"
-                                                 validatorMessage ="Read Length must be more than 5bp"
-                                                 style="width:80%;display:block;margin:0 auto;">
-                                        <f:validateDoubleRange minimum="5"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
-
-                        <p:column id="libraryLanesColumn" headerText="Lanes">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.lanes}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.lanes}"                                                      
-                                                 required ="true"
-                                                 requiredMessage="Lanes are required"
-                                                 converterMessage="Lanes must be an integer"
-                                                 validatorMessage ="Lanes must be between 1 and 8"
-                                                 style="width:80%;display:block;margin:0 auto;">
-                                        <f:validateDoubleRange minimum="1" maximum="8"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
-
-                        <p:column id="libraryVolumeColumn" headerText="Volume">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.volume}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.volume}"                                                      
-                                                 required ="true"
-                                                 requiredMessage="Volume is required"
-                                                 converterMessage="Volume must be a number"
-                                                 validatorMessage ="Volume must be posive"
-                                                 style="width:80%;display:block;margin:0 auto;">
-                                        <f:validateDoubleRange minimum="0.0"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
-
-                        <p:column id="libraryConenctrationColumn" headerText="DNA Concentration">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.dnaConcentration}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.dnaConcentration}" 
-                                                 required ="true"
-                                                 requiredMessage="DNA Concentration is required"
-                                                 converterMessage="DNA Concentration must be a number"
-                                                 validatorMessage ="DNA Concentration must be posive"
-                                                 style="width:80%;display:block;margin:0 auto;">
-                                        <f:validateDoubleRange minimum="0.0"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
-
-                        <p:column id="librarySizeColumn" headerText="Library Total Size">
-                            <p:cellEditor>
-                                <f:facet name="output"><h:outputText value="#{library.totalSize}" /></f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{library.totalSize}" 
-                                                 required ="true"
-                                                 requiredMessage="Library Total Size is required"
-                                                 converterMessage="Library Total Size must be a number"
-                                                 validatorMessage ="Library Total Size must be posive"
-                                                 style="width:80%;display:block;margin:0 auto;">
-                                        <f:validateDoubleRange minimum="0.0"/>
-                                    </p:inputText>
-                                </f:facet>
-                            </p:cellEditor>
-                        </p:column>
-                    </p:dataTable>
-
+                    </script>  
                 </p:tab>
-
 
             </p:wizard>
 
