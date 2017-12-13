@@ -287,13 +287,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestDTO getMinimalRequestById(final Integer rid) {
+    public RequestDTO getMinimalRequestByIdAndRequestor(final Integer rid, final String requestor) {
         try {
             return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RequestDTO >() {
                 @Override
                 public RequestDTO  execute() throws Exception {
 
-                    MinimalRequestEntity request = requestDAO.getMinimalRequestById(rid);
+                    MinimalRequestEntity request = requestDAO.getMinimalRequestByIdAndRequestor(rid,requestor);
 
                     if (request != null) {
                         return myDTOMapper.getRequestDTOFromEntity(request);
@@ -308,5 +308,31 @@ public class RequestServiceImpl implements RequestService {
             return null;
         }
 
+    }
+
+    @Override
+    public List<RequestDTO> getAllRequests() {
+        final List<RequestDTO> result = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<MinimalRequestEntity> requests = requestDAO.getAllMinimalRequests();
+                    
+                    for (MinimalRequestEntity request: requests) {
+                        result.add(myDTOMapper.getRequestDTOFromEntity(request));
+                    }
+
+                    return null;
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return result;
     }
 }

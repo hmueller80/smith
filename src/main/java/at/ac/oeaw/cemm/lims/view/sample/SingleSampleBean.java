@@ -80,7 +80,12 @@ public class SingleSampleBean implements Serializable {
             if (rid==null || rid.trim().isEmpty()){              
                     throw new IllegalStateException("Cannot instantiate new sample without request");
             }
-            refreshNew(Integer.parseInt(rid));
+            String uid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("uid");
+            if (uid == null || uid.trim().isEmpty()) {
+                throw new IllegalStateException("Cannot instantiate new sample without requestor");
+            }
+
+            refreshNew(Integer.parseInt(rid),uid);
         }
         
         if (!isEditable()) {
@@ -120,6 +125,11 @@ public class SingleSampleBean implements Serializable {
     }
 
     public LibraryDTO getCurrentLibrary() {
+                System.out.println("Getter called for library "+currentLibrary.getName());
+                for (SampleDTO sample: currentLibrary.getSamples()){
+                    System.out.println(sample.getName()+" "+sample.getId()+" Current "+currentSample.getId());
+                }
+
         if (!isLibraryEditable()) {
             Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("libraryName");
             while (messages.hasNext()) {
@@ -133,6 +143,8 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setCurrentLibrary(LibraryDTO currentLibrary) {
+        System.out.println("Setter called for library "+currentLibrary.getName());
+
         this.currentLibrary = currentLibrary;
         boolean containsCurrentSample = false;
         for (SampleDTO sample:  this.currentLibrary.getSamples()){
@@ -389,7 +401,7 @@ public class SingleSampleBean implements Serializable {
     
     public void refresh() {
         if (isNewForm) {
-            refreshNew(currentSample.getSubmissionId());
+            refreshNew(currentSample.getSubmissionId(),currentSample.getUser().getLogin());
         } else {
             refreshExisting(currentSample.getId());
         }
@@ -405,11 +417,12 @@ public class SingleSampleBean implements Serializable {
 
     }
 
-    private void refreshNew(Integer rid) {
-        RequestDTO existingRequest = services.getRequestService().getMinimalRequestById(rid);
+    private void refreshNew(Integer rid,String user) {
+        RequestDTO existingRequest = services.getRequestService().getMinimalRequestByIdAndRequestor(rid,user);
         if (existingRequest==null){
             throw new IllegalStateException("Request with id "+rid+" not existing");
         }
+        
         UserDTO requestor = existingRequest.getRequestor();
         principalInvestigator = services.getUserService().getUserByID(requestor.getPi());
 
@@ -426,6 +439,7 @@ public class SingleSampleBean implements Serializable {
         currentSample.setIndex(myDTOFactory.getIndexDTO("none"));
         currentApplication = myDTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ);
         currentSample.setApplication(currentApplication);
+        currentSample.setExperimentName(currentApplication.getApplicationName());
         currentSample.setType("");
         isNewForm = true;
     }

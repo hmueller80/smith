@@ -58,7 +58,9 @@ class RequestDTOImpl implements RequestDTO {
        if (obj instanceof RequestDTO){
            Map<String,LibraryDTO> otherLibraries = ((RequestDTO) obj).getLibraries();
            boolean equalLibs = otherLibraries.keySet().equals(this.libraries.keySet());
-           return Objects.equals(((RequestDTO) obj).getRequestId(), this.getRequestId()) && equalLibs;
+           return Objects.equals(((RequestDTO) obj).getRequestId(), this.getRequestId()) 
+                   && equalLibs 
+                   && ((RequestDTO) obj).getRequestor().getLogin().equals(this.requestor.getLogin());
        }
        return false;
     }
