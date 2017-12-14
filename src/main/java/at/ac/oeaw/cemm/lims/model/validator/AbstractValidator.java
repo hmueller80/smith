@@ -32,11 +32,15 @@ public abstract class AbstractValidator<T> {
         throw new ValidatorException("Could not validate object of Type "+objectToValidate.getClass().getSimpleName(),messages);
     }
     
+    public T forceGetObect() {
+        return objectToValidate;
+    }
+    
     public Set<ValidatorMessage> getMessages() {
         return messages;
     }
     
-    public abstract boolean objectIsValid();
+    protected abstract boolean objectIsValid();
     
     protected boolean stringNotEmpty(String toCheck,
             boolean allowUndefined, 
