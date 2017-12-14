@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.util.Date;
 
 /**
  *
@@ -17,10 +18,21 @@ public interface RequestDTOFactory {
 
     RequestFormDTO getRequestFormDTO(RequestorDTO requestor);
 
+    RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, Date date);
+
     RequestLibraryDTO getRequestLibraryDTO();
 
     RequestSampleDTO getRequestSampleDTO();
 
     RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi);
     
+    RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi, AffiliationDTO affiliation);
+
+    
+    AffiliationDTO getAffiliationDTO(String organizationName, String department);
+
+    RequestLibraryDTO getRequestLibraryDTO(Integer id);
+
+    RequestSampleDTO getRequestSampleDTO(Integer id);
+
 }

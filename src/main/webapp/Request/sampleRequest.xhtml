@@ -39,6 +39,8 @@
                             iconPos="right"
                             id="wizSubmitButton"
                             value="Submit" 
+                            action ="#{requestBean.submit()}"
+                            ajax="false"
                             rendered="#{requestBean.wizStep=='libraries'}"/>
                     </div>
                     <div class="ui-g-2" />

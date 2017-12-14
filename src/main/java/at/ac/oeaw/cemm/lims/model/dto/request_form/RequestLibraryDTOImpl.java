@@ -38,6 +38,7 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     protected RequestLibraryDTOImpl(Integer id) {
         this.id = id;
         uuid = UUID.randomUUID().toString();
+        samples = new LinkedHashMap<>();
     }
     
     protected RequestLibraryDTOImpl() {

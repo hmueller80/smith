@@ -5,11 +5,13 @@
  */
 package at.ac.oeaw.cemm.lims.view.request;
 
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestLibraryDTOImpl;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestSampleDTOImpl;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
@@ -48,7 +50,7 @@ import org.primefaces.event.FlowEvent;
 @ViewScoped
 public class RequestBean {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private RequestFormDTO request;
     private boolean areSamplesFailed = false;
     private boolean areLibrariesFailed = false;
@@ -58,12 +60,32 @@ public class RequestBean {
     private NewRoleManager roleManager;
     @Inject
     private RequestDTOFactory dtoFactory;
-
+    @Inject
+    private ServiceFactory services;
+    
     @PostConstruct
     public void init() {
         System.out.println("Initializing requestBean");
-        RequestorDTO requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
-        request = dtoFactory.getRequestFormDTO(requestor);
+        
+        String rid =  (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rid");
+        
+        if(rid==null) {              
+            AffiliationDTO affiliation = services.getRequestFormService().getAffiliationForUser(roleManager.getCurrentUser().getId());
+            RequestorDTO requestor;
+            if (affiliation != null) {
+                requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi(), affiliation);
+            } else {
+                requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
+            }
+            request = dtoFactory.getRequestFormDTO(requestor);
+        } else {
+            Integer requestId = Integer.parseInt(rid);
+            request = services.getRequestFormService().getFullRequestById(requestId);
+            if (request == null) {
+                throw new IllegalStateException("Sample with rid "+rid+" is null");
+            }
+        }
+      
     }
 
     public RequestFormDTO getRequest() {
@@ -238,6 +260,22 @@ public class RequestBean {
 
     public String getWizStep() {
         return wizardStep;
+    }
+    
+    public String submit() {
+        if (!areSamplesFailed && !areLibrariesFailed) {
+            try {
+                Integer requestId=services.getRequestFormService().saveRequestForm(request);
+                return "sampleRequest.jsf?faces-redirect=true&activeMenu=5&rid="+requestId;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());
+                return null;
+            }
+        }
+        
+        System.out.println("Samples or libraries are failed");
+        return null;
     }
 
 }

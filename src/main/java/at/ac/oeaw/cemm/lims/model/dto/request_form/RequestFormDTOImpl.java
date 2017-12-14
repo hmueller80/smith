@@ -31,6 +31,7 @@ public class RequestFormDTOImpl implements RequestFormDTO {
         this.id = id;
         this.requestor = requestor;
         this.date = date;
+        libraries = new LinkedHashMap<>();
     }
     
     protected RequestFormDTOImpl(RequestorDTO requestor) {

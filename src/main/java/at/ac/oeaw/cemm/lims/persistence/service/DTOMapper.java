@@ -98,7 +98,7 @@ public class DTOMapper {
         }
     }
 
-    protected UserDTO getUserDTOFromEntity(UserEntity entity) {
+    public UserDTO getUserDTOFromEntity(UserEntity entity) {
         if (entity == null) {
             return null;
         } else {

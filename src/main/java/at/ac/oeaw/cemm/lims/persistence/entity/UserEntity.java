@@ -1,7 +1,11 @@
 package at.ac.oeaw.cemm.lims.persistence.entity;
 
+import at.ac.oeaw.cemm.lims.persistence.entity.request_form.AffiliationEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,12 +13,30 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user")
 public class UserEntity implements java.io.Serializable {
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "pi")
+    private int pi;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Set<RequestEntity> requestSet;
+    
+    @JoinColumns({
+        @JoinColumn(name = "organization_name", referencedColumnName = "organization_name")
+        , @JoinColumn(name = "organization_department", referencedColumnName = "department")})
+    @ManyToOne
+    private AffiliationEntity affiliation;
 
     private static final long serialVersionUID = 1L;
 
@@ -35,8 +57,6 @@ public class UserEntity implements java.io.Serializable {
     @Column(name = "mailadress")
     private String mailAddress;
 
-    @Column(name = "pi")
-    private Integer pi;
 
     @Column(name = "userRole")
     private String userRole;
@@ -121,13 +141,6 @@ public class UserEntity implements java.io.Serializable {
         this.mailAddress = mailadress;
     }
 
-    public Integer getPi() {
-        return this.pi;
-    }
-
-    public void setPi(Integer pi) {
-        this.pi = pi;
-    }
 
     public String getUserRole() {
         return this.userRole;
@@ -164,6 +177,30 @@ public class UserEntity implements java.io.Serializable {
             }
         }
         return firstName;
+    }
+
+    public int getPi() {
+        return pi;
+    }
+
+    public void setPi(int pi) {
+        this.pi = pi;
+    }
+
+    public Set<RequestEntity> getRequestSet() {
+        return requestSet;
+    }
+
+    public void setRequestSet(Set<RequestEntity> requestSet) {
+        this.requestSet = requestSet;
+    }
+
+    public AffiliationEntity getAffiliation() {
+        return affiliation;
+    }
+
+    public void setAffiliation(AffiliationEntity affiliation) {
+        this.affiliation = affiliation;
     }
     
 }

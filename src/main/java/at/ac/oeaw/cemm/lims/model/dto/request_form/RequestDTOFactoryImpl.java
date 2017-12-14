@@ -12,6 +12,7 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import java.util.Date;
 import javax.faces.bean.ApplicationScoped;
 
 /**
@@ -45,4 +46,30 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     public RequestSampleDTO getRequestSampleDTO() {
         return new RequestSampleDTOImpl();
     }
+
+    @Override
+    public AffiliationDTO getAffiliationDTO(String organizationName, String department) {
+        return new AffiliationDTOImpl(organizationName,department);
+    }
+    
+    @Override
+    public RequestLibraryDTO getRequestLibraryDTO(Integer id) {
+        return new RequestLibraryDTOImpl(id);
+    }
+    
+    @Override
+    public RequestSampleDTO getRequestSampleDTO(Integer id) {
+        return new RequestSampleDTOImpl(id);
+    }
+
+    @Override
+    public RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi, AffiliationDTO affiliation) {
+        return new RequestorDTOImpl(requestor,pi, affiliation);
+    }
+
+    @Override
+    public RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor,Date date) {
+        return new RequestFormDTOImpl(id,requestor,date);
+    }
+
 }

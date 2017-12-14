@@ -80,6 +80,10 @@ Contributor(s):
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.AffiliationEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity"/>        
     <!--mapping class="it.iit.genomics.cru.smith.entity.AlignedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.AnnotatedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Attribute"/>
