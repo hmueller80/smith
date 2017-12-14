@@ -148,11 +148,16 @@
                           headerText="Submission Id"
                           filterBy="#{sample.submissionId}"
                           sortBy="#{sample.submissionId}">
+                    <!--
                         <h:outputText value="#{sample.submissionId}" />
+                    -->
+                        <h:outputLink  value="../SampleAnnotationSheets/#{sample.submissionId}.xlsx">#{sample.submissionId}
+                        </h:outputLink>
+ 
                 </p:column>
                 
                 <p:column id ="requestor" 
-                          headerText="Requestor"
+                          headerText="Requester"
                           filterBy="#{sample.user.login}" >
                     <h:outputText value="#{sample.user.login}" />
                 </p:column>
