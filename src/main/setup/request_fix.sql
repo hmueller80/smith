@@ -4,7 +4,7 @@ create table affiliation (
     address VARCHAR(200),
     url VARCHAR(2048),
     PRIMARY KEY(organization_name,department)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 alter table user
 add column organization_name VARCHAR(100), add column organization_department VARCHAR(100),
@@ -17,7 +17,7 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
     req_date date,
     primary key(id),
     foreign key (user_id) references user(user_id)
- );
+ )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
  
  create table request_library (
 	id int auto_increment,
@@ -32,7 +32,7 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
     total_size double,
     primary key(id),
     foreign key (request_id) references request(id)
- );
+ )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
  create table request_sample (
 	id int auto_increment,
@@ -49,4 +49,4 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
     primer_type varchar(1000),
     primary key(id),
     foreign key (library_id) references request_library(id)
- );    
+ )ENGINE=InnoDB DEFAULT CHARSET=UTF8;  

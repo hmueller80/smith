@@ -38,7 +38,7 @@ public class TimedTask {
             public void run() {
                 analysisManager.run();
             }
-        },0, Preferences.getRunfolderScanInterval() );
+        },2*60*1000, Preferences.getRunfolderScanInterval() );
     }
 
     public Preferences getPreferences() {

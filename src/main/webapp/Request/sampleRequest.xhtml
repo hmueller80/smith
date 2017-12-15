@@ -18,7 +18,7 @@
                             iconPos="left"
                             value="Back" 
                             onclick="PF('theWiz').back();" 
-                            update="wizNav"
+                            update="wizNav :requestWizard:sampleMessage :requestWizard:libraryMessage"
                             rendered="#{requestBean.wizStep!='personal'}"/>
                     </div>
                     <div class="ui-g-4" style="text-align: center;">
@@ -32,7 +32,7 @@
                             iconPos="right"
                             value="Next" 
                             onclick="PF('theWiz').next();" 
-                            update="wizNav"
+                            update="wizNav :requestWizard:sampleMessage :requestWizard:libraryMessage"
                             rendered="#{requestBean.wizStep!='libraries'}"/>
                         <p:commandButton
                             icon="ui-icon-disk"
