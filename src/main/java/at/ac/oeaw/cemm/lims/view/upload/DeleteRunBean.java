@@ -12,7 +12,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import javax.annotation.PostConstruct;
 

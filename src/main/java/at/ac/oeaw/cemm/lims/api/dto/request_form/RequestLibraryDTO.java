@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.Library;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  * @author dbarreca
  */
-public interface RequestLibraryDTO {
+public interface RequestLibraryDTO extends Library{
 
     void addSample(RequestSampleDTO sample);
     
@@ -20,24 +21,24 @@ public interface RequestLibraryDTO {
 
     @JsonIgnore
     RequestLibraryDTO getCopyWithoutSamples();
+    
+    @Override
+    List<RequestSampleDTO> getSamples();
 
+    @Override
+    String getName();
+    
     Double getDnaConcentration();
 
     Integer getLanes();
-
-    String getName();
 
     Integer getReadLength();
 
     String getReadMode();
 
-    RequestSampleDTO getSample(String sampleName);
-
-    List<RequestSampleDTO> getSamples();
-
     Double getTotalSize();
 
-    String getType();
+    String getApplicationName();
 
     String getUuid();
 
@@ -60,7 +61,7 @@ public interface RequestLibraryDTO {
 
     void setTotalSize(Double totalSize);
 
-    void setType(String type);
+    void setApplicationName(String type);
 
     void setVolume(Double volume);
     

@@ -5,9 +5,9 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import java.util.HashSet;
@@ -50,11 +50,11 @@ public class RequestServiceImpl implements RequestService {
         TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
             @Override
             public Void execute() throws Exception {
-                UserEntity user = userDAO.getUserByLogin(request.getRequestor().getLogin());
+                UserEntity user = userDAO.getUserByLogin(request.getRequestorUser().getLogin());
                 if (user == null) {
-                    throw new Exception("User with login " + request.getRequestor() + " not found in DB");
+                    throw new Exception("User with login " + request.getRequestorUser() + " not found in DB");
                 }
-                for (LibraryDTO library : request.getLibraries().values()) {
+                for (LibraryDTO library : request.getLibrariesMap().values()) {
                     LibraryEntity libraryEntity = new LibraryEntity();
                     libraryEntity.setLibraryName(library.getName());
                     try {
@@ -141,7 +141,7 @@ public class RequestServiceImpl implements RequestService {
             @Override
             public Void execute() throws Exception {
                 System.out.println("Deleting request "+request.getRequestId());
-                for (LibraryDTO library : request.getLibraries().values()) {
+                for (LibraryDTO library : request.getLibrariesMap().values()) {
                     System.out.println("Considering library "+library.getName()+" with id "+library.getId());
                     LibraryEntity libraryEntity = libraryDAO.getLibraryById(library.getId());
                     

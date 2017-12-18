@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
 import at.ac.oeaw.cemm.lims.persistence.dao.CommunicationsDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
@@ -253,5 +253,29 @@ public class UserServiceImpl implements UserService {
             userDAO.updateOrPersistUser(userEntity);
         }
         return userEntity;
+    }
+
+    @Override
+    public UserDTO getUserByMail(final String mailAddress) {
+         UserDTO user = null;
+
+        try {
+            UserEntity userEntity = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<UserEntity>() {
+                @Override
+                public UserEntity execute() throws Exception {
+                    return userDAO.getUserByMail(mailAddress);
+                }
+            });
+            
+            if (userEntity!=null) {
+                user = myDTOMapper.getUserDTOFromEntity(userEntity);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return user;
     }
 }

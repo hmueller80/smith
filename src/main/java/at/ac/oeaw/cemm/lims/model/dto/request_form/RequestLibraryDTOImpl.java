@@ -5,26 +5,25 @@
  */
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.util.NameFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  *
  * @author dbarreca
  */
-public class RequestLibraryDTOImpl implements RequestLibraryDTO {
+public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     
     private final Integer id;
     private final String  uuid;
     private String name;
-    private String type;
+    private String applicationName;
     private String readMode;
     private Integer readLength;
     private Integer lanes;
@@ -33,19 +32,19 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     private Double totalSize;
     
     @JsonIgnore
-    private Map<String, RequestSampleDTO> samples;
+    private LinkedList<RequestSampleDTO> samples;
 
     protected RequestLibraryDTOImpl(Integer id) {
         this.id = id;
         uuid = UUID.randomUUID().toString();
-        samples = new LinkedHashMap<>();
+        samples = new LinkedList<>();
     }
     
     protected RequestLibraryDTOImpl() {
         id = null;
         uuid = UUID.randomUUID().toString();
-        samples = new LinkedHashMap<>();
-        type = "WGS";
+        samples = new LinkedList<>();
+        applicationName = "WGS";
         readMode = "SR";
         readLength = 50;
         lanes = 1;
@@ -57,8 +56,8 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     protected RequestLibraryDTOImpl(String uuid){
         id = null;
         this.uuid = uuid;
-        samples = new LinkedHashMap<>();
-        type = "WGS";
+        samples = new LinkedList<>();
+        applicationName = "WGS";
         readMode = "SR";
         readLength = 50;
         lanes = 1;
@@ -74,8 +73,8 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
  
     @Override
     public void setName(String name) {
-        this.name = NameFilter.legalize(name.trim().toUpperCase());
-        for (RequestSampleDTO sample: samples.values()) {
+        this.name = NameFilter.legalizeLibrary(name);
+        for (RequestSampleDTO sample: samples) {
             sample.setLibrary(this.name);
         }
     }
@@ -86,13 +85,13 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     }
 
     @Override
-    public String getType() {
-        return type;
+    public String getApplicationName() {
+        return applicationName;
     }
 
     @Override
-    public void setType(String type) {
-        this.type = type;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
     @Override
@@ -102,7 +101,7 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
 
     @Override
     public void setReadMode(String readMode) {
-        this.readMode = readMode;
+        this.readMode = NameFilter.legalizeReadMode(readMode);
     }
 
     @Override
@@ -157,22 +156,18 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     
     @Override
     public List<RequestSampleDTO> getSamples(){
-        return new LinkedList<>(samples.values());
+        return samples;
     }
     
-    @Override
-    public RequestSampleDTO getSample(String sampleName){
-        return samples.get(sampleName);
-    }
-    
+
     @Override
     public void addSample(RequestSampleDTO sample){
-        samples.put(sample.getSampleName(), sample);
+        samples.add(sample);
     }
     
     @Override
     public void resetSamples(){
-        samples = new LinkedHashMap<>();
+        samples = new LinkedList<>();
     }
 
     @Override
@@ -186,7 +181,7 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     public RequestLibraryDTO getCopyWithoutSamples() {
         RequestLibraryDTO copy = new RequestLibraryDTOImpl(uuid);
         copy.setName(name);
-        copy.setType(type);
+        copy.setApplicationName(applicationName);
         copy.setReadMode(readMode);
         copy.setReadLength(readLength);
         copy.setLanes(lanes);
@@ -201,7 +196,7 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
     @Override
     public void setParametersFromCopy(RequestLibraryDTO theCopy) {
         setName(theCopy.getName());
-        type = theCopy.getType();
+        applicationName = theCopy.getApplicationName();
         readMode = theCopy.getReadMode();
         readLength = theCopy.getReadLength();
         lanes = theCopy.getLanes();
@@ -209,5 +204,5 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO {
         dnaConcentration = theCopy.getDnaConcentration();
         totalSize = theCopy.getTotalSize();
     }
-    
+
 }

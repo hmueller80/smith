@@ -5,6 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.Request;
+import at.ac.oeaw.cemm.lims.api.dto.generic.User;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -13,20 +15,28 @@ import java.util.regex.Pattern;
  *
  * @author dbarreca
  */
-public interface RequestFormDTO {
+public interface RequestFormDTO  extends Request {
 
     String DEFAULT_INDEX = "NONE";
     String DEFAULT_LIBRARY = "DEFAULT_LIB";
     String DEFAULT_NAME = "DEFAULT_NAME";
     String DEFAULT_SUFFIX = "_LIMS";
-    String INDEX_REGEXP = "[ATGC]+|" + DEFAULT_INDEX;
+    String INDEX_REGEXP = "[ATGCN]+|" + DEFAULT_INDEX;
     Pattern NAME_PATTERN = Pattern.compile("(.*)" + DEFAULT_SUFFIX + "[0-9]+");
 
     void addLibrary(RequestLibraryDTO library);
 
     Date getDate();
 
-    List<RequestLibraryDTO> getLibraries();
+    
+    @Override
+    public Integer getRequestId();
+    
+    @Override
+    public User getRequestorUser();
+    
+    @Override
+    public List<RequestLibraryDTO> getLibraries();
     
     RequestLibraryDTO getLibraryByUUID(String uuid);
 
@@ -34,8 +44,6 @@ public interface RequestFormDTO {
 
     void resetLibraries();
     
-    Integer getId();
-
     public void removeEmptyLibraries();
     
 }

@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import java.io.Serializable;
 import java.util.ArrayList;

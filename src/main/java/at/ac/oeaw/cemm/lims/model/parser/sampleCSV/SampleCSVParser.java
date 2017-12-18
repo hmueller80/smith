@@ -5,8 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;

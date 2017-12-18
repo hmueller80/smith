@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 
 /**
  *

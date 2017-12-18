@@ -89,4 +89,11 @@ public class UserDAO {
 
     }
 
+    public UserEntity getUserByMail(String mailAddress) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria userCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("mailAddress", mailAddress));
+        UserEntity user = (UserEntity) userCriteria.uniqueResult();
+        return user;
+    }
+
 }

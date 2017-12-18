@@ -14,12 +14,11 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestLibraryDTOImpl;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestSampleDTOImpl;
-import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibrariesValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestNormalizer;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestSamplesValidator;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -108,7 +106,6 @@ public class RequestBean {
     }
 
     public void setSamples(String json) {
-        areSamplesFailed = false;
         Iterator messageIterator = FacesContext.getCurrentInstance().getMessages("sampleMessage");
         while (messageIterator.hasNext()) {
             messageIterator.remove();
@@ -116,20 +113,13 @@ public class RequestBean {
         request.resetLibraries();
         
         try {
-            List<RequestSampleDTO> receivedSamples = objectMapper.readValue(json, new TypeReference<List<RequestSampleDTOImpl>>() {
-            });
-            
-            RequestSamplesValidator samplesValidator = new RequestSamplesValidator(receivedSamples);
-            
-            try {
-                receivedSamples = samplesValidator.getValidatedObject();
-            } catch (ValidatorException ex) {
-                areSamplesFailed = true;
-                receivedSamples = samplesValidator.forceGetObect();
-            }            
-            Set<ValidatorMessage> messages = samplesValidator.getMessages();
-                  
+            List<RequestSampleDTO> receivedSamples =
+                    objectMapper.readValue(json, new TypeReference<List<RequestSampleDTOImpl>>() {});
+             
+            RequestNormalizer.normalizeSamples(receivedSamples);
+         
             Map<String, RequestLibraryDTO> libraries = new LinkedHashMap<>();
+            
             for (RequestLibraryDTO existingLibrary: request.getLibraries()){
                 libraries.put(existingLibrary.getName(), existingLibrary);
             }
@@ -143,23 +133,20 @@ public class RequestBean {
                 }
                 library.addSample(sample);
             }
-            
+               
+            RequestLibraryValidator libraryValidator = new RequestLibraryValidator();
+            ValidationStatus validationStatus = new ValidationStatus();
+             
             for (RequestLibraryDTO library: libraries.values()) {
-                RequestLibraryValidator libraryValidator = new RequestLibraryValidator(library);
-                RequestLibraryDTO validatedLibrary;
-                try {
-                    validatedLibrary = libraryValidator.getValidatedObject();
-                } catch (ValidatorException ex) {
-                    areSamplesFailed = true;
-                    validatedLibrary = libraryValidator.forceGetObect();
-                }
-                request.addLibrary(validatedLibrary);
-                messages.addAll(libraryValidator.getMessages());
+                validationStatus.merge(libraryValidator.isValid(library));          
+                request.addLibrary(library);
             }
+            
+            areSamplesFailed = !validationStatus.isValid();
             
             request.removeEmptyLibraries();
             
-            for (ValidatorMessage message : messages) {
+            for (ValidatorMessage message : validationStatus.getValidationMessages()) {
                 if (message.getType().equals(ValidatorSeverity.FAIL)) {
                     NgsLimsUtility.setFailMessage("sampleMessage", null, message.getSummary(), message.getDescription());
                 } else {
@@ -170,6 +157,7 @@ public class RequestBean {
         } catch (IOException ex) {
             areSamplesFailed = true;
             NgsLimsUtility.setFailMessage("sampleMessages", null, "Error", ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -189,7 +177,6 @@ public class RequestBean {
     }
 
     public void setLibraries(String json) {
-        areLibrariesFailed = false;
         Iterator messageIterator = FacesContext.getCurrentInstance().getMessages("libraryMessage");
         while (messageIterator.hasNext()) {
             messageIterator.remove();
@@ -198,17 +185,20 @@ public class RequestBean {
         try {
             List<RequestLibraryDTO> receivedLibraries = objectMapper.readValue(json, new TypeReference<List<RequestLibraryDTOImpl>>() {
             });
+            
+            RequestNormalizer.normalizeLibraries(receivedLibraries);
 
-            RequestLibrariesValidator librariesValidator = new RequestLibrariesValidator(receivedLibraries);
-
-            try {
-                receivedLibraries = librariesValidator.getValidatedObject();
-            } catch (ValidatorException ex) {
-                receivedLibraries = librariesValidator.forceGetObect();
-                areLibrariesFailed = true;
+            RequestLibraryValidator libraryValidator = new RequestLibraryValidator(false);
+            ValidationStatus librariesValidation = new ValidationStatus();
+            
+            for (RequestLibraryDTO library: receivedLibraries){
+                librariesValidation.merge(libraryValidator.isValid(library));
             }
-
-            for (ValidatorMessage message : librariesValidator.getMessages()) {
+            
+            areLibrariesFailed = !librariesValidation.isValid();
+            
+         
+            for (ValidatorMessage message : librariesValidation.getValidationMessages()) {
                 if (message.getType().equals(ValidatorSeverity.FAIL)) {
                     NgsLimsUtility.setFailMessage("libraryMessage", null, message.getSummary(), message.getDescription());
                 } else {
@@ -229,6 +219,7 @@ public class RequestBean {
         } catch (IOException ex) {
             areLibrariesFailed = true;
             NgsLimsUtility.setFailMessage("libraryMessage", null, "Server Error", ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

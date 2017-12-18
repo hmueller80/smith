@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
-import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import java.util.List;
 
 /**

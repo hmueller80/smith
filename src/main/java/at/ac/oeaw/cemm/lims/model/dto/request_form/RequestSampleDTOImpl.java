@@ -6,12 +6,16 @@
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.generic.Sample;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
  * @author dbarreca
  */
-public class RequestSampleDTOImpl implements RequestSampleDTO{
+public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     
     private final Integer id;
     private String sampleName;
@@ -40,13 +44,13 @@ public class RequestSampleDTOImpl implements RequestSampleDTO{
     }        
     
     @Override
-    public String getSampleName() {
+    public String getName() {
         return sampleName;
     }
 
     @Override
-    public void setSampleName(String sampleName) {
-        this.sampleName = sampleName;
+    public void setName(String sampleName) {
+        this.sampleName =  NameFilter.legalize(sampleName);
     }
 
     @Override
@@ -75,8 +79,8 @@ public class RequestSampleDTOImpl implements RequestSampleDTO{
     }
 
     @Override
-    public void setI7Index(String i7Index) {
-        this.i7Index = i7Index;
+    public void setI7Index(String i7Index) {       
+        this.i7Index = NameFilter.legalizeIndex(i7Index);
     }
 
     @Override
@@ -96,7 +100,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO{
 
     @Override
     public void setI5Index(String i5Index) {
-        this.i5Index = i5Index;
+        this.i5Index = NameFilter.legalizeIndex(i5Index);
     }
 
     @Override
@@ -136,7 +140,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO{
 
     @Override
     public void setPrimerSequence(String primerSequence) {
-        this.primerSequence = primerSequence;
+        this.primerSequence = NameFilter.legalizeIndex(primerSequence);
     }
 
     @Override
@@ -146,7 +150,25 @@ public class RequestSampleDTOImpl implements RequestSampleDTO{
 
     @Override
     public void setLibrary(String library) {
-        this.library = library;
+        this.library = NameFilter.legalizeLibrary(library);
+    }
+
+    @JsonIgnore
+    @Override
+    public String getCompoundIndex() {
+        if (i7Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
+            if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
+                return RequestFormDTO.DEFAULT_INDEX;
+            }else{
+                return i5Index.toUpperCase().trim();
+            }
+        }else{
+            if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
+                return i7Index.toUpperCase().trim();
+            }else{
+                return (i7Index+i5Index).toUpperCase().trim();
+            }
+        }
     }
     
 }

@@ -5,13 +5,21 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.Sample;
+
 /**
  *
  * @author dbarreca
  */
-public interface RequestSampleDTO {
+public interface RequestSampleDTO extends Sample {
 
     Integer getId();
+    
+    @Override
+    String getName();
+        
+    @Override
+    String getCompoundIndex();
             
     String getI5Adapter();
 
@@ -33,8 +41,6 @@ public interface RequestSampleDTO {
 
     String getSampleDescription();
 
-    String getSampleName();
-
     void setI5Adapter(String i5Adapter);
 
     void setI5Index(String i5Index);
@@ -55,6 +61,6 @@ public interface RequestSampleDTO {
 
     void setSampleDescription(String sampleDescription);
 
-    void setSampleName(String sampleName);
+    void setName(String sampleName);
     
 }

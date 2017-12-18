@@ -5,9 +5,11 @@
  */
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.User;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,7 +44,7 @@ public class RequestFormDTOImpl implements RequestFormDTO {
     }
     
     @Override
-    public Integer getId() {
+    public Integer getRequestId() {
         return id;
     }
  
@@ -89,6 +91,11 @@ public class RequestFormDTOImpl implements RequestFormDTO {
         }
         
     }
-
-  
+    
+    @JsonIgnore
+    @Override
+    public User getRequestorUser() {
+        return requestor.getUser();
+    }
+    
 }

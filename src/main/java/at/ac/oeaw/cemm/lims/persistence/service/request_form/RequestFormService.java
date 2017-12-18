@@ -10,7 +10,6 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
-import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.*;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
@@ -58,7 +57,7 @@ public class RequestFormService {
                 
                 //2. Save the request
                 RequestEntity requestEntity = new RequestEntity();
-                requestEntity.setId(requestForm.getId());
+                requestEntity.setId(requestForm.getRequestId());
                 requestEntity.setReqDate(requestForm.getDate());
                 requestEntity.setUserId(user);
                 requestFormDAO.saveOrUpdate(requestEntity);
@@ -76,7 +75,7 @@ public class RequestFormService {
                     }
                     libraryEntity.setRequestId(requestEntity);
                     libraryEntity.setLibName(library.getName());
-                    libraryEntity.setLibType(library.getType());
+                    libraryEntity.setLibType(library.getApplicationName());
                     libraryEntity.setReadMode(library.getReadMode());
                     libraryEntity.setReadLength(library.getReadLength().shortValue());
                     libraryEntity.setLanes(library.getLanes().shortValue());
@@ -97,7 +96,7 @@ public class RequestFormService {
                             samplesToDelete.remove(sampleEntity);
                         }
                         sampleEntity.setLibraryId(libraryEntity);
-                        sampleEntity.setName(sample.getSampleName());
+                        sampleEntity.setName(sample.getName());
                         sampleEntity.setDescription(sample.getSampleDescription());
                         sampleEntity.setOrganism(sample.getOrganism());
                         sampleEntity.setIndexI5(sample.getI5Index());

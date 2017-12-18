@@ -2,8 +2,8 @@ package at.ac.oeaw.cemm.lims.analysis.impl.model;
 // Generated Aug 29, 2011 3:51:18 PM by Hibernate Tools 3.2.1.GA
 
 import at.ac.oeaw.cemm.bsf.barcode.IlluminaAdapterSequences;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import org.apache.commons.csv.CSVRecord;
 
 /**

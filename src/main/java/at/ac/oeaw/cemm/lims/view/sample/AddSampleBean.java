@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import java.util.List;

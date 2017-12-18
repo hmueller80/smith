@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service.request_form;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
@@ -57,7 +57,7 @@ public class RequestDTOMapper {
         library.setName(libraryEntity.getLibName());
         library.setReadMode(libraryEntity.getReadMode());
         library.setReadLength(libraryEntity.getReadLength().intValue());
-        library.setType(libraryEntity.getLibType());
+        library.setApplicationName(libraryEntity.getLibType());
         library.setLanes(libraryEntity.getLanes().intValue());
         library.setVolume(libraryEntity.getVolume());
         library.setDnaConcentration(libraryEntity.getDnaConcentration());
@@ -73,7 +73,7 @@ public class RequestDTOMapper {
 
     private RequestSampleDTO getRequestSampleDTOFromEntity(RequestSampleEntity sampleEntity) {
         RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId());
-        sample.setSampleName(sampleEntity.getName());
+        sample.setName(sampleEntity.getName());
         sample.setSampleDescription(sampleEntity.getDescription());
         sample.setOrganism(sampleEntity.getOrganism());
         sample.setI7Index(sampleEntity.getIndexI7());

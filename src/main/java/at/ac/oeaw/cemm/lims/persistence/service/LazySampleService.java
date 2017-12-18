@@ -5,8 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;

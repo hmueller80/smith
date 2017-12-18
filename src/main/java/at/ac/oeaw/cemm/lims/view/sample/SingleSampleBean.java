@@ -5,19 +5,19 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
+import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.ApplicationValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.SampleValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import at.ac.oeaw.cemm.lims.util.Levenshtein;
 import at.ac.oeaw.cemm.lims.util.NameFilter;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
@@ -65,7 +65,6 @@ public class SingleSampleBean implements Serializable {
     
     @PostConstruct
     public void init() {
-        System.out.println("SingleSampleBean post construct");
         for (String index : services.getSampleService().getAllIndexes()) {
             possibleIndexes.add(index);
         }
@@ -125,10 +124,6 @@ public class SingleSampleBean implements Serializable {
     }
 
     public LibraryDTO getCurrentLibrary() {
-                System.out.println("Getter called for library "+currentLibrary.getName());
-                for (SampleDTO sample: currentLibrary.getSamples()){
-                    System.out.println(sample.getName()+" "+sample.getId()+" Current "+currentSample.getId());
-                }
 
         if (!isLibraryEditable()) {
             Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("libraryName");
@@ -143,26 +138,9 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setCurrentLibrary(LibraryDTO currentLibrary) {
-        System.out.println("Setter called for library "+currentLibrary.getName());
 
         this.currentLibrary = currentLibrary;
-        boolean containsCurrentSample = false;
-        for (SampleDTO sample:  this.currentLibrary.getSamples()){
-            if (currentSample.getId()!=null){
-                if (currentSample.getId().equals(sample.getId())){
-                    containsCurrentSample = true;
-                    break;
-                }
-            }else{
-                if (currentSample.getName().equals(sample.getName())){
-                    containsCurrentSample = true;
-                    break;
-                }
-            }
-        }
-        if (!containsCurrentSample){
-             this.currentLibrary.addSample(currentSample);
-        }
+                
         if (!isLibraryEditable()) {
             Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("libraryName");
              while (messages.hasNext()) {
@@ -170,7 +148,30 @@ public class SingleSampleBean implements Serializable {
                 messages.remove();
             }
             NgsLimsUtility.setSuccessMessage("libraryName", null, "Library not editable", "The library has some running or run samples");
+        }else{
+            insertSampleInCurrentLibrary(currentSample);
         }
+    }
+    
+    private void insertSampleInCurrentLibrary(SampleDTO sample){
+        Iterator sampleIterator = currentLibrary.getSamples().iterator();
+
+        while (sampleIterator.hasNext()) {
+            SampleDTO existingSample = (SampleDTO) sampleIterator.next();
+            if (sample.getId() != null) {
+                if (existingSample.getId().equals(sample.getId())) {
+                    sampleIterator.remove();
+                    break;
+                }
+            } else {
+                if (existingSample.getName().equals(sample.getName())) {
+                    sampleIterator.remove();
+                    break;
+                }
+            }
+        }
+
+        this.currentLibrary.addSample(sample);
     }
 
     public UserDTO getPrincipalInvestigator() {
@@ -228,7 +229,6 @@ public class SingleSampleBean implements Serializable {
     }
 
     public void setSampleName(String name) {
-        System.out.println("Setting sample Name");
         if (!isNewForm && !Pattern.matches(".*_S[0-9]+", name.toUpperCase())){
             name = name+"_S"+currentSample.getId();
         }
@@ -270,7 +270,6 @@ public class SingleSampleBean implements Serializable {
 
     //CRUD OPs  
     public void saveSampleChanges() {
-        System.out.println("Saving sample Changes...");
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
             return;
@@ -280,7 +279,6 @@ public class SingleSampleBean implements Serializable {
     }
     
     public void saveLibraryChanges() {
-	System.out.println("Saving Library Changes...");
 
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
@@ -291,10 +289,8 @@ public class SingleSampleBean implements Serializable {
     }
 
     public String delete() {
-        System.out.println("Deleting Sample with id " + currentSample.getId());
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
-            System.out.println("User has no permissions to delete this sample");
             return null;
         }
 
@@ -328,8 +324,11 @@ public class SingleSampleBean implements Serializable {
     private boolean persist(boolean library) {
         try {
             boolean checkLibrary = false;
+            ValidationStatus validation = new ValidationStatus();
             String oldLibraryName = null;
             SampleDTO sampleToPersist;
+            
+            SampleDTOValidator sampleValidator = new SampleDTOValidator();
             
             if (library ) {
                 if (isNewForm){
@@ -338,58 +337,48 @@ public class SingleSampleBean implements Serializable {
                 sampleToPersist = services.getSampleService().getFullSampleById(currentSample.getId());
                 oldLibraryName = sampleToPersist.getLibraryName();
 
-                ApplicationValidator appValidator = new ApplicationValidator(currentApplication);
-                ApplicationDTO appToPersist = appValidator.getValidatedObject();
-                sampleToPersist.setApplication(appToPersist);
-                sampleToPersist.setExperimentName(appToPersist.getApplicationName());
+                sampleToPersist.setApplication(currentApplication);
                 sampleToPersist.setIndex(currentSample.getIndex());
                         
                 if (!oldLibraryName.equals(currentLibrary.getName())) {
                     checkLibrary = true;
                     sampleToPersist.setLibraryName(this.currentLibrary.getName());
                 }
-
-                for (ValidatorMessage message : appValidator.getMessages()) {
-                    if (message.getType().equals(ValidatorSeverity.WARNING)) {
-                        NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
-                        System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
-                    }
-                }
-
+                
+                insertSampleInCurrentLibrary(sampleToPersist);
+                
+                LibraryValidator libValidator = new LibraryValidator(sampleValidator,false );                
+                validation.merge(libValidator.isValid(currentLibrary));
             } else {
-                SampleValidator sampValidator = new SampleValidator(currentSample, myDTOFactory);
-                sampleToPersist = sampValidator.getValidatedObject();
-
-                for (ValidatorMessage message : sampValidator.getMessages()) {
-                    if (message.getType().equals(ValidatorSeverity.WARNING)) {
-                        NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
-                        System.out.println("WARNING: " + message.getSummary() + " Description: " + message.getDescription());
-                    }
-                }
-            }
-      
-            PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
-            if (checkLibrary && oldLibraryName!=null){
-                services.getRequestService().deleteLibraryIfEmpty(oldLibraryName);
+                sampleToPersist = currentSample;
             }
             
-            //RESTORE STATUS
-            refreshExisting(receipt.getId());
-
-            NgsLimsUtility.setSuccessMessage(null, null,
-                    "Sample with id " + receipt.getId() + " updated successfully",
-                    "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
-            System.out.println("SUCCESS: " + "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
-            return true;
-
-        } catch (ValidatorException e) {
-            System.out.println(e.getMessage());
-            for (ValidatorMessage message : e.getPayload()) {
+            validation.merge(sampleValidator.isValid(sampleToPersist));
+            
+            for (ValidatorMessage message : validation.getValidationMessages()) {
                 if (message.getType().equals(ValidatorSeverity.FAIL)) {
                     NgsLimsUtility.setFailMessage(null, null, message.getSummary(), message.getDescription());
-                    System.out.println("FATAL: " + message.getSummary() + " Description: " + message.getDescription());
+                } else if (message.getType().equals(ValidatorSeverity.WARNING)) {
+                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
                 }
             }
+            
+            if (validation.isValid()){
+                PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
+                if (checkLibrary && oldLibraryName != null) {
+                    services.getRequestService().deleteLibraryIfEmpty(oldLibraryName);
+                }
+
+                //RESTORE STATUS
+                refreshExisting(receipt.getId());
+
+                NgsLimsUtility.setSuccessMessage(null, null,
+                        "Sample with id " + receipt.getId() + " updated successfully",
+                        "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
+                System.out.println("SUCCESS: " + "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
+                return true;
+            }
+            
         } catch (Exception e) {
             NgsLimsUtility.setFailMessage(null, null, "Error while persisting sample", e.getMessage());
             System.out.println("FATAL: exception " + e.getMessage());
@@ -423,7 +412,7 @@ public class SingleSampleBean implements Serializable {
             throw new IllegalStateException("Request with id "+rid+" not existing");
         }
         
-        UserDTO requestor = existingRequest.getRequestor();
+        UserDTO requestor = existingRequest.getRequestorUser();
         principalInvestigator = services.getUserService().getUserByID(requestor.getPi());
 
         currentSample = myDTOFactory.getSampleDTO(null);

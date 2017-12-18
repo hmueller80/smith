@@ -1,6 +1,6 @@
 package at.ac.oeaw.cemm.lims.view.run;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 
 public class SingleRunTableRow {
 	private final String lane;

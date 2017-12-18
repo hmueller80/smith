@@ -1,5 +1,6 @@
 package at.ac.oeaw.cemm.lims.util;
 
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import java.util.HashSet;
 
 /**
@@ -104,13 +105,16 @@ public class NameFilter {
     * @since 1.0
     */
     public static String legalize(String name) {
+        if (name==null || name.isEmpty()){
+            return "";
+        }
         String n = name.trim();
         if(startsWithDigit(n)){
             n = "S_" + n;
         }
-        if(hasIllegalCharacters(n)){
-            n = replaceIllegalCharacters(n);
-        }
+        
+        n = replaceIllegalCharacters(n);
+        
         return n;
     }
     
@@ -123,16 +127,45 @@ public class NameFilter {
     * @since 1.0
     */
     public static String legalizeLibrary(String name) {
-        String n = name.trim();
+        if (name==null || name.isEmpty()){
+            return "";
+        }
+        String n = name.trim().toUpperCase();
         if(startsWithDigit(n)){
             n = "L_" + n;
         }
-        if(hasIllegalCharacters(n)){
-            n = replaceIllegalCharacters(n);
-        }
+      
+        n = replaceIllegalCharacters(n);
+
         return n;
     }
     
+     public static String legalizeIndex(String index) {
+        if (index==null || index.isEmpty()){
+            return RequestFormDTO.DEFAULT_INDEX;
+        }
+        index = index.trim().toUpperCase();
+        if(!index.matches(RequestFormDTO.INDEX_REGEXP)){
+            return RequestFormDTO.DEFAULT_INDEX;
+        }
+        
+        return index;
+    }
+    
+    public static String legalizeReadMode(String readMode) {
+        if (readMode==null || readMode.isEmpty()){
+            return "";
+        }
+        readMode = readMode.trim().toUpperCase().replace(" ", "");
+        if (readMode.equals("PAIREDEND") || readMode.equals("PAIRED") || readMode.equals("PE")){
+            return "PE";
+        }else if (readMode.equals("SINGLEREAD") || readMode.equals("SINGLE") || readMode.equals("SR")) {
+            return "SR";
+        }else{
+            return "";
+        }
+
+    }
     /**
     * Tests if first character in name is a digit.
     *
@@ -191,11 +224,9 @@ public class NameFilter {
         String temp = new String(nameca);
         temp = temp.replaceAll("-", "_minus_");
         temp = temp.replaceAll("!", "_plus_");
-        temp = temp.replaceAll("__", "_");
-        temp = temp.replaceAll("__", "_");
-        temp = temp.replaceAll("__", "_");
-        temp = temp.replaceAll("__", "_");
-        temp = temp.replaceAll("__", "_");
+        while (temp.contains("__")){
+            temp = temp.replaceAll("__", "_");
+        }
         return temp;
     }
     

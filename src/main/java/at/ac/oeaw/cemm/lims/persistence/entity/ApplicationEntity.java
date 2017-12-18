@@ -1,6 +1,6 @@
 package at.ac.oeaw.cemm.lims.persistence.entity;
 
-import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import java.util.HashSet;
 import java.util.Set;
 

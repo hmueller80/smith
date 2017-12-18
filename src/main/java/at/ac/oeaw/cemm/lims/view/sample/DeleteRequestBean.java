@@ -5,9 +5,9 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -84,7 +84,7 @@ public class DeleteRequestBean {
     public List<LibraryDTO> getDeleatableLibraries() {
         List<LibraryDTO> returnValue = new LinkedList<>();
         returnValue.add(defaultLibrary);
-        returnValue.addAll(selectedRequest.getLibraries().values());
+        returnValue.addAll(selectedRequest.getLibrariesMap().values());
         return returnValue;
     }
 

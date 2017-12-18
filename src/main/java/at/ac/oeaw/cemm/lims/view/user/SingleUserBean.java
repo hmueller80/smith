@@ -5,13 +5,13 @@
  */
 package at.ac.oeaw.cemm.lims.view.user;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.UserValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.UserDTOValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -136,32 +136,32 @@ public class SingleUserBean {
     public void persist(){
         final String COMPONENT = "UserModbutton";
         
-        UserValidator userValidator = new UserValidator(currentUser);
+        UserDTOValidator userValidator = new UserDTOValidator();
         userValidator.setIsNew(isNew);
         try{
-            UserDTO validatedUser = userValidator.getValidatedObject();
-            PersistedEntityReceipt receipt = services.getUserService().persistOrUpdateUser(validatedUser,communications.getTarget(),isNew);
-            for (ValidatorMessage message:userValidator.getMessages()){
+            ValidationStatus validation = userValidator.isValid(currentUser);
+             for (ValidatorMessage message:validation.getValidationMessages()){
                 if (ValidatorSeverity.WARNING.equals(message.getType())){
                     NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getDescription());
                 }
-            }
-            NgsLimsUtility.setSuccessMessage(FORM_ID, COMPONENT, "Success", "User saved");
-            isNew=false;
-            currentUser = services.getUserService().getUserByID(receipt.getId());
-            currentUserPI= services.getUserService().getUserByID(currentUser.getPi());
-        }catch(ValidatorException e){
-            for (ValidatorMessage message:e.getPayload()){
                 if (ValidatorSeverity.FAIL.equals(message.getType())){
                     NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getDescription());
                 }
             }
+            
+            if (validation.isValid()) {
+                PersistedEntityReceipt receipt = services.getUserService().persistOrUpdateUser(currentUser, communications.getTarget(), isNew);
+
+                NgsLimsUtility.setSuccessMessage(FORM_ID, COMPONENT, "Success", "User saved");
+                isNew = false;
+                currentUser = services.getUserService().getUserByID(receipt.getId());
+                currentUserPI = services.getUserService().getUserByID(currentUser.getPi());
+            }
+
         }catch(Exception e){
             e.printStackTrace();
             NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "DB error", e.getMessage());
         }
-        
-          
     }
 
 }

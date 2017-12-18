@@ -1,6 +1,6 @@
 package at.ac.oeaw.cemm.lims.view.upload;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;

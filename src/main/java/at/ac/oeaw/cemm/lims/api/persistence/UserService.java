@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
 
@@ -30,5 +30,7 @@ public interface UserService {
     public boolean userExists(String login) throws Exception;
 
     public PersistedEntityReceipt persistOrUpdateUser(UserDTO validatedUser, List<UserDTO> collaborators, boolean isNew) throws Exception;
+
+    public UserDTO getUserByMail(String mailAddress);
 
 }

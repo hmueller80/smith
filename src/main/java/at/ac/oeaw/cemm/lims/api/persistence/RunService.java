@@ -7,10 +7,10 @@ package at.ac.oeaw.cemm.lims.api.persistence;
 
 import java.util.List;
 import java.util.Map;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.Set;
-import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
 
 /**
  *

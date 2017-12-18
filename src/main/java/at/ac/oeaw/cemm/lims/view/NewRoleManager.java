@@ -4,8 +4,8 @@
  */
 package at.ac.oeaw.cemm.lims.view;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;

@@ -57,7 +57,7 @@
                         id="sampleSelect" 
                         value="#{deleteRequestBean.requestsAvailable}" 
                         var="sampleRequest" 
-                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestorUser.login})" itemValue="#{sampleRequest}" />
                     <p:ajax update="librarySelector" />
                 </p:selectOneMenu>     
                 <br /><br/>
@@ -106,8 +106,7 @@
             <h:form id="addSampleDialog">
                 <p:outputLabel value="Please select a request to which you want to add a sample"/>
                 <br/><br/>
-                <p:selectOneMenu  
-                    converter="#{genericConverter}"
+                <p:selectOneMenu                      converter="#{genericConverter}"
                     value ="#{addSampleBean.selectedRequest}"
                     immediate="true"
                     disabled="#{!addSampleBean.roleManager.hasSampleLoadPermission()}"
@@ -117,7 +116,7 @@
                         id="sampleSelect" 
                         value="#{addSampleBean.allRequests}" 
                         var="sampleRequest" 
-                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestorUser.login})" itemValue="#{sampleRequest}" />
                     <p:ajax update="@this confirmAddSampleButton" partialSubmit="true"/>
                 </p:selectOneMenu>                     
                 <br /><br/>                
@@ -131,7 +130,7 @@
                         rendered = "#{addSampleBean.roleManager.hasSampleLoadPermission()}"
                         outcome="/Sample/sampleDetails_1.jsf">
                         <f:param name="rid" value="#{addSampleBean.selectedRequest.requestId}" />
-                        <f:param name="uid" value="#{addSampleBean.selectedRequest.requestor.login}" />
+                        <f:param name="uid" value="#{addSampleBean.selectedRequest.requestorUser.login}" />
                         <f:param name="activeMenu" value="1" />                           
                     </p:button>
                     <p:commandButton

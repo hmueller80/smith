@@ -7,7 +7,7 @@ package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 
 /**
  *

@@ -1,7 +1,7 @@
 package at.ac.oeaw.cemm.lims.view.upload;
 
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
@@ -119,7 +119,7 @@ public class UploadSampleRequestNewBean implements Serializable {
                 RequestDTO requestObj = parsedCSV.getRequestObj();
                 try {                   
                     Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestObj);
-                    sendMailWithReceipts(requestObj.getRequestor(), receipts);
+                    sendMailWithReceipts(requestObj.getRequestorUser(), receipts);
                     NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Samples uploaded correctly");
                 } catch (Exception e) {
                     NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());

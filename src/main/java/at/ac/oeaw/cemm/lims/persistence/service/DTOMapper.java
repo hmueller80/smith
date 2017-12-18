@@ -5,20 +5,20 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.IndexDTO;
-import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity;
@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;

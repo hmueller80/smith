@@ -8,44 +8,26 @@ package at.ac.oeaw.cemm.lims.model.validator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.validator.routines.EmailValidator;
 
 /**
  *
  * @author dbarreca
  */
 public abstract class AbstractValidator<T> {
-    protected final T objectToValidate;
-    private Boolean isValid=null;
-    protected Set<ValidatorMessage> messages=new HashSet<>();
-    
-    public AbstractValidator (T objectToValidate) {
-        this.objectToValidate = objectToValidate;
+         
+    public ValidationStatus isValid(T objectToValidate) {
+        Set<ValidatorMessage> messages = new HashSet<>();
+        return new ValidationStatus(validateInternal(objectToValidate,messages),messages);       
     }
     
-    public T getValidatedObject() throws ValidatorException {
-        if (isValid==null) isValid = objectIsValid();
-        
-        if (isValid) {
-            return objectToValidate;
-        }
-        
-        throw new ValidatorException("Could not validate object of Type "+objectToValidate.getClass().getSimpleName(),messages);
-    }
-    
-    public T forceGetObect() {
-        return objectToValidate;
-    }
-    
-    public Set<ValidatorMessage> getMessages() {
-        return messages;
-    }
-    
-    protected abstract boolean objectIsValid();
+    protected abstract boolean validateInternal(T objectToValidate,Set<ValidatorMessage> messages);
     
     protected boolean stringNotEmpty(String toCheck,
             boolean allowUndefined, 
             ValidatorSeverity severity,
-            String parameterName){
+            String parameterName,
+            Set<ValidatorMessage> messages){
         
         if (toCheck==null || toCheck.isEmpty()){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is empty"));
@@ -61,7 +43,8 @@ public abstract class AbstractValidator<T> {
     protected boolean stringMatchesPattern(String toCheck,
             String pattern,
             ValidatorSeverity severity,
-            String parameterName){
+            String parameterName,
+            Set<ValidatorMessage> messages){
         
         if (toCheck==null || toCheck.isEmpty()){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is empty"));
@@ -76,7 +59,8 @@ public abstract class AbstractValidator<T> {
     
     protected boolean validPositiveNumber(Double toCheck,
             ValidatorSeverity severity,
-            String parameterName){
+            String parameterName,
+            Set<ValidatorMessage> messages){
         
         if (toCheck==null || toCheck<0){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is undefined or negative"));
@@ -88,7 +72,8 @@ public abstract class AbstractValidator<T> {
     
     protected boolean validPositiveNumber(Integer toCheck,
             ValidatorSeverity severity,
-            String parameterName){
+            String parameterName,
+            Set<ValidatorMessage> messages){
         
         if (toCheck==null || toCheck<0){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is undefined or negative"));
@@ -101,7 +86,8 @@ public abstract class AbstractValidator<T> {
      protected boolean collectionNotEmpty(
             Collection toCheck, 
             ValidatorSeverity severity,
-            String parameterName){
+            String parameterName,
+            Set<ValidatorMessage> messages){
         
         if (toCheck==null || toCheck.isEmpty()){
             messages.add(new ValidatorMessage(severity,parameterName,parameterName+" is empty"));
@@ -109,6 +95,20 @@ public abstract class AbstractValidator<T> {
         }
         
         return true;
+    }
+     
+     protected boolean validEmail(String email, ValidatorSeverity severity,Set<ValidatorMessage> messages) {
+        return validEmail(email, severity, "User Email",messages);
+    }
+     
+    protected boolean validEmail(String email, ValidatorSeverity severity, String fieldName,Set<ValidatorMessage> messages) {
+        if (EmailValidator.getInstance().isValid(email)){
+            return true;
+        }else {
+            messages.add(new ValidatorMessage(severity, fieldName, "Email "+email+" is not a valid address"));
+            return false;
+        }
+
     }
             
 }

@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;

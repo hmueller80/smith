@@ -11,7 +11,7 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import java.util.Date;
 import javax.faces.bean.ApplicationScoped;
 
