@@ -6,8 +6,10 @@
 package at.ac.oeaw.cemm.lims.model.validator.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.ApplicationValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import java.util.Set;
 /**
@@ -30,19 +32,11 @@ public class RequestLibraryValidator extends LibraryValidator<RequestLibraryDTO>
 
         boolean isValid = super.validateInternal(objectToValidate, messages);
         
-        if (stringNotEmpty(objectToValidate.getReadMode(), false, ValidatorSeverity.FAIL, "Read Mode",messages)) {
-            String readMode = objectToValidate.getReadMode();
-            if (!"PE".equals(readMode) && !"SR".equals(readMode)) {
-                isValid = false;
-                messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Read Mode", "Read Mode must be PE or SR"));
-            }else{
-                objectToValidate.setReadMode(readMode);
-            }
-        } else {
-            isValid = false;
-        }    
-        isValid = isValid && stringNotEmpty(objectToValidate.getApplicationName(), false, ValidatorSeverity.FAIL, "Application", messages);
-        isValid = isValid && validPositiveNumber(objectToValidate.getReadLength(), ValidatorSeverity.FAIL, "Read Length",messages);
+        ApplicationValidator appValidator  = new ApplicationValidator();
+        ValidationStatus appValidation = appValidator.isValid(objectToValidate);
+        isValid = isValid && appValidation.isValid();
+        messages.addAll(appValidation.getValidationMessages());
+        
         isValid = isValid && validPositiveNumber(objectToValidate.getLanes(), ValidatorSeverity.FAIL, "Lanes",messages);
         isValid = isValid && validPositiveNumber(objectToValidate.getVolume(), ValidatorSeverity.FAIL, "Volume",messages);
         isValid = isValid && validPositiveNumber(objectToValidate.getDnaConcentration(), ValidatorSeverity.FAIL, "DNA Concentration",messages);

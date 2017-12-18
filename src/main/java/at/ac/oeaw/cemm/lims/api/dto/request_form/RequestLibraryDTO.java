@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.api.dto.generic.Library;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author dbarreca
  */
-public interface RequestLibraryDTO extends Library{
+public interface RequestLibraryDTO extends Library, Application{
 
     void addSample(RequestSampleDTO sample);
     
@@ -32,12 +33,15 @@ public interface RequestLibraryDTO extends Library{
 
     Integer getLanes();
 
+    @Override
     Integer getReadLength();
 
+    @Override
     String getReadMode();
 
     Double getTotalSize();
 
+    @Override
     String getApplicationName();
 
     String getUuid();
