@@ -7,6 +7,12 @@ import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
+import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
+import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
 import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -82,7 +88,7 @@ public class UploadSampleRequestNewBean implements Serializable {
                 return;
             }
 
-            parsedCSV = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename), services);
+            parsedCSV = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename));
             //--------------LOG PARSING STATUS ------------------------------------
             System.out.println("---------Parsed file " + filename + "----------");
             System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
@@ -102,9 +108,19 @@ public class UploadSampleRequestNewBean implements Serializable {
                     System.out.println("Failed validation");
                 }
             } else {
-                NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
-                for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
-                    NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                RequestValidator requestValidator = new RequestValidator(new LibraryValidator(new SampleDTOValidator()),services);
+                ValidationStatus requestValidation = requestValidator.isValid(parsedCSV.getRequestObj());
+                if (requestValidation.isValid()){
+                    NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+                    for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                        NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                    }
+                } else {
+                    for (ValidatorMessage message: requestValidation.getValidationMessages()){
+                        if (ValidatorSeverity.FAIL.equals(message.getType())){
+                            NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getDescription());
+                        }
+                    }
                 }
             }
         } else {

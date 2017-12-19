@@ -6,13 +6,40 @@
                 template="/template.xhtml">
 
     <ui:define name="sampleRequest">
-
+        <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="uploadDialogHeader" value="#{uploadSampleSheetBean.fileName}"/>
+            </f:facet>
+            <h:form id="uploadDialog">
+                <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton 
+                        widgetVar='okButton'
+                        value="OK"
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        onclick="PF('uploadDialog').hide()"
+                        update="@all"/>
+                </div>
+            </h:form>
+        </p:dialog>
         <h:form id="requestWizard">
             <p:messages id="formMessages" for="validationMessages"/>
+      
             <h:panelGroup id="wizNav">
                 <div class="ui-g">
                     <div class="ui-g-2"/>
                     <div class="ui-g-2" style="text-align:right">
+
+                     <p:fileUpload style="float:left;margin:1px"
+                                   fileUploadListener="#{uploadSampleSheetBean.handleFileUpload}"
+                                   label="Upload Excel" multiple="false" mode="advanced" auto="true"
+                                   sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
+                                   oncomplete="PF('uploadDialog').show()"
+                                   update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" 
+                                   rendered="#{requestBean.wizStep=='personal'}"/>
+                 
                         <p:commandButton 
                             icon="ui-icon-arrow-1-w"
                             iconPos="left"
@@ -48,83 +75,83 @@
             </h:panelGroup>
 
             <p:wizard widgetVar="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false">
-                
+
                 <p:tab id="personal" title="Personal" >
                     <div style="width: 100%; text-align:center" >
-                    <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
-                        
-                         <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                        
-                         <p:outputPanel style="display:inline-block">
-                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Requestor" />
-                         </p:outputPanel>                       
-                                                <p:outputPanel style="display:inline-block"/>
+                        <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
 
-                        <p:outputPanel style="display:inline-block"/>
-                        
-                        <h:outputLabel for="userName" value="User Name: " />
-                        <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.userName}"/>
-                        <p:message for="userName" />
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
 
-                        <h:outputLabel for="userEmail" value="User Email: " />
-                        <h:outputText style="width:300px;"  id="userEmail" value="#{requestBean.request.requestor.user.mailAddress}"/>
-                        <p:message for="userEmail" />
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Requestor" />
+                            </p:outputPanel>                       
+                            <p:outputPanel style="display:inline-block"/>
 
-                        <h:outputLabel for="userPhone" value="User Phone: " />
-                        <h:outputText style="width:300px;"  id="userPhone" value="#{requestBean.request.requestor.user.phone}"/>
-                        <p:message for="userPhone" />
-                            
-                        <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                        
-                         <p:outputPanel style="display:inline-block">
-                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Principal Investigator" />
-                         </p:outputPanel>                       
-                        <p:separator />
-                        <p:outputPanel style="display:inline-block"/>
-                        
-                        <h:outputLabel for="userPiName" value="Principal Investigator: " />
-                        <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.userName}"/>
-                        <p:message for="userPiName" />
+                            <p:outputPanel style="display:inline-block"/>
 
-                        <h:outputLabel for="userPiEmail" value="Principal Investigator Email: " />
-                        <h:outputText style="width:300px;"  id="userPiEmail" value="#{requestBean.request.requestor.pi.mailAddress}"/>
-                        <p:message for="userPiEmail" />
+                            <h:outputLabel for="userName" value="User Name: " />
+                            <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.userName}"/>
+                            <p:message for="userName" />
 
-                        <h:outputLabel for="userPiPhone" value="Principal Investigator Phone: " />
-                        <h:outputText style="width:300px;"  id="userPiPhone" value="#{requestBean.request.requestor.pi.phone}"/>
-                        <p:message for="userPiPhone" />         
-                        
-                         <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                         <p:outputPanel style="display:inline-block"/>
-                        
-                         <p:outputPanel style="display:inline-block">
-                            <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size: 2.1vh" value="Affiliation Details" />
-                         </p:outputPanel>                       
-                        <p:separator />
-                        <p:outputPanel style="display:inline-block"/>
-                        
-                        <p:outputLabel for="orgaName" value="Organization: " />
-                        <p:inputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
-                        <p:message for="orgaName" />      
+                            <h:outputLabel for="userEmail" value="User Email: " />
+                            <h:outputText style="width:300px;"  id="userEmail" value="#{requestBean.request.requestor.user.mailAddress}"/>
+                            <p:message for="userEmail" />
 
-                        <p:outputLabel for="orgaDept" value="Department " />
-                        <p:inputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.department}"/>
-                        <p:message for="orgaDept" />   
+                            <h:outputLabel for="userPhone" value="User Phone: " />
+                            <h:outputText style="width:300px;"  id="userPhone" value="#{requestBean.request.requestor.user.phone}"/>
+                            <p:message for="userPhone" />
 
-                        <p:outputLabel for="orgaAddress" value="Address: " />
-                        <p:inputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
-                        <p:message for="orgaAddress" />   
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
 
-                        <p:outputLabel for="orgaUrl" value="URL: " />
-                        <p:inputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
-                        <p:message for="orgaUrl" />   
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Principal Investigator" />
+                            </p:outputPanel>                       
+                            <p:separator />
+                            <p:outputPanel style="display:inline-block"/>
 
-                    </p:panelGrid>
+                            <h:outputLabel for="userPiName" value="Principal Investigator: " />
+                            <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.userName}"/>
+                            <p:message for="userPiName" />
+
+                            <h:outputLabel for="userPiEmail" value="Principal Investigator Email: " />
+                            <h:outputText style="width:300px;"  id="userPiEmail" value="#{requestBean.request.requestor.pi.mailAddress}"/>
+                            <p:message for="userPiEmail" />
+
+                            <h:outputLabel for="userPiPhone" value="Principal Investigator Phone: " />
+                            <h:outputText style="width:300px;"  id="userPiPhone" value="#{requestBean.request.requestor.pi.phone}"/>
+                            <p:message for="userPiPhone" />         
+
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size: 2.1vh" value="Affiliation Details" />
+                            </p:outputPanel>                       
+                            <p:separator />
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <p:outputLabel for="orgaName" value="Organization: " />
+                            <p:inputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
+                            <p:message for="orgaName" />      
+
+                            <p:outputLabel for="orgaDept" value="Department " />
+                            <p:inputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.department}"/>
+                            <p:message for="orgaDept" />   
+
+                            <p:outputLabel for="orgaAddress" value="Address: " />
+                            <p:inputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
+                            <p:message for="orgaAddress" />   
+
+                            <p:outputLabel for="orgaUrl" value="URL: " />
+                            <p:inputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
+                            <p:message for="orgaUrl" />   
+
+                        </p:panelGrid>
                     </div>
                 </p:tab>
                 <p:tab id="samples" title="samples">
@@ -272,36 +299,36 @@
                                         type: 'text'
                                     },
                                     {
-                                        data:'applicationName',
-                                        type:'text'
+                                        data: 'applicationName',
+                                        type: 'text'
                                     },
                                     {
-                                        data:'readMode',
-                                        type:'dropdown',
-                                        source:['PE','SR']
+                                        data: 'readMode',
+                                        type: 'dropdown',
+                                        source: ['PE', 'SR']
                                     },
                                     {
-                                        data:'readLength',
-                                        type:'numeric'
+                                        data: 'readLength',
+                                        type: 'numeric'
                                     },
-                                     {
-                                        data:'lanes',
-                                        type:'numeric'
+                                    {
+                                        data: 'lanes',
+                                        type: 'numeric'
                                     },
-                                     {
-                                        data:'volume',
-                                        type:'numeric'
+                                    {
+                                        data: 'volume',
+                                        type: 'numeric'
                                     },
-                                     {
-                                        data:'dnaConcentration',
-                                        type:'numeric'
+                                    {
+                                        data: 'dnaConcentration',
+                                        type: 'numeric'
                                     },
-                                     {
-                                        data:'totalSize',
-                                        type:'numeric'
+                                    {
+                                        data: 'totalSize',
+                                        type: 'numeric'
                                     }],
                                 rowHeaders: true,
-                                colHeaders: ['Library Name','Application','Read Mode','Read Length','Lanes','Volume','DNA Concentration','Total size'],
+                                colHeaders: ['Library Name', 'Application', 'Read Mode', 'Read Length', 'Lanes', 'Volume', 'DNA Concentration', 'Total size'],
                                 manualRowResize: true,
                                 minSpareRows: 0,
                                 afterChange: dataChangeCallback,

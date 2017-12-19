@@ -6,20 +6,18 @@
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet;
 
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  
 /**
  *
@@ -27,38 +25,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class ExcelParser{
     
-    private String fileName;
     
     protected ArrayList<ArrayList<String>> summarySheet = new ArrayList<>();
     protected ArrayList<ArrayList<String>>  samplesSheet = new ArrayList<>();
     protected ArrayList<ArrayList<String>> librariesSheet = new ArrayList<>();
     protected ArrayList<ArrayList<String>> requestsSheet = new ArrayList<>();
     
-    public ExcelParser(String filename) throws ParsingException {
-        this.fileName = filename;
-        parseFile();        
-    }
-     
-    private void parseFile() throws ParsingException {
-        boolean isExcel2007 = false;
+    public ExcelParser(File file) throws ParsingException {
+        String fileName = file.getName();
         
-         if(fileName.endsWith(".xlsx")){
-            isExcel2007 = true;
-        }else if(!fileName.endsWith(".xls")){
+        
+        if(!fileName.endsWith(".xlsx") && !fileName.endsWith(".xls")){
             throw new ParsingException("Excel parsing","Invalid format: only xls or xlsx files are accepted");
         }
         
         try {
-            Workbook wb;
-            
-            if (isExcel2007){
-                wb = new XSSFWorkbook(fileName);
-            }else{
-                FileInputStream fis = new FileInputStream(fileName);            
-                POIFSFileSystem fileSystem = new POIFSFileSystem(fis);   
-                wb = new HSSFWorkbook(fileSystem);
-            }
-            
+            Workbook wb = WorkbookFactory.create(file);
+           
             int sheets = wb.getNumberOfSheets();
 
             for (int i = 0; i < sheets; i++) {
@@ -107,9 +90,8 @@ public class ExcelParser{
             }
             wb.close();
             
-        } catch (IOException ex) {
-            Logger.getLogger(ExcelParser.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
+        } catch (IOException| InvalidFormatException | EncryptedDocumentException ex) {
+            throw new ParsingException("Error while reading Excel File "+file.getName(),ex.getMessage());
         }
 
     }

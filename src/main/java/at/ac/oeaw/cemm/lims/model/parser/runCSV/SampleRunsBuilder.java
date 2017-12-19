@@ -34,8 +34,9 @@ import org.apache.commons.csv.CSVRecord;
 public class SampleRunsBuilder {
     
     @Inject private DTOFactory myDTOFactory;
-    
-    public ValidatedCSV<Set<SampleRunDTO>> buildSampleRunsFromCSV(File csvFile, ServiceFactory services, UserDTO operator){
+    @Inject private ServiceFactory services;
+
+    public ValidatedCSV<Set<SampleRunDTO>> buildSampleRunsFromCSV(File csvFile, UserDTO operator){
        
         //This objects maps sample Id -> sampleRuns)
         Map<Integer,SampleRunDTO> samples = new HashMap<>();

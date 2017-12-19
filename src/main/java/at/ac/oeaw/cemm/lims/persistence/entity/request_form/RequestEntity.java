@@ -30,7 +30,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "request")
 public class RequestEntity implements Serializable {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -40,6 +40,9 @@ public class RequestEntity implements Serializable {
     @Column(name = "req_date")
     @Temporal(TemporalType.DATE)
     private Date reqDate;
+    
+    @Column(name = "status")
+    private String status;
     
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
@@ -86,6 +89,14 @@ public class RequestEntity implements Serializable {
     public void setRequestLibrarySet(Set<RequestLibraryEntity> requestLibrarySet) {
         this.requestLibrarySet = requestLibrarySet;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    } 
 
     @Override
     public int hashCode() {

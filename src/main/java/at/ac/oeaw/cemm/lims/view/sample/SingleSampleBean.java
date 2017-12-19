@@ -232,7 +232,7 @@ public class SingleSampleBean implements Serializable {
         if (!isNewForm && !Pattern.matches(".*_S[0-9]+", name.toUpperCase())){
             name = name+"_S"+currentSample.getId();
         }
-        currentSample.setName(NameFilter.legalize(name));
+        currentSample.setName(NameFilter.legalizeSampleName(name));
     }
     
     public String getSequencingIndex() {

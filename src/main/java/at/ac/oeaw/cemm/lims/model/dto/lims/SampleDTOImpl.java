@@ -81,9 +81,9 @@ class SampleDTOImpl implements SampleDTO, Serializable {
         this.bulkFragmentSize = bulkFragmentSize;
         this.costcenter = costcenter;
         this.status = status;
-        this.name = NameFilter.legalize(name);
+        this.name = NameFilter.legalizeSampleName(name);
         this.comment = comment;
-        this.description = description;
+        this.description = NameFilter.legalize(description);
         this.requestDate = requestDate;
         this.bioanalyzerDate = bioanalyzerDate;
         this.bioAnalyzerMolarity = bioAnalyzerMolarity;
@@ -246,7 +246,7 @@ class SampleDTOImpl implements SampleDTO, Serializable {
 
     @Override
     public void setName(String name) {
-        this.name = NameFilter.legalize(name);
+        this.name = NameFilter.legalizeSampleName(name);
     }
 
     @Override
@@ -256,7 +256,7 @@ class SampleDTOImpl implements SampleDTO, Serializable {
 
     @Override
     public void setDescription(String description) {
-        this.description = description;
+        this.description = NameFilter.legalize(description);
     }
 
     @Override

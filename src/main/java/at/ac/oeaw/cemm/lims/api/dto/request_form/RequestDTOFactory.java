@@ -18,9 +18,11 @@ public interface RequestDTOFactory {
 
     RequestFormDTO getRequestFormDTO(RequestorDTO requestor);
 
-    RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, Date date);
+    RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, Date date, String status);
 
     RequestLibraryDTO getRequestLibraryDTO();
+
+    RequestLibraryDTO getEmptyRequestLibraryDTO();
 
     RequestSampleDTO getRequestSampleDTO();
 

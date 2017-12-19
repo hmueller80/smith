@@ -38,7 +38,7 @@ public class RequestBuilder {
     @Inject private DTOFactory myDTOFactory;
     @Inject private ServiceFactory services;
     
-    public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, ServiceFactory services) {
+    public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile) {
         RequestDTO requestObj = null;
         CSVValidationStatus validationStatus = new CSVValidationStatus();
         

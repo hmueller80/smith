@@ -17,7 +17,6 @@ import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestSampleDTOImpl;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestNormalizer;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -89,6 +88,11 @@ public class RequestBean {
     public RequestFormDTO getRequest() {
         return request;
     }
+
+    protected void setRequest(RequestFormDTO request) {
+        this.request = request;
+    }
+    
 
     public String getSamples() {
         try {
@@ -257,7 +261,7 @@ public class RequestBean {
         if (!areSamplesFailed && !areLibrariesFailed) {
             try {
                 Integer requestId=services.getRequestFormService().saveRequestForm(request);
-                return "sampleRequest.jsf?faces-redirect=true&activeMenu=5&rid="+requestId;
+                return "requestCreated.jsf?faces-redirect=true&activeMenu=5&rid="+requestId;
             } catch (Exception ex) {
                 ex.printStackTrace();
                 NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());

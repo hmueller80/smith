@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.model.validator.dto.generic;
 
-import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.api.dto.generic.User;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;

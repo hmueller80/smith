@@ -16,7 +16,9 @@ import java.util.regex.Pattern;
  * @author dbarreca
  */
 public interface RequestFormDTO  extends Request {
-
+    public final static String STATUS_NEW = "new";
+    public final static String STATUS_ACCEPTED = "accepted";
+    
     String DEFAULT_INDEX = "NONE";
     String DEFAULT_LIBRARY = "DEFAULT_LIB";
     String DEFAULT_NAME = "DEFAULT_NAME";
@@ -27,7 +29,8 @@ public interface RequestFormDTO  extends Request {
     void addLibrary(RequestLibraryDTO library);
 
     Date getDate();
-
+    
+    String getDateAsString();
     
     @Override
     public Integer getRequestId();
@@ -45,5 +48,7 @@ public interface RequestFormDTO  extends Request {
     void resetLibraries();
     
     public void removeEmptyLibraries();
+    
+    public String getStatus();
     
 }

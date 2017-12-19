@@ -95,6 +95,16 @@ public class NameFilter {
         }
 
     }
+    
+     public static String legalize(String name) {
+        if (name==null || name.isEmpty()){
+            return "";
+        }
+        String n = name.trim();
+        n = replaceIllegalCharacters(n);
+        
+        return n;
+    }
 
     /**
     * Removes illegal characters in name and appends "S_" if name starts with digit.
@@ -104,7 +114,7 @@ public class NameFilter {
     * @return String
     * @since 1.0
     */
-    public static String legalize(String name) {
+    public static String legalizeSampleName(String name) {
         if (name==null || name.isEmpty()){
             return "";
         }
@@ -157,9 +167,9 @@ public class NameFilter {
             return "";
         }
         readMode = readMode.trim().toUpperCase().replace(" ", "");
-        if (readMode.equals("PAIREDEND") || readMode.equals("PAIRED") || readMode.equals("PE")){
+        if (readMode.startsWith("PAIRED") || readMode.equals("PE")){
             return "PE";
-        }else if (readMode.equals("SINGLEREAD") || readMode.equals("SINGLE") || readMode.equals("SR")) {
+        }else if (readMode.startsWith("SINGLE") || readMode.equals("SR")) {
             return "SR";
         }else{
             return "";

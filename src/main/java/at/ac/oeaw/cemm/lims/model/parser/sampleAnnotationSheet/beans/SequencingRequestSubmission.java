@@ -5,9 +5,12 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 public class SequencingRequestSubmission implements Serializable {
     private String libraryName = "";
@@ -27,71 +30,25 @@ public class SequencingRequestSubmission implements Serializable {
     private Integer sequencingRequestSubmissionId;
     private String sequencer = "";
 
-    public SequencingRequestSubmission(ArrayList<String> row, ArrayList<Integer> indices) {
-        if(indices.size() >= 16){
-            if(!row.get(indices.get(0)).equals("null")){
-                if(indices.get(0) > -1 && row.size() > indices.get(0)){
-                    libraryName = row.get(indices.get(0));
-                }
-                if(indices.get(1) > -1 && row.size() > indices.get(1)){
-                    sequencingType  = row.get(indices.get(1));
-                }
-                if(indices.get(2) > -1 && row.size() > indices.get(2)){
-                    readLength = removeUnits(row.get(indices.get(2)));
-                }
-                if(indices.get(4) > -1 && row.size() > indices.get(4)){
-                    numberofLanes = removeUnits(row.get(indices.get(4)));
-                }
-                if(indices.get(5) > -1 && row.size() > indices.get(5)){
-                    specialRequirements = row.get(indices.get(5));
-                }
-                if(indices.get(6) > -1 && row.size() > indices.get(6)){
-                    additionalComment = row.get(indices.get(6));
-                }
-                if(indices.get(7) > -1 && row.size() > indices.get(7)){
-                    receivingPerson = row.get(indices.get(7));
-                }
-                if(indices.get(8) > -1 && row.size() > indices.get(8)){
-                    receivingDate = new Date(System.currentTimeMillis());
-                    //receivingDate = row.get(indices.get(8));
-                }
-                if(indices.get(9) > -1 && row.size() > indices.get(9)){
-                    receivingComment = row.get(indices.get(9));
-                }
-                if(indices.get(10) > -1 && row.size() > indices.get(10)){
-                    qualityControlPerson = row.get(indices.get(10));
-                }
-                if(indices.get(11) > -1 && row.size() > indices.get(11)){ 
-                    qualityControlDate = new Date(System.currentTimeMillis());
-                    //qualityControlDate = row.get(indices.get(11));
-                }
-                if(indices.get(12) > -1 && row.size() > indices.get(12)){
-                    qualityControlSummary = row.get(indices.get(12));
-                }
-                if(indices.get(13) > -1 && row.size() > indices.get(13)){
-                    qualityControlFiles = row.get(indices.get(13));
-                }
-                if(indices.get(14) > -1 && row.size() > indices.get(14)){
-                    qualityControlStatus = row.get(indices.get(14));
-                }
-                if(indices.get(15) > -1 && row.size() > indices.get(15)){
-                    sequencer = row.get(indices.get(15));
-                }
-            }
-        }
+    public SequencingRequestSubmission(ArrayList<String> row, Map<String, Integer> header) {
+
+        libraryName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryName, row, header);
+        sequencingType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.sequencingType, row, header);
+        readLength = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.readLength, row, header));
+        numberofLanes = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.numberofLanes, row, header));
+        specialRequirements = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.specialRequirements, row, header);
+        additionalComment = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.AdditionalComment, row, header);
+        receivingPerson = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.receivingPerson, row, header);
+        receivingDate = new Date(System.currentTimeMillis());
+        receivingComment = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.receivingComment, row, header);
+        qualityControlPerson = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.qualityControlPerson, row, header);
+        qualityControlDate = new Date(System.currentTimeMillis());
+        qualityControlSummary = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.qualityControlSummary, row, header);
+        qualityControlFiles = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.qualityControlFiles, row, header);
+        qualityControlStatus = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.qualityControlStatus, row, header);
+        sequencer = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.sequencer, row, header);
     }
     
-    private String removeUnits(String s){
-        StringBuilder sb = new StringBuilder();
-        char[] c = s.toCharArray();
-        for(int i = 0; i < c.length; i++){
-            if(Character.isDigit(c[i]) || c[i] == ',' || c[i] == '.'){
-                sb.append(c[i]);
-            }
-        }
-        return sb.toString();
-    }
-
     public String getLibraryName() {
         return libraryName;
     }
@@ -155,60 +112,11 @@ public class SequencingRequestSubmission implements Serializable {
     public String getSequencer() {
         return sequencer;
     }
-    
-    
-    
-    public boolean siValid(){
-        if( libraryName == null){
-            //System.out.println("1");
-            return false;
-        }
-        if( libraryName.equals("")){
-            //System.out.println("2");
-            return false;
-        }
-        if( libraryName.equals("null")){
-            //System.out.println("3");
-            return false;
-        }
-        if( sequencingType == null){
-            //System.out.println("4");
-            return false;
-        }
-        if( sequencingType.equals("")){
-            //System.out.println("5");
-            return false;
-        }
-        if( sequencingType.equals("null")){
-            //System.out.println("6");
-            return false;
-        }
-        if( readLength == null){
-            //System.out.println("7");
-            return false;
-        }
-        if( readLength.equals("null")){
-            //System.out.println("8");
-            return false;
-        }
-        if( readLength.equals("")){
-            //System.out.println("9");
-            return false;
-        }
-        if( numberofLanes == null){
-            //System.out.println("10");
-            return false;
-        }
-        if( numberofLanes.equals("null")){
-            //System.out.println("11");
-            return false;
-        }
-        if( numberofLanes.equals("")){
-            //System.out.println("12");
-            return false;
-        }
-        //System.out.println("valid");
-        return true;
+
+    @Override
+    public String toString() {
+        return "SequencingRequestSubmission{" + "\n\tlibraryName=" + libraryName + ",\n\t sequencingType=" + sequencingType + ",\n\t readLength=" + readLength + ",\n\t numberofLanes=" + numberofLanes + ",\n\t specialRequirements=" + specialRequirements + ",\n\t additionalComment=" + additionalComment + ",\n\t receivingPerson=" + receivingPerson + ",\n\t receivingDate=" + receivingDate + ",\n\t receivingComment=" + receivingComment + ",\n\t qualityControlPerson=" + qualityControlPerson + ",\n\t qualityControlDate=" + qualityControlDate + ",\n\t qualityControlSummary=" + qualityControlSummary + ",\n\t qualityControlFiles=" + qualityControlFiles + ",\n\t qualityControlStatus=" + qualityControlStatus + ",\n\t sequencingRequestSubmissionId=" + sequencingRequestSubmissionId + ",\n\t sequencer=" + sequencer + '}';
     }
+    
     
 }

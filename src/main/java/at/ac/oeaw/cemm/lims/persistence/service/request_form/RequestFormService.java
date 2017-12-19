@@ -20,7 +20,9 @@ import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.service.TransactionManager;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -59,6 +61,7 @@ public class RequestFormService {
                 RequestEntity requestEntity = new RequestEntity();
                 requestEntity.setId(requestForm.getRequestId());
                 requestEntity.setReqDate(requestForm.getDate());
+                requestEntity.setStatus(requestForm.getStatus());
                 requestEntity.setUserId(user);
                 requestFormDAO.saveOrUpdate(requestEntity);
                 
@@ -177,4 +180,141 @@ public class RequestFormService {
             return null;
         }
     }
+
+    public List<RequestFormDTO> getDeleatableRequests() {
+        final List<RequestFormDTO> result = new LinkedList<>();
+
+        try {
+            TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    List<RequestEntity> requestEntities = requestFormDAO.getDeleatableRequests();
+
+                    if (requestEntities != null) {
+                        for (RequestEntity requestEntity : requestEntities) {
+                            UserEntity requestor = requestEntity.getUserId();
+                            UserEntity pi = userDAO.getUserByID(requestor.getPi());
+                            RequestFormDTO request = dtoMapper.getRequestFormDTOFromEntity(requestEntity, requestor, pi, false);
+                            result.add(request);
+                        }
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public void bulkDeleteRequest(final Integer requestId) {
+         try {
+            TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    RequestEntity requestEntity = requestFormDAO.getRequestById(requestId);
+
+                    if (requestEntity != null) {
+                      for (RequestLibraryEntity library: requestEntity.getRequestLibrarySet()){
+                          for (RequestSampleEntity sample: library.getRequestSampleSet()){
+                              requestFormDAO.deleteSample(sample);
+                          }
+                          requestFormDAO.deleteLibrary(library);
+                      }
+                      requestFormDAO.deleteRrequest(requestEntity);
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public List<RequestFormDTO> getRequests(final String sortField,final boolean ascending,final Map<String, Object> filters) {
+        final List<RequestFormDTO> requests = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<RequestEntity> requestEntities = requestFormDAO.getAllRequests(sortField, ascending, filters);
+
+                    if (requestEntities != null) {
+                        for (RequestEntity entity : requestEntities) {
+                            UserEntity requestor = entity.getUserId();
+                            UserEntity pi = userDAO.getUserByID(requestor.getPi());
+                            requests.add(dtoMapper.getRequestFormDTOFromEntity(entity, requestor, pi, false));                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Requests retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        
+        return requests;
+    }
+
+    public List<RequestFormDTO> getRequests(final int first, final int pageSize, final String sortField, final boolean ascending, final Map<String, Object> filters) {
+        final List<RequestFormDTO> requests = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<RequestEntity> requestEntities = requestFormDAO.getRequestsPaginated(first, pageSize, sortField, ascending, filters);
+
+                    if (requestEntities != null) {
+                        for (RequestEntity entity : requestEntities) {
+                            UserEntity requestor = entity.getUserId();
+                            UserEntity pi = userDAO.getUserByID(requestor.getPi());
+                            requests.add(dtoMapper.getRequestFormDTOFromEntity(entity, requestor, pi, false));
+                        }
+                    }
+
+                    return null;
+                }
+            });
+            System.out.println("Requests retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return requests;
+    }
+    
+    public Integer getRequestsCount(final Map<String, Object> filters){
+        Integer requests = null;
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            requests = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Integer>() {
+                @Override
+                public Integer execute() throws Exception {
+                    return requestFormDAO.getRequestsCount(filters);
+                }
+            });
+            System.out.println("Requestscount took "+(System.currentTimeMillis()-currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return requests;
+    }
+    
+
 }

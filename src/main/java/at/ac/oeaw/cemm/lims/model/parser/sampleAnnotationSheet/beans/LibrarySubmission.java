@@ -5,11 +5,12 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -44,118 +45,35 @@ public class LibrarySubmission implements Serializable {
     private String libraryDNAAmount = "";
     private Integer librarySubmissionId;
 
-    public LibrarySubmission(ArrayList<String> row, ArrayList<Integer> indices) {
-        //System.out.println("init SampleSubmission");
-        if(indices.size() >= 27){
-            if(!row.get(indices.get(0)).equals("null")){
-                if(indices.get(0) > -1 && row.size() > indices.get(0)){
-                    libraryName = row.get(indices.get(0));
-                    //System.out.println(libraryName);
-                }
-                if(indices.get(1) > -1 && row.size() > indices.get(1)){
-                    libraryLabel  = row.get(indices.get(1));
-                    //System.out.println(libraryLabel);
-                }
-                if(indices.get(2) > -1 && row.size() > indices.get(2)){
-                    sampleName = row.get(indices.get(2));
-                    //System.out.println(sampleName);
-                }
-                if(indices.get(3) > -1 && row.size() > indices.get(3)){
-                    barcodeSequencei7 = row.get(indices.get(3));
-                }
-                if(indices.get(4) > -1 && row.size() > indices.get(4)){
-                    libraryAdapteri7 = row.get(indices.get(4));
-                }
-                if(indices.get(5) > -1 && row.size() > indices.get(5)){
-                    barcodeSequencei5 = row.get(indices.get(5));
-                    if(barcodeSequencei5.equals("null")){
-                        barcodeSequencei5 = "";
-                    }
-                }
-                if(indices.get(6) > -1 && row.size() > indices.get(6)){
-                    libraryAdapteri5 = row.get(indices.get(6));
-                }
-                if(indices.get(7) > -1 && row.size() > indices.get(7)){
-                    sequencingPrimerType = row.get(indices.get(7));
-                }
-                if(indices.get(8) > -1 && row.size() > indices.get(8)){
-                    customSequencingPrimerName = row.get(indices.get(8));
-                }
-                if(indices.get(9) > -1 && row.size() > indices.get(9)){
-                    customSequencingPrimerSequence = row.get(indices.get(9));
-                }
-                if(indices.get(10) > -1 && row.size() > indices.get(10)){                    
-                    libraryType = row.get(indices.get(10));
-                }
-                if(indices.get(11) > -1 && row.size() > indices.get(11)){
-                    libraryKits = row.get(indices.get(11));
-                }
-                if(indices.get(12) > -1 && row.size() > indices.get(12)){
-                    libraryDetails = row.get(indices.get(12));
-                }
-                if(indices.get(13) > -1 && row.size() > indices.get(13)){
-                    libraryPerson = row.get(indices.get(13));
-                }
-                if(indices.get(14) > -1 && row.size() > indices.get(14)){
-                    //libraryDate = row.get(indices.get(15));
-                    libraryDate = new Date(System.currentTimeMillis());
-                }
-                if(indices.get(15) > -1 && row.size() > indices.get(15)){
-                    libraryVolume = removeUnits(row.get(indices.get(15)));
-                }  
-                if(indices.get(16) > -1 && row.size() > indices.get(16)){
-                    libraryDNAConcentration = removeUnits(row.get(indices.get(16)));
-                }  
-                if(indices.get(17) > -1 && row.size() > indices.get(17)){
-                    libraryTotalSize = removeUnits(row.get(indices.get(17)));
-                }  
-                if(indices.get(18) > -1 && row.size() > indices.get(18)){
-                    libraryInsertSize = removeUnits(row.get(indices.get(18)));
-                }  
-                if(indices.get(19) > -1 && row.size() > indices.get(19)){
-                    libraryComment = row.get(indices.get(19));
-                }  
-                if(indices.get(20) > -1 && row.size() > indices.get(20)){
-                    additionalComment = row.get(indices.get(20));
-                }  
-                if(indices.get(21) > -1 && row.size() > indices.get(21)){
-                    //System.out.println(indices.get(22));
-                    bioinformaticsProtocol = row.get(indices.get(21));
-                } 
-                if(indices.get(22) > -1 && row.size() > indices.get(22)){
-                    bioinformaticsGenome = row.get(indices.get(22));
-                } 
-                if(indices.get(23) > -1 && row.size() > indices.get(23)){
-                    bioinformaticsGermlineControl = row.get(indices.get(23));
-                } 
-                if(indices.get(24) > -1 && row.size() > indices.get(24)){
-                    bioinformaticsComment = row.get(indices.get(24));
-                } 
-                if(indices.get(25) > -1 && row.size() > indices.get(25)){
-                    libraryDNAAmount = removeUnits(row.get(indices.get(25)));
-                } 
+    public LibrarySubmission(ArrayList<String> row, Map<String, Integer> header) {
 
-            }
-        }
-    }
-    
-    private String removeUnits(String s){
-        StringBuilder sb = new StringBuilder();
-        char[] c = s.toCharArray();
-        for(int i = 0; i < c.length; i++){
-            if(Character.isDigit(c[i]) || c[i] == ',' || c[i] == '.'){
-                sb.append(c[i]);
-            }
-        }
-        return sb.toString();
-    }
-
-  
-    public String getLibraryDateAsString() {
-        DateFormat df = new SimpleDateFormat("dd.MM.YYYY");
-        String result = df.format(libraryDate);
-        return result;
-        //return libraryDate;
+        libraryName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryName,row,header);
+        libraryLabel = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryLabel,row,header);
+        sampleName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleName,row,header);
+        barcodeSequencei7 = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BarcodeSequencei7,row,header);
+        libraryAdapteri7 = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryAdapteri7,row,header);
+        barcodeSequencei5 = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BarcodeSequencei5,row,header);
+        libraryAdapteri5 = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryAdapteri5,row,header);
+        sequencingPrimerType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SequencingPrimerType,row,header);
+        customSequencingPrimerName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.CustomSequencingPrimerName,row,header);
+        customSequencingPrimerSequence = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.CustomSequencingPrimerSequence,row,header);
+        libraryType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryType,row,header);
+        libraryKits = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryKits,row,header);
+        libraryDetails = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryDetails,row,header);
+        libraryPerson = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryPerson,row,header);
+        libraryDate = new Date(System.currentTimeMillis());
+        libraryVolume = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryVolume,row,header));
+        libraryDNAConcentration = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryDNAConcentration,row,header));
+        libraryTotalSize = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryTotalSize,row,header));
+        libraryInsertSize = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryInsertSize,row,header));
+        libraryComment = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryComment,row,header);
+        additionalComment = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.AdditionalComment,row,header);
+        bioinformaticsProtocol = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BioinformaticsProtocol,row,header);
+        bioinformaticsGenome = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BioinformaticsGenome,row,header);
+        bioinformaticsGermlineControl = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BioinformaticsGermlineControl,row,header);
+        bioinformaticsComment = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BioinformaticsComment,row,header);
+        libraryDNAAmount = ExcelParserUtils.removeUnits(ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryDNAAmount,row,header));
+              
     }
 
     public String getLibraryName() {
@@ -265,47 +183,11 @@ public class LibrarySubmission implements Serializable {
     public Integer getLibrarySubmissionId() {
         return librarySubmissionId;
     }
-    
-    public boolean siValid(){
-        if( libraryName == null){
-            //System.out.println("1");
-            return false;
-        }
-        if( libraryName.equals("")){
-            //System.out.println("2");
-            return false;
-        }
-        if( libraryName.equals("null")){
-            //System.out.println("3");
-            return false;
-        }
-        if( libraryLabel == null){
-            //System.out.println("4");
-            return false;
-        }
-        if( libraryLabel.equals("null")){
-            //System.out.println("5");
-            return false;
-        }
-        if( libraryLabel.equals("")){
-            //System.out.println("6");
-            return false;
-        }
-        if( sampleName == null){
-            //System.out.println("7");
-            return false;
-        }
-        if( sampleName.equals("")){
-            //System.out.println("8");
-            return false;
-        }
-        if( sampleName.equals("null")){
-            //System.out.println("9");
-            return false;
-        }
-        
-        //System.out.println("valid");
-        return true;
+
+    @Override
+    public String toString() {
+        return "LibrarySubmission{" + "\n\tlibraryName=" + libraryName + ",\n\t libraryLabel=" + libraryLabel + ",\n\t sampleName=" + sampleName + ",\n\t barcodeSequencei7=" + barcodeSequencei7 + ",\n\t libraryAdapteri7=" + libraryAdapteri7 + ",\n\t barcodeSequencei5=" + barcodeSequencei5 + ",\n\t libraryAdapteri5=" + libraryAdapteri5 + ",\n\t sequencingPrimerType=" + sequencingPrimerType + ",\n\t customSequencingPrimerName=" + customSequencingPrimerName + ",\n\t customSequencingPrimerSequence=" + customSequencingPrimerSequence + ",\n\t libraryType=" + libraryType + ",\n\t libraryKits=" + libraryKits + ",\n\t libraryDetails=" + libraryDetails + ",\n\t libraryPerson=" + libraryPerson + ",\n\t libraryDate=" + libraryDate + ",\n\t libraryVolume=" + libraryVolume + ",\n\t libraryDNAConcentration=" + libraryDNAConcentration + ",\n\t libraryTotalSize=" + libraryTotalSize + ",\n\t libraryInsertSize=" + libraryInsertSize + ",\n\t libraryComment=" + libraryComment + ",\n\t additionalComment=" + additionalComment + ",\n\t bioinformaticsProtocol=" + bioinformaticsProtocol + ",\n\t bioinformaticsGenome=" + bioinformaticsGenome + ",\n\t bioinformaticsGermlineControl=" + bioinformaticsGermlineControl + ",\n\t bioinformaticsComment=" + bioinformaticsComment + ",\n\t libraryDNAAmount=" + libraryDNAAmount + ",\n\t librarySubmissionId=" + librarySubmissionId + '}';
     }
+    
     
 }

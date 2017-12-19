@@ -76,7 +76,7 @@ public class SampleCSVParser extends DTOCSVParser<SampleDTO> {
 
         String sampleName = record.get(SampleRequestCSVHeader.SampleName);
         if (sampleName != null && !sampleName.trim().isEmpty()) {
-            sample.setName(NameFilter.legalize(sampleName));
+            sample.setName(NameFilter.legalizeSampleName(sampleName));
         } else {
             sample.setName("undefined");
         }

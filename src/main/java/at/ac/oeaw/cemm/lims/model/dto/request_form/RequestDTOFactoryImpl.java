@@ -58,6 +58,14 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     }
     
     @Override
+    public RequestLibraryDTO getEmptyRequestLibraryDTO() {
+        RequestLibraryDTOImpl theResult = new RequestLibraryDTOImpl();
+        theResult.resetLibraryData();
+        return theResult;
+    }
+
+    
+    @Override
     public RequestSampleDTO getRequestSampleDTO(Integer id) {
         return new RequestSampleDTOImpl(id);
     }
@@ -68,8 +76,8 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     }
 
     @Override
-    public RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor,Date date) {
-        return new RequestFormDTOImpl(id,requestor,date);
+    public RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor,Date date, String status) {
+        return new RequestFormDTOImpl(id,requestor,date, status);
     }
 
 }

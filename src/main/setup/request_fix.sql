@@ -15,6 +15,7 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
 	id int auto_increment,
     user_id int(11) not null,
     req_date date,
+    status varchar(100),
     primary key(id),
     foreign key (user_id) references user(user_id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;

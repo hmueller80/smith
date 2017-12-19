@@ -1,0 +1,130 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="requestSearch">
+        
+         <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="deleteDialogHeader" value="Delete Complete Request"/>
+            </f:facet>
+            <h:form id="deleteDialog">
+
+                <p:messages id="messages" for="deleteDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="Please select a request to delete"/>
+                <br/><br/>
+                <p:selectOneMenu  
+                    converter="#{genericConverter}"
+                    value ="#{deleteRequestFormBean.selectedRequest}"
+                    immediate="true"
+                    disabled="#{!deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                    filter="true" 
+                    filterMatchMode="contains">
+                    <f:selectItems 
+                        id="request" 
+                        value="#{deleteRequestFormBean.deleatableRequests}" 
+                        var="myRequest" 
+                        itemLabel="#{myRequest.requestId} - (requested by #{myRequest.requestorUser.login} on #{myRequest.dateAsString})"
+                        itemValue="#{myRequest}" />
+                </p:selectOneMenu>     
+                <br /><br/>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmDeleteButton'
+                        value="Delete" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                        actionListener ="#{deleteRequestFormBean.deleteRequest()}"
+                        update="deleteDialog requestsTableForm"
+                        oncomplete="PF('deleteDialog').hide()"
+                        onclick="PF('confirmDeleteButton').disable();PF('cancelDeleteButton').disable()"
+
+                        />
+                    <p:commandButton
+                        widgetVar='cancelDeleteButton'
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('deleteDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        <h:form id="requestsTableForm">            
+            
+            <p:dataTable id="requestsTable" 
+                         var="myRequest" 
+                         value="#{requestsSearchBeanLazy.requestDataModel}" 
+                         widgetVar="requestsTable"
+                         paginator="true" 
+                         rows="20"
+                         style="font-size: x-small;" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                         {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         emptyMessage="There are no requests"
+                         sortBy="#{myRequest.id}" 
+                         sortOrder="descending"
+                         lazy="true">
+
+                <f:facet name="header">
+                    <div class="ui-g">
+                        <div class="ui-g-8" />
+                        <div class="ui-g-4">
+                            <p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
+                                             rendered="#{deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                                             onclick="PF('deleteDialog').show()" />
+                            <p:button
+                                style="float:right;margin:1px" 
+                                value="Add Request" 
+                                icon="ui-icon-plus"
+                                id="addRequestButton"
+                                outcome="/Request/sampleRequest.jsf">
+                                <f:param name="activeMenu" value="5" />                           
+                            </p:button>
+                            <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
+                                             icon="ui-icon-arrowthick-1-s">
+                                <p:dataExporter type="csv" target="requestsTable" fileName="Requests"
+                                                pageOnly="false" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </f:facet>
+
+                <p:column id="idColumn"                 
+                          headerText="Request Id"
+                          filterBy="#{myRequest.id}"
+                          sortBy="#{myRequest.id}">
+                        <h:link  outcome="sampleRequest.jsf" value="#{myRequest.requestId}">
+                            <f:param name="rid" value="#{myRequest.requestId}"/>
+                            <f:param name="activeMenu" value="5" />                           
+                        </h:link>
+                </p:column>
+
+                <p:column id="requesterColumn"                      
+                          headerText="Requestor"
+                          filterBy="#{myRequest.userId.login}">
+                    <h:outputText value="#{myRequest.requestorUser.login}" />
+                </p:column>
+                
+                 <p:column id="statusColumn"                      
+                          headerText="Request status"
+                          filterBy="#{myRequest.status}">
+                    <h:outputText value="#{myRequest.status}" />
+                </p:column>
+
+                <p:column id="dateColumn"                  
+                          headerText="Request Date">
+                    <h:outputText value="#{myRequest.dateAsString}" />
+                </p:column>
+
+            </p:dataTable>
+            
+        </h:form>
+    
+    </ui:define>
+
+</ui:composition>

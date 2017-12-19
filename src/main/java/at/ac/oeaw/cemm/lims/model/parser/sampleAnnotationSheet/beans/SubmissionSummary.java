@@ -83,9 +83,7 @@ public class SubmissionSummary implements Serializable {
     
     private String findValueForKey(ArrayList<ArrayList<String>> rows, String key){
         for (ArrayList<String> row : rows) {
-            if (row.contains(key)) {//use startsWith to handle trailung null values (cells that appear empty but have had some value in it)
-                //System.out.println(row);
-                
+            if (row.contains(key)) {
                 if(row.size() > 1 && row.get(1) != null && !row.get(1).equals("null")){
                     return row.get(1);
                 }
@@ -204,6 +202,11 @@ public class SubmissionSummary implements Serializable {
 
     public String getSubmissionDateString() {
         return submissionDateString;
+    }
+
+    @Override
+    public String toString() {
+        return "SubmissionSummary{" + "\n\tsubmissionName=" + submissionName + ",\n\t submissionTitle=" + submissionTitle + ",\n\t submissionContext=" + submissionContext + ",\n\t submissionDescription=" + submissionDescription + ",\n\t submissionComment=" + submissionComment + ",\n\t submissionDate=" + submissionDate + ",\n\t submissionTemplate=" + submissionTemplate + ",\n\t relatedPublications=" + relatedPublications + ",\n\t relatedDatasets=" + relatedDatasets + ",\n\t submittingOrganizationName=" + submittingOrganizationName + ",\n\t submittingOrganizationAddress=" + submittingOrganizationAddress + ",\n\t submittingOrganizationURL=" + submittingOrganizationURL + ",\n\t submittingOrganizationUID=" + submittingOrganizationUID + ",\n\t contactPersonName=" + contactPersonName + ",\n\t contactPersonEmail=" + contactPersonEmail + ",\n\t contactPersonPhone=" + contactPersonPhone + ",\n\t labURL=" + labURL + ",\n\t labHeadContact=" + labHeadContact + ",\n\t labAdministrativeContact=" + labAdministrativeContact + ",\n\t labExperimentalContact=" + labExperimentalContact + ",\n\t labBioinformaticsContact=" + labBioinformaticsContact + ",\n\t submittingOrganizationDepartment=" + submittingOrganizationDepartment + ",\n\t billingContact=" + billingContact + ",\n\t billingAddress=" + billingAddress + ",\n\t billingCode=" + billingCode + ",\n\t submissionSummaryId=" + submissionSummaryId + ",\n\t submissionDateString=" + submissionDateString + '}';
     }
     
     

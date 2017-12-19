@@ -10,20 +10,16 @@ import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -82,7 +78,7 @@ public class UploadRunFormNewBean implements Serializable {
                 return;
             }
             System.out.println("Parsing data");
-            parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), services, roleManager.getCurrentUser());
+            parsedCSV = runBuilder.buildSampleRunsFromCSV(new File(destination + filename), roleManager.getCurrentUser());
             //--------------LOG PARSING STATUS ------------------------------------
             System.out.println("---------Parsed file " + filename + "----------");
             System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());

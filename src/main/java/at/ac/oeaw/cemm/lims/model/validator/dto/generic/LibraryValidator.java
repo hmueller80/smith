@@ -61,7 +61,11 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
     
     private boolean validateSamples(Library objectToValidate, Set<ValidatorMessage> messages) {
         boolean isValid = true;
-    
+        
+        if (checkSamples){
+            isValid = isValid && collectionNotEmpty(objectToValidate.getSamples(),ValidatorSeverity.FAIL,"Samples in library "+objectToValidate.getName(),messages);
+        }
+        
         Sample[] samples = objectToValidate.getSamples().toArray(new Sample[objectToValidate.getSamples().size()]);
 
         for (int i = 0; i < samples.length; i++) {

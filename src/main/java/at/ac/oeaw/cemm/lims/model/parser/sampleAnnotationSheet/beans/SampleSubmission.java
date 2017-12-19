@@ -5,8 +5,11 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -32,64 +35,26 @@ public class SampleSubmission implements Serializable {
     private Integer sampleSubmissionId;
 
     
-    public SampleSubmission(ArrayList<String> row, ArrayList<Integer> indices) {
-        if(indices.size() >= 17){
-            if(!row.get(indices.get(0)).equals("null")){
-                
-                if(indices.get(0) > -1 && row.size() > indices.get(0)){
-                    sampleName = row.get(indices.get(0));
-                }
-                if(indices.get(1) > -1 && row.size() > indices.get(1)){
-                    sampleDescription  = row.get(indices.get(1));
-                }
-                if(indices.get(2) > -1 && row.size() > indices.get(2)){
-                    organism = row.get(indices.get(2));
-                }
-                if(indices.get(3) > -1 && row.size() > indices.get(3)){
-                    sex = row.get(indices.get(3));
-                }
-                if(indices.get(4) > -1 && row.size() > indices.get(4)){
-                    age = row.get(indices.get(4));
-                }
-                if(indices.get(5) > -1 && row.size() > indices.get(5)){
-                    tissue = row.get(indices.get(5));
-                }
-                if(indices.get(6) > -1 && row.size() > indices.get(6)){
-                    cellType = row.get(indices.get(6));
-                }
-                if(indices.get(7) > -1 && row.size() > indices.get(7)){
-                    genotype = row.get(indices.get(7));
-                }
-                if(indices.get(8) > -1 && row.size() > indices.get(8)){
-                    familyRelations = row.get(indices.get(8));
-                }
-                if(indices.get(9) > -1 && row.size() > indices.get(9)){
-                    phenotype = row.get(indices.get(9));
-                }
-                if(indices.get(10) > -1 && row.size() > indices.get(10)){                    
-                    disease = row.get(indices.get(10));
-                }
-                if(indices.get(11) > -1 && row.size() > indices.get(11)){
-                    materialType = row.get(indices.get(11));
-                }
-                if(indices.get(12) > -1 && row.size() > indices.get(12)){
-                    source = row.get(indices.get(12));
-                }
-                if(indices.get(13) > -1 && row.size() > indices.get(13)){
-                    acquisitionDate = row.get(indices.get(13));
-                }
-                if(indices.get(14) > -1 && row.size() > indices.get(14)){
-                    sampleGroup = row.get(indices.get(14));
-                }
-                if(indices.get(15) > -1 && row.size() > indices.get(15)){
-                    originalSampleID = row.get(indices.get(15));
-                }               
+    public SampleSubmission(ArrayList<String> row, Map<String, Integer> header) {
 
-            }else{
-                System.out.println("null 0");
-            }
-        }
+        sampleName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleName,row,header);
+        sampleDescription = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleDescription, row, header);
+        organism = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Organism,row,header);
+        sex = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Sex,row,header);
+        age = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Age,row,header);
+        cellType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.CellType,row,header);
+        genotype = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Genotype,row,header);
+        familyRelations = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.FamilyRelations,row,header);
+        phenotype = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Phenotype,row,header);
+        disease = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Disease,row,header);
+        materialType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.MaterialType,row,header);
+        source = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Source,row,header);
+        acquisitionDate = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.AcquisitionDate,row,header);
+        sampleGroup = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleGroup,row,header);
+        originalSampleID = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.OriginalSampleID,row,header);
     }
+    
+    
 
     public String getSampleName() {
         return sampleName;
@@ -159,34 +124,10 @@ public class SampleSubmission implements Serializable {
         return sampleSubmissionId;
     }
 
-    
-    public boolean siValid(){
-        if( sampleName == null){
-            System.out.println("1");
-            return false;
-        }
-        if( sampleName.equals("")){
-            System.out.println("2");
-            return false;
-        }
-        if( sampleName.equals("null")){
-            System.out.println("3");
-            return false;
-        }
-        if( organism == null){
-            System.out.println("4");
-            return false;
-        }
-        if( organism.equals("null")){
-            System.out.println("5");
-            return false;
-        }
-        if( organism.equals("")){
-            System.out.println("6");
-            return false;
-        }        
-
-        return true;
+    @Override
+    public String toString() {
+        return "SampleSubmission{" + "\n\tsampleName=" + sampleName + ",\n\t sampleDescription=" + sampleDescription + ",\n\t organism=" + organism + ",\n\t sex=" + sex + ",\n\t age=" + age + ",\n\t tissue=" + tissue + ",\n\t cellType=" + cellType + ",\n\t genotype=" + genotype + ",\n\t familyRelations=" + familyRelations + ",\n\t phenotype=" + phenotype + ",\n\t disease=" + disease + ",\n\t materialType=" + materialType + ",\n\t source=" + source + ",\n\t acquisitionDate=" + acquisitionDate + ",\n\t sampleGroup=" + sampleGroup + ",\n\t originalSampleID=" + originalSampleID + ",\n\t sampleSubmissionId=" + sampleSubmissionId + '}';
     }
+    
     
 }

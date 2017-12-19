@@ -37,16 +37,22 @@ public class RequestDTOMapper {
         
         return result;
     }
-
+    
     public RequestFormDTO getRequestFormDTOFromEntity(RequestEntity requestEntity, UserEntity requestorEntity, UserEntity piEntity) {
+        return getRequestFormDTOFromEntity(requestEntity,requestorEntity,piEntity,true);
+    }
+
+    public RequestFormDTO getRequestFormDTOFromEntity(RequestEntity requestEntity, UserEntity requestorEntity, UserEntity piEntity, boolean loadLibraries) {
         UserDTO user = limsMapper.getUserDTOFromEntity(requestorEntity);
         UserDTO pi = limsMapper.getUserDTOFromEntity(piEntity);
         AffiliationDTO affiliation = getAffiliationFromEntity(requestorEntity.getAffiliation());
         RequestorDTO requestor = dtoFactory.getRequestorDTO(user, pi, affiliation);
-        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,requestEntity.getReqDate());
-        for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {
-            RequestLibraryDTO library = getLibraryRequestDTOFromEntity(libraryEntity);
-            requestForm.addLibrary(library);
+        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,requestEntity.getReqDate(),requestEntity.getStatus());
+        if (loadLibraries){
+            for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {
+                RequestLibraryDTO library = getLibraryRequestDTOFromEntity(libraryEntity);
+                requestForm.addLibrary(library);
+            }
         }
         
         return requestForm;

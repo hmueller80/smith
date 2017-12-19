@@ -65,6 +65,16 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
         dnaConcentration = 0.0;
         totalSize = 0.0;
     }
+    
+    protected void resetLibraryData(){
+        readMode = null;
+        readLength = null;
+        lanes = null;
+        applicationName = null;
+        volume = null;
+        dnaConcentration = null;
+        totalSize = null;
+    }
 
     @Override
     public Integer getId() {

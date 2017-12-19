@@ -50,7 +50,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
 
     @Override
     public void setName(String sampleName) {
-        this.sampleName =  NameFilter.legalize(sampleName);
+        this.sampleName =  NameFilter.legalizeSampleName(sampleName);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
 
     @Override
     public void setSampleDescription(String sampleDescription) {
-        this.sampleDescription = sampleDescription;
+        this.sampleDescription = NameFilter.legalize(sampleDescription);
     }
 
     @Override

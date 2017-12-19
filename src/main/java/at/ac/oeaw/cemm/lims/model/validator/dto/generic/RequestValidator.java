@@ -54,6 +54,9 @@ public class RequestValidator<T extends Request> extends AbstractValidator<T> {
         
         Set<String> sampleNames = new HashSet<>();
         Set<String> librariesNames = new HashSet<>();
+        
+        isValid = isValid && collectionNotEmpty(libraries,ValidatorSeverity.FAIL,"Libraries in request",messages);
+        
         for (Library library: libraries){
             
             ValidationStatus libraryValidation = libraryValidator.isValid(library);
