@@ -224,7 +224,6 @@
                 <p:column id="nameColumn" filterBy="#{sample.name}"                      
                           headerText="#{bundle['samples.sample.name']}">
                     <h:outputText value="#{sample.name}" id="sampleNameValue"/>
-                    <p:tooltip id="toolTipName" value="#{sample.name}" for = "sampleNameValue" position="top"/>
                 </p:column>
 
                 <p:column id="statusColumn" filterBy="#{sample.status}"                     
@@ -252,7 +251,6 @@
                 <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
                           headerText="#{bundle['samples.description']}">
                     <h:outputText value="#{sample.description}" id="sampleDescriptionValue"/>
-                    <p:tooltip id="toolTipDescription" value="#{sample.description}" for = "sampleDescriptionValue" position="top"/>
                 </p:column>
 
             </p:dataTable>
