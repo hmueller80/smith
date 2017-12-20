@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
+import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.*;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
@@ -36,11 +37,12 @@ public class RequestFormService {
     @Inject private AffiliationDAO affiliationDAO;
     @Inject private RequestFormDAO requestFormDAO;
     @Inject private UserDAO userDAO;
+    @Inject private SampleDAO sampleDAO;
     @Inject private RequestLibraryDAO requestLibraryDAO;
     @Inject private RequestSampleDAO requestSampleDAO;
     @Inject private RequestDTOMapper dtoMapper;
     
-    public Integer saveRequestForm(final RequestFormDTO requestForm) throws Exception {
+    public Integer saveRequestForm(final RequestFormDTO requestForm, final Boolean isNew) throws Exception {
         return TransactionManager.doInTransaction(
                 new TransactionManager.TransactionCallable<Integer>() {
             @Override
@@ -63,7 +65,7 @@ public class RequestFormService {
                 requestEntity.setReqDate(requestForm.getDate());
                 requestEntity.setStatus(requestForm.getStatus());
                 requestEntity.setUserId(user);
-                requestFormDAO.saveOrUpdate(requestEntity);
+                requestFormDAO.saveOrUpdate(requestEntity,isNew);
                 
                 //2. Take care of libraries
                 Set<RequestLibraryEntity> librariesToDelete = new HashSet<>(requestLibraryDAO.getLibrariesByReqId(requestEntity.getId()));
@@ -314,6 +316,23 @@ public class RequestFormService {
         }
 
         return requests;
+    }
+
+    public Integer getMaxRequestId() {
+           try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Integer>() {
+                @Override
+                public Integer execute() throws Exception {
+                    Integer maxIdFromSamples = sampleDAO.getMaxRequestId();
+                    Integer maxIdFromRequests = requestFormDAO.getMaxRequestId();
+                    return Math.max(maxIdFromSamples, maxIdFromRequests);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
     
 

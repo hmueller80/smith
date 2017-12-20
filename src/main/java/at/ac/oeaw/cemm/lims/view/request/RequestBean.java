@@ -18,6 +18,7 @@ import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
+import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -56,6 +57,10 @@ public class RequestBean {
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
+    
+    @ManagedProperty(value = "#{requestIdBean}")
+    private RequestIdBean requestIdBean;
+    
     @Inject
     private RequestDTOFactory dtoFactory;
     @Inject
@@ -241,6 +246,14 @@ public class RequestBean {
         this.roleManager = roleManager;
     }
 
+    public RequestIdBean getRequestIdBean() {
+        return requestIdBean;
+    }
+
+    public void setRequestIdBean(RequestIdBean requestIdBean) {
+        this.requestIdBean = requestIdBean;
+    }
+
     public String onFlowProcess(FlowEvent event) {
         if (event.getOldStep().equals("libraries") && areLibrariesFailed) {
             wizardStep = event.getOldStep();
@@ -264,18 +277,27 @@ public class RequestBean {
     }
     
     public String submit() {
+        String redirectPage = null;
+        
         if (!areSamplesFailed && !areLibrariesFailed) {
             if (isEditable()){
-                try {
-                    Integer requestId=services.getRequestFormService().saveRequestForm(request);
+                try {                  
                     if(newRequest){
-                        return "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+requestId;
+                        request.setRequestId(requestIdBean.getNextId());
+                    }
+                    
+                    Integer requestId=services.getRequestFormService().saveRequestForm(request,newRequest);
+                    
+                    if(newRequest){
+                        redirectPage = "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+requestId;
                     }else{
                         NgsLimsUtility.setSuccessMessage("libraryMessage", null, "Request Updated","");
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());
+                }finally{
+                    requestIdBean.unlock();
                 }
             }else{
                 NgsLimsUtility.setFailMessage("libraryMessage", null, "User error", "You don't have permission to upload this request");
@@ -283,7 +305,8 @@ public class RequestBean {
         } else {       
             NgsLimsUtility.setFailMessage("libraryMessage", null, "Validation error", "Samples or Libraries have not passed validation");
         }
-        return null;
+        
+        return redirectPage;
     }
     
     public String deleteRequest() {

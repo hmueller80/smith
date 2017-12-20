@@ -5,11 +5,11 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.entity.request_form;
 
+import at.ac.oeaw.cemm.lims.persistence.entity.EntityWithSettableId;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -29,12 +30,13 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "request")
-public class RequestEntity implements Serializable {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
+
+public class RequestEntity implements Serializable, EntityWithSettableId {
+
+    @Id 
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
+    @GenericGenerator(name="IdOrGenerated", strategy="at.ac.oeaw.cemm.lims.persistence.entity.UseIdOrGenerate")
+    @Column(name = "id", nullable = false, columnDefinition = "serial")   
     private Integer id;
     
     @Column(name = "req_date")

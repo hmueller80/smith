@@ -1,5 +1,5 @@
 create table affiliation (
-	organization_name VARCHAR(100),
+    organization_name VARCHAR(100),
     department VARCHAR(100),
     address VARCHAR(200),
     url VARCHAR(2048),
@@ -12,7 +12,7 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
 
 
  create table request (
-	id int auto_increment,
+    id int auto_increment,
     user_id int(11) not null,
     req_date date,
     status varchar(100),

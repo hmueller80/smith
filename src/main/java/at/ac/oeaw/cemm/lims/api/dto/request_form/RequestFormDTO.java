@@ -51,4 +51,6 @@ public interface RequestFormDTO  extends Request {
     
     public String getStatus();
     
+    public void setRequestId(Integer id);
+    
 }

@@ -27,7 +27,7 @@ import java.util.Objects;
 public class RequestFormDTOImpl implements RequestFormDTO {
     private final static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Integer id;
+    private Integer id;
     private final RequestorDTO requestor;    
     private final Date date;
     private final String status;
@@ -54,6 +54,12 @@ public class RequestFormDTOImpl implements RequestFormDTO {
     public Integer getRequestId() {
         return id;
     }
+    
+     @Override
+    public void setRequestId(Integer id) {
+        this.id = id;
+    }
+
  
     @Override
     public Date getDate() {
@@ -151,8 +157,5 @@ public class RequestFormDTOImpl implements RequestFormDTO {
         }
         return true;
     }
-
-    
-    
-    
+  
 }

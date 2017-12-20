@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.persistence.dao.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity;
@@ -50,9 +51,13 @@ public class RequestFormDAO {
         }
     };
 
-    public void saveOrUpdate(RequestEntity requestEntity) {
+    public void saveOrUpdate(RequestEntity requestEntity,boolean isNewEntity) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.saveOrUpdate(requestEntity);
+        if (isNewEntity){
+            session.save(requestEntity);
+        }else{
+            session.update(requestEntity);
+        }
         session.flush();
     }
 
@@ -201,6 +206,16 @@ public class RequestFormDAO {
         }
 
         return query;
+    }
+
+    public Integer getMaxRequestId() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria requestCriteria = session.createCriteria(RequestEntity.class).setProjection(Projections.max("id"));
+        Integer id = (Integer) requestCriteria.uniqueResult();
+        if (id == null) {
+            id = 0;
+        }
+        return id;
     }
 
     
