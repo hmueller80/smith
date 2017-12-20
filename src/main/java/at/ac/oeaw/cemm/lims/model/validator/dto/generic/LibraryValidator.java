@@ -96,6 +96,14 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
 
         String thisIndex = thisSample.getCompoundIndex();
         String otherIndex = otherSample.getCompoundIndex();
+        if (thisIndex == null){
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index error", "Sample "+thisSample.getName()+" has i5 index but not i7"));
+            return false;
+        }
+        if (otherIndex == null){
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index error", "Sample "+otherSample.getName()+" has i5 index but not i7"));
+            return false;
+        }
         System.out.println("Checking sample "+thisSample.getName()+" and "+otherSample.getName());
         if (RequestFormDTO.DEFAULT_INDEX.equals(thisIndex)
                 || RequestFormDTO.DEFAULT_INDEX.equals(otherIndex)) {

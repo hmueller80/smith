@@ -18,6 +18,9 @@ import java.util.Date;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 
 /**
  *
@@ -133,5 +136,56 @@ public class DTOFactoryImpl implements DTOFactory {
     @Override
     public NewsDTO createEmptyNews() {
         return new NewsDTOImpl(null,"","",new Date());
+    }
+
+    @Override
+    public RequestDTO getRequestDTO(RequestFormDTO requestForm) {
+        RequestDTO requestToLims = getRequestDTO(requestForm.getRequestor().getUser(), requestForm.getRequestId());
+        for (RequestLibraryDTO requestLibrary : requestForm.getLibraries()) {
+            LibraryDTO library = getLibraryDTO(requestLibrary.getName(), null);
+            ApplicationDTO application = getApplicationDTO(
+                    requestLibrary.getReadLength(), 
+                    requestLibrary.getReadMode(), 
+                    "HiSeq2000", 
+                    requestLibrary.getApplicationName(),30);
+            for (RequestSampleDTO requestSample : requestLibrary.getSamples()) {
+                SampleDTO sample =   getSampleDTO(null);
+                sample.setSubmissionId(requestForm.getRequestId());
+                sample.setLibraryName(library.getName());
+                
+                sample.setName(requestSample.getName());
+                sample.setDescription(requestSample.getSampleDescription());
+                sample.setComment("");
+                
+                sample.setStatus(SampleDTO.status_requested);
+                
+                sample.setUser(requestToLims.getRequestorUser());
+                sample.setCostcenter(requestForm.getRequestor().getPi().getUserName().replace(",", ""));
+
+                
+                sample.setApplication(application);                
+                sample.setIndex(getIndexDTO(requestSample.getCompoundIndex()));
+                            sample.setName(requestSample.getName());
+                            
+                sample.setOrganism(requestSample.getOrganism());
+                sample.setConcentration(requestLibrary.getDnaConcentration());
+                sample.setTotalAmount(0.0);
+                sample.setBulkFragmentSize(requestLibrary.getTotalSize());
+                
+                sample.setRequestDate(requestForm.getDate());
+                sample.setBioanalyzerDate(requestForm.getDate());
+                
+                sample.setAntibody("");
+                sample.setType("");
+                sample.setSyntehsisNeeded(true);
+                sample.setBioAnalyzerMolarity(0.0);
+                
+                library.addSample(sample);
+            }
+            
+            requestToLims.addOrGetLibrary(library);
+        }
+        
+        return requestToLims;
     }
 }

@@ -7,18 +7,22 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.dao.ApplicationDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.IndexDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
+import at.ac.oeaw.cemm.lims.persistence.dao.RequestDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
+import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestFormDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +44,8 @@ public class LazySampleService implements SampleService {
     @Inject ApplicationDAO applicationDAO;
     @Inject UserDAO userDAO;
     @Inject DTOMapper myDTOMapper;
+    @Inject RequestFormDAO requestFormDAO;
+    @Inject RequestDAO requestDAO;
 
    
     @Override
@@ -215,6 +221,15 @@ public class LazySampleService implements SampleService {
 
                         if (libraryEntity.getSamples().isEmpty()) {
                             libraryDAO.deleteLibrary(libraryEntity);
+                        }
+                        
+                        if (!requestDAO.checkRequestExistence(sample.getSubmissionId())){
+                            RequestEntity requestForm = requestFormDAO.getRequestById(sample.getSubmissionId());
+                            if (requestForm != null){
+                                requestForm.setStatus(RequestFormDTO.STATUS_NEW);
+                                requestFormDAO.saveOrUpdate(requestForm, false);
+                            }
+                            
                         }
                     }
                 }

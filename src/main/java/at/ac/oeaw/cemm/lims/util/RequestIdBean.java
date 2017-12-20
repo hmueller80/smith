@@ -21,7 +21,7 @@ import javax.inject.Inject;
 public class RequestIdBean {
     @Inject ServiceFactory services;
     
-    private Lock lock = new ReentrantLock();
+    private ReentrantLock lock = new ReentrantLock();
 
     public Integer getNextId() {
         lock.lock();
@@ -30,8 +30,11 @@ public class RequestIdBean {
         return maxIdinDB+1;
     }
     
+    
     public void unlock(){
-        lock.unlock();
+        if (lock.isHeldByCurrentThread() && lock.isLocked()){
+            lock.unlock();
+        }
     } 
     
 }

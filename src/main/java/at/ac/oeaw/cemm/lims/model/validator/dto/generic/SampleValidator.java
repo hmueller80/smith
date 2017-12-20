@@ -39,8 +39,14 @@ public class SampleValidator<T extends Sample> extends AbstractValidator<T> {
             }
         }
         
-        isValid = isValid && 
-                stringMatchesPattern(objectToValidate.getCompoundIndex(),RequestFormDTO.INDEX_REGEXP,ValidatorSeverity.FAIL,"Index in sample "+objectToValidate.getName(),messages);
+        if (objectToValidate.getCompoundIndex() == null) {
+            isValid = false;
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index error", "Sample "+objectToValidate.getName()+" has i5 index but not i7"));
+        } else {
+
+            isValid = isValid
+                    && stringMatchesPattern(objectToValidate.getCompoundIndex(), RequestFormDTO.INDEX_REGEXP, ValidatorSeverity.FAIL, "Index in sample " + objectToValidate.getName(), messages);
+        }
         
         return isValid;
     }

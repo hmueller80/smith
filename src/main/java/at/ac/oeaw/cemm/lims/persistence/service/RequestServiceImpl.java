@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.persistence.service;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LibraryDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import java.util.HashSet;
@@ -23,7 +24,9 @@ import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
 import at.ac.oeaw.cemm.lims.persistence.dao.RequestDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
+import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestFormDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -36,6 +39,7 @@ import java.util.Objects;
 public class RequestServiceImpl implements RequestService {
     
     @Inject RequestDAO requestDAO;
+    @Inject RequestFormDAO requestFormDAO;
     @Inject LibraryDAO libraryDAO;
     @Inject SampleDAO sampleDAO;
     @Inject UserDAO userDAO;
@@ -75,6 +79,13 @@ public class RequestServiceImpl implements RequestService {
                         }
                     }
                 }
+                
+                if (request.getRequestId()!=null){
+                    RequestEntity requestEntity = requestFormDAO.getRequestById(request.getRequestId());
+                    requestEntity.setStatus(RequestFormDTO.STATUS_ACCEPTED);
+                    requestFormDAO.saveOrUpdate(requestEntity,false);
+                }
+
 
                 return null;
             }
@@ -165,6 +176,15 @@ public class RequestServiceImpl implements RequestService {
                         libraryDAO.deleteLibrary(libraryEntity);
                     }
                 }
+
+                if (!requestDAO.checkRequestExistence(request.getRequestId())) {
+                    RequestEntity requestForm = requestFormDAO.getRequestById(request.getRequestId());
+                    if (requestForm != null) {
+                        requestForm.setStatus(RequestFormDTO.STATUS_NEW);
+                        requestFormDAO.saveOrUpdate(requestForm, false);
+                    }
+
+                }
                                                       
                 return null;
             }
@@ -194,6 +214,15 @@ public class RequestServiceImpl implements RequestService {
 
                 if (library.getSamples().isEmpty()) {
                     libraryDAO.deleteLibrary(library);
+                }
+                
+                if (!requestDAO.checkRequestExistence(requestId)) {
+                    RequestEntity requestForm = requestFormDAO.getRequestById(requestId);
+                    if (requestForm != null) {
+                        requestForm.setStatus(RequestFormDTO.STATUS_NEW);
+                        requestFormDAO.saveOrUpdate(requestForm, false);
+                    }
+
                 }
 
                 return null;

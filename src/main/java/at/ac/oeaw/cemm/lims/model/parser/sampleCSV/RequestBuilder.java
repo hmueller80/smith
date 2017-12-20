@@ -23,7 +23,7 @@ import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.lims.RequestUploadValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.RequestCSVUploadValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
 import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import java.io.File;
@@ -76,7 +76,7 @@ public class RequestBuilder {
             }
             
             //Validate Business Logic!
-            RequestValidator requestValidator = new RequestUploadValidator(new LibraryValidator(new SampleDTOValidator()),services, requestIdBean);
+            RequestValidator requestValidator = new RequestCSVUploadValidator(new LibraryValidator(new SampleDTOValidator()),services, requestIdBean);
             ValidationStatus requestValidation = requestValidator.isValid(requestObj);
             if (!requestValidation.isValid()){
                 validationStatus.addFailMessage("Submission Validation", "");

@@ -54,7 +54,7 @@ public class RequestBean {
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
     private boolean newRequest = false;
-
+    
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
     
@@ -71,8 +71,16 @@ public class RequestBean {
         System.out.println("Initializing requestBean");
         
         String rid =  (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rid");
-        
-        if(rid==null) {              
+        Integer requestId = null;
+        if (rid!=null){
+            requestId = Integer.parseInt(rid);
+        }
+        initInternal(requestId);
+       
+    }
+    
+    protected void initInternal(Integer requestId){
+         if(requestId==null) {              
             AffiliationDTO affiliation = services.getRequestFormService().getAffiliationForUser(roleManager.getCurrentUser().getId());
             RequestorDTO requestor;
             if (affiliation != null) {
@@ -84,16 +92,14 @@ public class RequestBean {
             newRequest = true;
         } else {
             newRequest = false;
-            Integer requestId = Integer.parseInt(rid);
             request = services.getRequestFormService().getFullRequestById(requestId);
             if (request == null) {
-                throw new IllegalStateException("Sample with rid "+rid+" is null");
+                throw new IllegalStateException("Sample with rid "+requestId+" is null");
             }
             if (!isEditable()){
-                NgsLimsUtility.setSuccessMessage("validationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
+                NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
             }
         }
-      
     }
 
     public RequestFormDTO getRequest() {
@@ -276,38 +282,45 @@ public class RequestBean {
         return wizardStep;
     }
     
-    public String submit() {
-        String redirectPage = null;
-        
+    protected boolean submit() {
+        Boolean success = false;
+
         if (!areSamplesFailed && !areLibrariesFailed) {
-            if (isEditable()){
-                try {                  
-                    if(newRequest){
+            if (isEditable()) {
+                try {
+                    if (newRequest) {
                         request.setRequestId(requestIdBean.getNextId());
                     }
-                    
-                    Integer requestId=services.getRequestFormService().saveRequestForm(request,newRequest);
-                    
-                    if(newRequest){
-                        redirectPage = "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+requestId;
-                    }else{
-                        NgsLimsUtility.setSuccessMessage("libraryMessage", null, "Request Updated","");
-                    }
+                    services.getRequestFormService().saveRequestForm(request, newRequest);
+                    success = true;
+                    NgsLimsUtility.setSuccessMessage("validationMessages", null, "Request Updated", "");
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());
-                }finally{
+                    NgsLimsUtility.setFailMessage("validationMessages", null, "Server error", ex.getMessage());
+                } finally {
+                    
                     requestIdBean.unlock();
                 }
-            }else{
-                NgsLimsUtility.setFailMessage("libraryMessage", null, "User error", "You don't have permission to upload this request");
+            } else {
+                NgsLimsUtility.setFailMessage("validationMessages", null, "User error", "You don't have permission to upload this request");
             }
-        } else {       
-            NgsLimsUtility.setFailMessage("libraryMessage", null, "Validation error", "Samples or Libraries have not passed validation");
+        } else {
+            NgsLimsUtility.setFailMessage("validationMessages", null, "Validation error", "Samples or Libraries have not passed validation");
+        }
+
+        return success;
+    }
+
+    public String submitAndRedirect() {
+        if (submit()){
+            if (newRequest){
+                return "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+            }
         }
         
-        return redirectPage;
+        return null;
     }
+    
     
     public String deleteRequest() {
         try{
@@ -318,10 +331,10 @@ public class RequestBean {
                 
                 return "requestDeleted.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
             }else{
-                NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", "This request cannot be deleted due to status or user role");
+                NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", "This request cannot be deleted due to status or user role");
             }
         }catch(Exception e){
-            NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
+            NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", e.getMessage());
         }
         
         return null;

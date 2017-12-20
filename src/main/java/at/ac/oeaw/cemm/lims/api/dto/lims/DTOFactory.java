@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.dto.lims;
 
 
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import java.util.Date;
 import java.util.Set;
 
@@ -28,6 +29,8 @@ public interface DTOFactory {
     NewsDTO getNewsDTO(Integer id, String header, String body, Date date);
 
     RequestDTO getRequestDTO(UserDTO requestor, Integer requestId);
+    
+    RequestDTO getRequestDTO(RequestFormDTO requestForm);
 
     SampleDTO getSampleDTO(Integer id);
 
@@ -38,6 +41,7 @@ public interface DTOFactory {
     UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole);
     
     RunDTO getRunDTO(Integer id, String flowcell, UserDTO operator, String runFolder);
+    
 
     public NewsDTO createEmptyNews();
     

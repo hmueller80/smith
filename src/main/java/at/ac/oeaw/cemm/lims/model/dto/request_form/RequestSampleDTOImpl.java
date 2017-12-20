@@ -160,7 +160,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
             if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
                 return RequestFormDTO.DEFAULT_INDEX;
             }else{
-                return i5Index.toUpperCase().trim();
+                return null;
             }
         }else{
             if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){

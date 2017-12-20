@@ -16,31 +16,25 @@ import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
-import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import java.util.Set;
 
-public class RequestUploadValidator extends RequestValidator<RequestDTO> {
+public class RequestFormUploadValidator extends RequestValidator<RequestDTO> {
+    ServiceFactory services;
     
-    private RequestIdBean requestIdBean;
-    
-    public <T extends LibraryValidator> RequestUploadValidator(T libraryValidator, ServiceFactory services, RequestIdBean requestIdBean) {
+    public <T extends LibraryValidator> RequestFormUploadValidator(T libraryValidator, ServiceFactory services) {
         super(libraryValidator, services);
-        this.requestIdBean = requestIdBean;
+        this.services = services;
     }
     
     @Override
-    protected boolean validateInternal(RequestDTO objectToValidate, Set<ValidatorMessage> messages) {      
+    protected boolean validateInternal(RequestDTO objectToValidate, Set<ValidatorMessage> messages) {
         boolean isValid = super.validateInternal(objectToValidate, messages);
-        
-        try{
-            if (objectToValidate.getRequestId() < requestIdBean.getNextId()){
-                isValid = false;
-                messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"Submission Id","Samples or requests with this ID already exists"));
-            }
-        }finally{
-            requestIdBean.unlock();
+
+        if (services.getRequestService().checkRequestExistence(objectToValidate.getRequestId())) {
+            isValid = false;
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Submission Id", "Samples or requests with this ID already exists"));
         }
-                
+
         return isValid;
     }
 
