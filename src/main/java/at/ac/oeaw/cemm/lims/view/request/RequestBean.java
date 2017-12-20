@@ -52,6 +52,7 @@ public class RequestBean {
     private boolean areSamplesFailed = false;
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
+    private boolean newRequest = false;
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -75,11 +76,16 @@ public class RequestBean {
                 requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
             }
             request = dtoFactory.getRequestFormDTO(requestor);
+            newRequest = true;
         } else {
+            newRequest = false;
             Integer requestId = Integer.parseInt(rid);
             request = services.getRequestFormService().getFullRequestById(requestId);
             if (request == null) {
                 throw new IllegalStateException("Sample with rid "+rid+" is null");
+            }
+            if (!isEditable()){
+                NgsLimsUtility.setSuccessMessage("validationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
             }
         }
       
@@ -259,18 +265,54 @@ public class RequestBean {
     
     public String submit() {
         if (!areSamplesFailed && !areLibrariesFailed) {
-            try {
-                Integer requestId=services.getRequestFormService().saveRequestForm(request);
-                return "requestCreated.jsf?faces-redirect=true&activeMenu=5&rid="+requestId;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());
-                return null;
+            if (isEditable()){
+                try {
+                    Integer requestId=services.getRequestFormService().saveRequestForm(request);
+                    if(newRequest){
+                        return "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+requestId;
+                    }else{
+                        NgsLimsUtility.setSuccessMessage("libraryMessage", null, "Request Updated","");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    NgsLimsUtility.setFailMessage("libraryMessage", null, "Server error", ex.getMessage());
+                }
+            }else{
+                NgsLimsUtility.setFailMessage("libraryMessage", null, "User error", "You don't have permission to upload this request");
             }
+        } else {       
+            NgsLimsUtility.setFailMessage("libraryMessage", null, "Validation error", "Samples or Libraries have not passed validation");
+        }
+        return null;
+    }
+    
+    public String deleteRequest() {
+        try{
+            if(!newRequest && RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
+                services.getRequestFormService().bulkDeleteRequest(request.getRequestId());
+                NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+request.getRequestId()
+                        +" requested by "+request.getRequestor().getUser().getLogin());
+                
+                return "requestDeleted.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+            }else{
+                NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", "This request cannot be deleted due to status or user role");
+            }
+        }catch(Exception e){
+            NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
         }
         
-        System.out.println("Samples or libraries are failed");
         return null;
+    }
+
+    public boolean isNewRequest() {
+        return newRequest;
+    }
+    
+    public boolean isEditable() {
+        return RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetModifyPermission(request);
+    }
+
+    public void setEditable(boolean value) {
     }
 
 }

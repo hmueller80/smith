@@ -63,10 +63,14 @@ public class DeleteRequestFormBean {
     
     public void deleteRequest() {
         try{
-            services.getRequestFormService().bulkDeleteRequest(selectedRequest.getRequestId());
-            NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+selectedRequest.getRequestId()
-                    +" requested by "+selectedRequest.getRequestor().getUser().getLogin());
-            init();
+            if(RequestFormDTO.STATUS_NEW.equals(selectedRequest.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
+                services.getRequestFormService().bulkDeleteRequest(selectedRequest.getRequestId());
+                NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+selectedRequest.getRequestId()
+                        +" requested by "+selectedRequest.getRequestor().getUser().getLogin());
+                init();
+            }else{
+                NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", "This request cannot be deleted due to status or user role");
+            }
         }catch(Exception e){
             NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
         }

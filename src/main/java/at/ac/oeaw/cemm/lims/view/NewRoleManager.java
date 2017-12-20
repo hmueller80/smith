@@ -134,7 +134,7 @@ public class NewRoleManager implements Serializable {
         return false;
     }
     
-    public boolean hasAnnotationSheetPermission(RequestFormDTO requestForm) {
+    public boolean hasAnnotationSheetModifyPermission(RequestFormDTO requestForm) {
         if (Admin || Technician) {
             return true;
         } else if (User || GroupLeader) {
@@ -149,7 +149,7 @@ public class NewRoleManager implements Serializable {
         return false;
     }
     
-    public boolean hasRequestDeletePermissions() {
+    public boolean hasAnnotationSheetDeletePermission() {
         return (Admin || Technician);
     }
 

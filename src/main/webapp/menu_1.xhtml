@@ -30,17 +30,16 @@
                     icon="ui-icon ui-icon-search">
             <f:param name="activeMenu" value="3" />
         </p:menuitem>
-
-        <p:menuitem value="#{bundle['menu.logout']}"
-                    icon="ui-icon ui-icon-arrowreturnthick-1-w"
-                    action="#{navigationBean.doLogout}" >
+                
+        <p:menuitem value="Request"
+                    icon="ui-icon ui-icon-search"
+                    outcome="/Request/requestSearch.jsf">
             <f:param name="activeMenu" value="4" />
         </p:menuitem>
         
-        
-        <p:menuitem value="Request"
+        <p:menuitem value="#{bundle['menu.logout']}"
                     icon="ui-icon ui-icon-arrowreturnthick-1-w"
-                    outcome="/Request/requestSearch.jsf">
+                    action="#{navigationBean.doLogout}" >
             <f:param name="activeMenu" value="5" />
         </p:menuitem>
     </p:tabMenu>

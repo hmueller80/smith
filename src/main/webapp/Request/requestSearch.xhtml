@@ -20,7 +20,7 @@
                     converter="#{genericConverter}"
                     value ="#{deleteRequestFormBean.selectedRequest}"
                     immediate="true"
-                    disabled="#{!deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                    disabled="#{!deleteRequestFormBean.roleManager.hasAnnotationSheetDeletePermission()}"
                     filter="true" 
                     filterMatchMode="contains">
                     <f:selectItems 
@@ -37,7 +37,7 @@
                         value="Delete" 
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
-                        rendered = "#{deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                        rendered = "#{deleteRequestFormBean.roleManager.hasAnnotationSheetDeletePermission()}"
                         actionListener ="#{deleteRequestFormBean.deleteRequest()}"
                         update="deleteDialog requestsTableForm"
                         oncomplete="PF('deleteDialog').hide()"
@@ -74,8 +74,10 @@
                     <div class="ui-g">
                         <div class="ui-g-8" />
                         <div class="ui-g-4">
-                            <p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
-                                             rendered="#{deleteRequestFormBean.roleManager.hasRequestDeletePermissions()}"
+                            <p:commandButton style="float:right;margin:1px" 
+                                             value="Delete" 
+                                             icon="ui-icon-trash"
+                                             rendered="#{deleteRequestFormBean.roleManager.hasAnnotationSheetDeletePermission()}"
                                              onclick="PF('deleteDialog').show()" />
                             <p:button
                                 style="float:right;margin:1px" 
@@ -83,7 +85,7 @@
                                 icon="ui-icon-plus"
                                 id="addRequestButton"
                                 outcome="/Request/sampleRequest.jsf">
-                                <f:param name="activeMenu" value="5" />                           
+                                <f:param name="activeMenu" value="4" />                           
                             </p:button>
                             <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
                                              icon="ui-icon-arrowthick-1-s">
@@ -100,7 +102,7 @@
                           sortBy="#{myRequest.id}">
                         <h:link  outcome="sampleRequest.jsf" value="#{myRequest.requestId}">
                             <f:param name="rid" value="#{myRequest.requestId}"/>
-                            <f:param name="activeMenu" value="5" />                           
+                            <f:param name="activeMenu" value="4" />                           
                         </h:link>
                 </p:column>
 

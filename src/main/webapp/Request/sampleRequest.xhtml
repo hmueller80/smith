@@ -6,6 +6,17 @@
                 template="/template.xhtml">
 
     <ui:define name="sampleRequest">
+        
+        <p:confirmDialog global="true">
+            <h:form>
+                <p:commandButton value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
+                <p:commandButton value="No" type="button"
+                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </h:form>
+        </p:confirmDialog>
+        
+        
         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
                 <h:outputText id="uploadDialogHeader" value="#{uploadSampleSheetBean.fileName}"/>
@@ -24,9 +35,47 @@
                 </div>
             </h:form>
         </p:dialog>
+        
         <h:form id="requestWizard">
-            <p:messages id="formMessages" for="validationMessages"/>
-      
+            <p:messages id="formMessages" for="validationMessages" showDetail="true"/>
+            <div class="ui-g">
+                <div class="ui-g-8"/>
+                <div class="ui-g-4">
+
+                    <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
+                                     value="Upload in LIMS" 
+                                     icon="ui-icon-trash"
+                                     rendered="#{requestBean.roleManager.hasSampleLoadPermission()
+                                                 and requestBean.editable
+                                                 and not requestBean.newRequest}" 
+                                     />
+
+                    <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
+                                     value="Delete" 
+                                     icon="ui-icon-trash"
+                                     action ="#{requestBean.deleteRequest()}"
+                                     rendered="#{requestBean.roleManager.hasAnnotationSheetDeletePermission() 
+                                                 and requestBean.editable 
+                                                 and not requestBean.newRequest}" >
+                               <p:confirm header="Confirmation"
+                                       message="Are you sure to Delete this request?"
+                                       icon="ui-icon-alert" />
+                    </p:commandButton>
+
+                    <p:button style="float:right;margin:1px;font-size: x-small;" 
+                              outcome="sampleRequest"
+                              value="Reload" 
+                              icon="ui-icon-arrowrefresh-1-e"
+                               rendered="#{requestBean.editable and not requestBean.newRequest}" >
+                            <f:param name="rid" value="#{requestBean.request.requestId}" />
+                            <f:param name="activeMenu" value="4" />
+                    </p:button>
+
+                </div>
+            </div>
+                
+            <p:separator />
+            
             <h:panelGroup id="wizNav">
                 <div class="ui-g">
                     <div class="ui-g-2"/>
@@ -38,10 +87,10 @@
                                    sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
                                    oncomplete="PF('uploadDialog').show()"
                                    update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" 
-                                   rendered="#{requestBean.wizStep=='personal'}"/>
+                                   rendered="#{requestBean.wizStep=='personal' and requestBean.newRequest}"/>
                  
                         <p:commandButton 
-                            icon="ui-icon-arrow-1-w"
+                            icon="ui-icon-arrow-1-w" 
                             iconPos="left"
                             value="Back" 
                             onclick="PF('theWiz').back();" 
@@ -49,7 +98,7 @@
                             rendered="#{requestBean.wizStep!='personal'}"/>
                     </div>
                     <div class="ui-g-4" style="text-align: center;">
-                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Requestor</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Request</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='samples' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Samples</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='libraries' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Libraries</p:outputPanel>
                     </div>
@@ -65,10 +114,14 @@
                             icon="ui-icon-disk"
                             iconPos="right"
                             id="wizSubmitButton"
-                            value="Submit" 
+                            value="#{requestBean.newRequest ? 'Submit' : 'Update'}" 
                             action ="#{requestBean.submit()}"
-                            ajax="false"
-                            rendered="#{requestBean.wizStep=='libraries'}"/>
+                            update="@all"
+                            rendered="#{requestBean.wizStep=='libraries' and requestBean.editable}">
+                           <p:confirm header="Confirmation"
+                                       message="Are you sure to #{requestBean.newRequest ? 'Submit' : 'Update'} this request?"
+                                       icon="ui-icon-alert" />
+                        </p:commandButton>
                     </div>
                     <div class="ui-g-2" />
                 </div>
@@ -79,6 +132,24 @@
                 <p:tab id="personal" title="Personal" >
                     <div style="width: 100%; text-align:center" >
                         <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
+                            
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Request" />
+                            </p:outputPanel>                       
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            
+                            <h:outputLabel for="requestId" value="Request Id: " />
+                            <h:outputText style="width:300px;"  id="requestId" value="#{requestBean.request.requestId}"/>
+                            <p:message for="requestId" />
+                            
+                            <h:outputLabel for="requestStatus" value="Request Status: " />
+                            <h:outputText style="width:300px;"  id="requestStatus" value="#{requestBean.request.status}"/>
+                            <p:message for="requestStatus" />                           
 
                             <p:outputPanel style="display:inline-block"/>
                             <p:outputPanel style="display:inline-block"/>
@@ -87,8 +158,7 @@
                             <p:outputPanel style="display:inline-block">
                                 <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Requestor" />
                             </p:outputPanel>                       
-                            <p:outputPanel style="display:inline-block"/>
-
+                            <p:separator/>
                             <p:outputPanel style="display:inline-block"/>
 
                             <h:outputLabel for="userName" value="User Name: " />
@@ -136,19 +206,19 @@
                             <p:outputPanel style="display:inline-block"/>
 
                             <p:outputLabel for="orgaName" value="Organization: " />
-                            <p:inputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
+                            <h:outputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
                             <p:message for="orgaName" />      
 
                             <p:outputLabel for="orgaDept" value="Department " />
-                            <p:inputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.department}"/>
+                            <h:outputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.department}"/>
                             <p:message for="orgaDept" />   
 
                             <p:outputLabel for="orgaAddress" value="Address: " />
-                            <p:inputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
+                            <h:outputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
                             <p:message for="orgaAddress" />   
 
                             <p:outputLabel for="orgaUrl" value="URL: " />
-                            <p:inputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
+                            <h:outputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
                             <p:message for="orgaUrl" />   
 
                         </p:panelGrid>
@@ -158,6 +228,7 @@
                     <p:inputText id="samplesData" type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
                         <p:ajax event="change" update="@this sampleMessage :requestWizard:libraryData" oncomplete="refresh()" partialSubmit="true"/>
                     </p:inputText>
+                    <p:inputText id="editable" type="hidden" widgetVar="editableSamples" value="#{requestBean.editable}" />    
                     <p:messages for="sampleMessage" id="sampleMessage" showDetail="true" closable="true" />
 
                     <div id="example"/>
@@ -190,8 +261,10 @@
                         $(document).ready(function () {
                             data = JSON.parse(PF('tableData').getJQ().val());
                             var container = document.getElementById('example');
+                            var editable = (PF('editableSamples').getJQ().val() == 'true');
                             var settings = {
                                 data: data,
+                                readOnly: !editable,
                                 columns: [
                                     {
                                         data: 'name',
@@ -259,6 +332,7 @@
                     <p:inputText id="libraryData" type="hidden" widgetVar="tableDataLib" value="#{requestBean.libraries}" >    
                         <p:ajax event="change" update="@this libraryMessage :requestWizard:samplesData" oncomplete="refreshLib()" partialSubmit="true"/>
                     </p:inputText>
+                    <p:inputText id="editableLibraries" type="hidden" widgetVar="editableLibraries" value="#{requestBean.editable}" />    
                     <p:messages for="libraryMessage" id="libraryMessage" showDetail="true" closable="true" />
 
                     <div id="exampleLib" />
@@ -291,8 +365,10 @@
                         $(document).ready(function () {
                             dataLib = JSON.parse(PF('tableDataLib').getJQ().val());
                             var container = document.getElementById('exampleLib');
+                            var editable = (PF('editableLibraries').getJQ().val() == 'true');
                             var settings = {
                                 data: dataLib,
+                                readOnly: !editable,
                                 columns: [
                                     {
                                         data: 'name',

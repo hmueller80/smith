@@ -47,15 +47,15 @@ public class RequestFormService {
             public Integer execute() throws Exception {                                
                 //1. Take care of requestor
                 RequestorDTO requestor = requestForm.getRequestor();
-                AffiliationDTO affiliation = requestor.getAffiliation();
-                AffiliationEntity affiliationEntity= new AffiliationEntity(affiliation.getName(),affiliation.getDepartment());
-                affiliationEntity.setAddress(affiliation.getAddress());
-                affiliationEntity.setUrl(affiliation.getUrl());
-                affiliationDAO.saveOrUpdate(affiliationEntity);
+                //AffiliationDTO affiliation = requestor.getAffiliation();
+                //AffiliationEntity affiliationEntity= new AffiliationEntity(affiliation.getName(),affiliation.getDepartment());
+                //affiliationEntity.setAddress(affiliation.getAddress());
+                //affiliationEntity.setUrl(affiliation.getUrl());
+                //affiliationDAO.saveOrUpdate(affiliationEntity);
                 UserEntity user = userDAO.getUserByID(requestor.getUser().getId());
                 if (user == null) throw new Exception("User "+requestor.getUser().getLogin()+" not found in DB");
-                user.setAffiliation(affiliationEntity);
-                userDAO.updateOrPersistUser(user);
+                //user.setAffiliation(affiliationEntity);
+                //userDAO.updateOrPersistUser(user);
                 
                 //2. Save the request
                 RequestEntity requestEntity = new RequestEntity();

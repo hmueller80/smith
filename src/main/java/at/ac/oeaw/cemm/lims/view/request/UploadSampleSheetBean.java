@@ -105,7 +105,9 @@ public class UploadSampleSheetBean {
             RequestFormDTO requestForm = parsedCSV.getRequestObj();
             RequestValidator validator = new RequestValidator(new RequestLibraryValidator(),services);
             ValidationStatus validation = validator.isValid(requestForm);
-            if (validation.isValid()) {
+            if (!roleManager.hasAnnotationSheetModifyPermission(requestForm)){
+                NgsLimsUtility.setFailMessage(messageBoxComponent, null, "User Error", "You don't have permission to upload this excel");
+            }else if (validation.isValid()) {
                 requestBean.setRequest(requestForm);
                 NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
                 for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
