@@ -23,11 +23,6 @@ import javax.faces.bean.ApplicationScoped;
 public class RequestDTOFactoryImpl implements RequestDTOFactory {
     
     @Override
-    public AffiliationDTO getAffiliationDTO() {
-        return new AffiliationDTOImpl();
-    }
-    
-    @Override
     public RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi){
         return new RequestorDTOImpl(requestor,pi);
     }
@@ -46,11 +41,6 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     public RequestSampleDTO getRequestSampleDTO() {
         return new RequestSampleDTOImpl();
     }
-
-    @Override
-    public AffiliationDTO getAffiliationDTO(String organizationName, String department) {
-        return new AffiliationDTOImpl(organizationName,department);
-    }
     
     @Override
     public RequestLibraryDTO getRequestLibraryDTO(Integer id) {
@@ -68,11 +58,6 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     @Override
     public RequestSampleDTO getRequestSampleDTO(Integer id) {
         return new RequestSampleDTOImpl(id);
-    }
-
-    @Override
-    public RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi, AffiliationDTO affiliation) {
-        return new RequestorDTOImpl(requestor,pi, affiliation);
     }
 
     @Override

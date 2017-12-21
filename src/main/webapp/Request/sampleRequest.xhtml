@@ -213,19 +213,19 @@
                             <p:outputPanel style="display:inline-block"/>
 
                             <p:outputLabel for="orgaName" value="Organization: " />
-                            <h:outputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.affiliation.name}"/>
+                            <h:outputText style="width:300px;"  id="orgaName" value="#{requestBean.request.requestor.user.affiliation.organizationName}"/>
                             <p:message for="orgaName" />      
 
                             <p:outputLabel for="orgaDept" value="Department " />
-                            <h:outputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.affiliation.department}"/>
+                            <h:outputText style="width:300px;"  id="orgaDept" value="#{requestBean.request.requestor.user.affiliation.departmentName}"/>
                             <p:message for="orgaDept" />   
 
                             <p:outputLabel for="orgaAddress" value="Address: " />
-                            <h:outputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.affiliation.address}"/>
+                            <h:outputText style="width:300px;"  id="orgaAddress" value="#{requestBean.request.requestor.user.affiliation.address}"/>
                             <p:message for="orgaAddress" />   
 
                             <p:outputLabel for="orgaUrl" value="URL: " />
-                            <h:outputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.affiliation.url}"/>
+                            <h:outputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.user.affiliation.url}"/>
                             <p:message for="orgaUrl" />   
 
                         </p:panelGrid>

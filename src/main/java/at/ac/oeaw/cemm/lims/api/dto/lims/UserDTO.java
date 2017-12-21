@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.generic.User;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 
 /**
  *
@@ -26,6 +27,8 @@ public interface UserDTO extends User {
     String getUserName();
 
     String getUserRole();
+    
+    AffiliationDTO getAffiliation();
 
     public String getFirstName();
             
@@ -42,6 +45,8 @@ public interface UserDTO extends User {
     void setUserRole(String userRole);
     
     void setId(Integer id);
+    
+    void setAffiliation(AffiliationDTO affiliation);
     
     Integer getId();          
     

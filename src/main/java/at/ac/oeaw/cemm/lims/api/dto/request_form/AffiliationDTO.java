@@ -5,6 +5,9 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
+
 /**
  *
  * @author dbarreca
@@ -13,18 +16,13 @@ public interface AffiliationDTO {
 
     String getAddress();
 
-    String getDepartment();
+    String getDepartmentName();
 
-    String getName();
+    DepartmentDTO getDepartment();
+    
+    String getOrganizationName();
+    
+    OrganizationDTO getOrganization();
 
     String getUrl();
-
-    void setAddress(String address);
-
-    void setDepartment(String deptartment);
-
-    void setName(String name);
-
-    void setUrl(String url);
-    
 }

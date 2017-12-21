@@ -7,9 +7,11 @@ package at.ac.oeaw.cemm.lims.model.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
@@ -66,8 +69,8 @@ public class DTOFactoryImpl implements DTOFactory {
     }
     
     @Override
-    public UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole){
-        return new UserDTOImpl(id, userName, login, phone, mailAddress, pi, userRole);
+    public UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation){
+        return new UserDTOImpl(id, userName, login, phone, mailAddress, pi, userRole, affiliation);
     }
     
     @Override
@@ -187,5 +190,25 @@ public class DTOFactoryImpl implements DTOFactory {
         }
         
         return requestToLims;
+    }
+    
+    @Override
+    public AffiliationDTO getAffiliationDTO(OrganizationDTO organization, DepartmentDTO department) {
+        return new AffiliationDTOImpl(organization,department);
+    }
+
+    @Override
+    public OrganizationDTO getOrganizationDTO(String name) {
+        return new OrganizationDTOImpl(name, "", "");
+    }
+
+    @Override
+    public DepartmentDTO getDepartmentDTO(String departmentName) {
+        return new DepartmentDTOImpl(departmentName); 
+    }
+
+    @Override
+    public AffiliationDTO getAffiliationDTO() {
+        return new AffiliationDTOImpl(new OrganizationDTOImpl(),new DepartmentDTOImpl());
     }
 }

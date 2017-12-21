@@ -630,3 +630,7 @@ a.ui-button:active,
 .wizard-panel-grid td,  .wizard-panel-grid tr{
     border-style: none !important
 }
+#userDetailsForm\3AuserDetailPanel .ui-panel-content{
+    height: 90%;
+    overflow-y: scroll;
+}

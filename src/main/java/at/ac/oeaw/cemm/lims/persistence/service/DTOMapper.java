@@ -11,7 +11,9 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
@@ -27,9 +29,12 @@ import java.util.Set;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
+import at.ac.oeaw.cemm.lims.persistence.entity.DepartmentEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.OrganizationEntity;
 
 /**
  *
@@ -98,10 +103,22 @@ public class DTOMapper {
         }
     }
 
+    private AffiliationDTO getAffiliationFromEntity(DepartmentEntity entity) {
+        OrganizationEntity orga = entity.getOrganization();
+        OrganizationDTO orgaDTO = getOrganizationFromEntity(orga);
+        DepartmentDTO deptDTO = getDepartmentFromEntity(entity);
+        
+        AffiliationDTO result = myDTOFactory.getAffiliationDTO(orgaDTO,deptDTO);
+
+        return result;
+    }
+    
     public UserDTO getUserDTOFromEntity(UserEntity entity) {
         if (entity == null) {
             return null;
         } else {
+            AffiliationDTO affiliation = getAffiliationFromEntity(entity.getDepartment());
+                
             return myDTOFactory.getUserDTO(
                     entity.getId(),
                     entity.getUserName(),
@@ -109,9 +126,12 @@ public class DTOMapper {
                     entity.getPhone(),
                     entity.getMailAddress(),
                     entity.getPi(),
-                    entity.getUserRole());
+                    entity.getUserRole(),
+                    affiliation);
         }
     }
+    
+  
 
     protected SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) {
         SampleDTO sampleDTO = getSampleDTOfromEntity(sampleRun.getsample());
@@ -156,9 +176,27 @@ public class DTOMapper {
         return library;
     }
 
-    RequestDTO getRequestDTOFromEntity(MinimalRequestEntity request) {
+    public RequestDTO getRequestDTOFromEntity(MinimalRequestEntity request) {
         UserDTO requestor = getUserDTOFromEntity(request.getRequestor());
         return myDTOFactory.getRequestDTO(requestor, request.getRequestId());
+    }
+
+    public OrganizationDTO getOrganizationFromEntity(OrganizationEntity orgaEntity) {
+        OrganizationDTO orgaDTO = myDTOFactory.getOrganizationDTO(orgaEntity.getOrganizationName());
+        orgaDTO.setAddress(orgaEntity.getAddress());
+        orgaDTO.setWebPage(orgaEntity.getUrl());
+        for (DepartmentEntity department: orgaEntity.getDepartmentSet()){
+            orgaDTO.addDepartment(getDepartmentFromEntity(department));
+        }
+        
+        return orgaDTO;
+    }
+    
+    public DepartmentDTO getDepartmentFromEntity(DepartmentEntity department){
+        DepartmentDTO departmentDTO = myDTOFactory.getDepartmentDTO(department.getDepartmentPK().getDepartmentName());
+        departmentDTO.setAddress(department.getAddress());
+        departmentDTO.setWebPage(department.getUrl());
+        return departmentDTO;
     }
 
 }

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.dto.lims;
 
 
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import java.util.Date;
 import java.util.Set;
@@ -38,11 +39,18 @@ public interface DTOFactory {
 
     SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder, Boolean isControl);
 
-    UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole);
+    UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation);
+     
+    AffiliationDTO getAffiliationDTO(OrganizationDTO organization, DepartmentDTO department);
     
     RunDTO getRunDTO(Integer id, String flowcell, UserDTO operator, String runFolder);
     
+    OrganizationDTO getOrganizationDTO(String name);
 
     public NewsDTO createEmptyNews();
+
+    public DepartmentDTO getDepartmentDTO(String departmentName);
+
+    public AffiliationDTO getAffiliationDTO();
     
 }

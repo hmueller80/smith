@@ -169,7 +169,7 @@ public class NameFilter {
         readMode = readMode.trim().toUpperCase().replace(" ", "");
         if (readMode.startsWith("PAIRED") || readMode.equals("PE")){
             return "PE";
-        }else if (readMode.startsWith("SINGLE") || readMode.equals("SR")) {
+        }else if (readMode.startsWith("SINGLE") || readMode.equals("SR") || readMode.equals("SE")) {
             return "SR";
         }else{
             return "";

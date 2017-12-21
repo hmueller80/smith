@@ -38,7 +38,7 @@ public class TestExcelParser {
         
     }
     
-    @Test
+    @Ignore
     public void testSampleAnnotationPaser() throws ParsingException {
         File file = new File("/Users/dbarreca/Dev/test_files/1044_MGL010_sampleannotationsheetI.xlsx");
         

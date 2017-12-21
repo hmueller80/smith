@@ -1,15 +1,27 @@
-create table affiliation (
+create table organization (
     organization_name VARCHAR(100),
-    department VARCHAR(100),
     address VARCHAR(200),
     url VARCHAR(2048),
-    PRIMARY KEY(organization_name,department)
+    PRIMARY KEY(organization_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
-alter table user
-add column organization_name VARCHAR(100), add column organization_department VARCHAR(100),
-add constraint fk_affiliation  foreign key (organization_name,organization_department) references affiliation(organization_name,department);
+insert into organization values ("NONE","","");
 
+create table department(
+	department_name VARCHAR(100),
+    organization_name VARCHAR(100),
+    address VARCHAR(200),
+    url VARCHAR(2048),
+	PRIMARY KEY(department_name,organization_name),
+	FOREIGN KEY(organization_name) references organization(organization_name)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+insert into department values ("NONE","NONE","","");
+
+alter table user
+add column organization_name VARCHAR(100) not null DEFAULT "NONE", add column organization_department VARCHAR(100) not null DEFAULT "NONE";
+alter table user
+add constraint fk_affiliation  foreign key (organization_department,organization_name) references department(department_name,organization_name);
 
  create table request (
     id int auto_increment,
@@ -51,3 +63,8 @@ add constraint fk_affiliation  foreign key (organization_name,organization_depar
     primary key(id),
     foreign key (library_id) references request_library(id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;  
+ 
+ 
+insert into organization values ("CeMM","Lazarettgasse 14, AKH BT 25.3, 1090 Vienna, Austria","www.cemm.at");
+insert into department values ("BSF","CeMM","","http://cemm.at/research/groups/biomedical-sequencing-facility-bsf/");
+insert into department values ("NONE","CeMM","","");

@@ -44,6 +44,9 @@ public class SingleUserBean {
     @ManagedProperty(value="#{newRoleManager}")
     NewRoleManager roleManager;
     
+    @ManagedProperty(value="#{orgaBean}")
+    OrgaBean orgaBean;
+    
     private boolean isNew = false;
     private UserDTO currentUser;
     private UserDTO currentUserPI;
@@ -81,11 +84,13 @@ public class SingleUserBean {
             }
         }else{
             isNew = true;
-            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null);
+            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null,myDTOFactory.getAffiliationDTO());
             currentUserPI = services.getUserService().getUsersByRole(Preferences.ROLE_GROUPLEADER).get(0);
             isEditable = roleManager.getHasUserAddPermission();
+            
         } 
-        
+        orgaBean.set(currentUser.getAffiliation().getOrganization(),currentUser.getAffiliation().getDepartment());
+            
         List<UserDTO> coll = services.getUserService().getCollaborators(currentUser);
         List<UserDTO> possibleColl = services.getUserService().getAllUsers();
         possibleColl.remove(currentUser);
@@ -198,5 +203,14 @@ public class SingleUserBean {
             NgsLimsUtility.setFailMessage(FORM_ID, null, "DB error", e.getMessage());
         }
     }
+    
+   
+    public OrgaBean getOrgaBean() {
+        return orgaBean;
+    }
 
+    public void setOrgaBean(OrgaBean orgaBean) {
+        this.orgaBean = orgaBean;
+    }
+ 
 }

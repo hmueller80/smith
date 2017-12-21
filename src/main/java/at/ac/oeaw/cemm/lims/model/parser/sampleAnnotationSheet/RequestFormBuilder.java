@@ -49,7 +49,8 @@ public class RequestFormBuilder {
                         parser.getSummary().getContactPersonPhone(), 
                         parser.getSummary().getContactPersonEmail(), 
                         null, 
-                        "user");
+                        "user",
+                        limsDTOFactory.getAffiliationDTO());
             }
             
             RequestorDTO requestor = myDTOFactory.getRequestorDTO(requestorUser, piUser);
@@ -114,19 +115,19 @@ public class RequestFormBuilder {
         libraryDTO.setName(seqRequest.getLibraryName());
         libraryDTO.setReadMode(seqRequest.getSequencingType());
         libraryDTO.setReadLength(
-                getInteger(seqRequest.getReadLength(), ExcelParserConstants.readLength + " for library " + libraryDTO.getName())
+                getInteger(seqRequest.getReadLength(), ExcelParserConstants.readLength + " for library " + libraryDTO.getName(),null)
         );
         libraryDTO.setLanes(
-                getInteger(seqRequest.getNumberofLanes(), ExcelParserConstants.numberofLanes + " for library " + libraryDTO.getName())
+                getInteger(seqRequest.getNumberofLanes(), ExcelParserConstants.numberofLanes + " for library " + libraryDTO.getName(),null)
         );
         return libraryDTO;
     }
 
     private void enrichLibrary(RequestLibraryDTO library, LibrarySubmission libRequest) throws ParsingException {
         String reqAppName = libRequest.getLibraryType();
-        Double reqVolume = getDouble(libRequest.getLibraryVolume(), ExcelParserConstants.LibraryVolume + " for sample " + libRequest.getSampleName());
-        Double reqDnaConcentration = getDouble(libRequest.getLibraryDNAConcentration(), ExcelParserConstants.LibraryDNAConcentration + " for sample " + libRequest.getSampleName());
-        Double reqSize = getDouble(libRequest.getLibraryTotalSize(), ExcelParserConstants.LibraryTotalSize + " for sample " + libRequest.getSampleName());
+        Double reqVolume = getDouble(libRequest.getLibraryVolume(), ExcelParserConstants.LibraryVolume + " for sample " + libRequest.getSampleName(),0.0);
+        Double reqDnaConcentration = getDouble(libRequest.getLibraryDNAConcentration(), ExcelParserConstants.LibraryDNAConcentration + " for sample " + libRequest.getSampleName(),0.0);
+        Double reqSize = getDouble(libRequest.getLibraryTotalSize(), ExcelParserConstants.LibraryTotalSize + " for sample " + libRequest.getSampleName(),0.0);
 
         if (library.getApplicationName() == null) {
             library.setApplicationName(reqAppName);
@@ -182,7 +183,13 @@ public class RequestFormBuilder {
     private RequestSampleDTO getSample(LibrarySubmission libSubmission){
         RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO();
         sampleDTO.setName(libSubmission.getSampleName());
-        sampleDTO.setLibrary(libSubmission.getLibraryName());
+        
+        if ((libSubmission.getLibraryLabel()== null || libSubmission.getLibraryLabel().trim().isEmpty())
+            && (libSubmission.getLibraryName()!= null && !libSubmission.getLibraryName().trim().isEmpty())){
+            sampleDTO.setLibrary(libSubmission.getLibraryName());
+        }else{
+            sampleDTO.setLibrary(libSubmission.getLibraryLabel());
+        }
         sampleDTO.setI7Index(libSubmission.getBarcodeSequencei7());
         sampleDTO.setI7Adapter(libSubmission.getLibraryAdapteri7());
         sampleDTO.setI5Index(libSubmission.getBarcodeSequencei5());
@@ -199,8 +206,8 @@ public class RequestFormBuilder {
         sampleDTO.setOrganism(sampleReq.getOrganism());
     }
 
-    private Integer getInteger(String string, String fieldName) throws ParsingException {
-        Integer theInteger = null;
+    private Integer getInteger(String string, String fieldName, Integer defaultValue) throws ParsingException {
+        Integer theInteger = defaultValue;
         if (string!=null && !string.isEmpty() && !string.equals("null") && !string.equals("NA")){
             try {
                 Double parsedDouble = Double.parseDouble(string);
@@ -213,8 +220,8 @@ public class RequestFormBuilder {
         return theInteger;
     }
     
-     private Double getDouble(String string, String fieldName) throws ParsingException {
-        Double theDouble = null;
+     private Double getDouble(String string, String fieldName, Double defaultValue) throws ParsingException {
+        Double theDouble = defaultValue;
         
         if (string!=null && !string.isEmpty() && !string.equals("null") && !string.equals("NA")){
             try {

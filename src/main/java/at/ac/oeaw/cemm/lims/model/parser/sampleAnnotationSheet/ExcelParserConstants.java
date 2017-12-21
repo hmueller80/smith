@@ -213,11 +213,11 @@ public class ExcelParserConstants {
         libraryColumnNames.add(new ColumnNames(SampleName,true, SampleName));
         libraryColumnNames.add(new ColumnNames(BarcodeSequencei7,true, BarcodeSequence1, BarcodeSequencei7, BarcodeSequence, BarcodeSequenceForward, "N7 Barcode Sequence", "Sequences Index primer 1 (i7)"));
         libraryColumnNames.add(new ColumnNames(LibraryAdapteri7,true, LibraryAdapter1, LibraryAdapteri7, LibraryAdapter, "N7 Library Adapter"));
-        libraryColumnNames.add(new ColumnNames(BarcodeSequencei5,true, BarcodeSequence2, BarcodeSequencei5, BarcodeSequenceReverse, "N5 Barcode Sequence", "Sequences Index primer 2 (i5)"));
-        libraryColumnNames.add(new ColumnNames(LibraryAdapteri5,true, LibraryAdapter2, LibraryAdapteri5, "N5 Library Adapter"));
-        libraryColumnNames.add(new ColumnNames(SequencingPrimerType,true, SequencingPrimer, SequencingPrimerType));
-        libraryColumnNames.add(new ColumnNames(CustomSequencingPrimerName,true, CustomSequencingPrimerNameold, CustomSequencingPrimerName));
-        libraryColumnNames.add(new ColumnNames(CustomSequencingPrimerSequence,true, CustomSequencingPrimerSequence));
+        libraryColumnNames.add(new ColumnNames(BarcodeSequencei5, BarcodeSequence2, BarcodeSequencei5, BarcodeSequenceReverse, "N5 Barcode Sequence", "Sequences Index primer 2 (i5)"));
+        libraryColumnNames.add(new ColumnNames(LibraryAdapteri5, LibraryAdapter2, LibraryAdapteri5, "N5 Library Adapter"));
+        libraryColumnNames.add(new ColumnNames(SequencingPrimerType, SequencingPrimer, SequencingPrimerType));
+        libraryColumnNames.add(new ColumnNames(CustomSequencingPrimerName, CustomSequencingPrimerNameold, CustomSequencingPrimerName));
+        libraryColumnNames.add(new ColumnNames(CustomSequencingPrimerSequence, CustomSequencingPrimerSequence));
         libraryColumnNames.add(new ColumnNames(LibraryType, LibraryType));
         libraryColumnNames.add(new ColumnNames(LibraryKits, LibraryKits));
         libraryColumnNames.add(new ColumnNames(LibraryDetails, LibraryDetails));

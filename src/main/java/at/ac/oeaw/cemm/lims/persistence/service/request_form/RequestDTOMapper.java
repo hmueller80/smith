@@ -6,14 +6,12 @@
 package at.ac.oeaw.cemm.lims.persistence.service.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
-import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import at.ac.oeaw.cemm.lims.persistence.entity.request_form.AffiliationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity;
@@ -29,14 +27,6 @@ import javax.inject.Inject;
 public class RequestDTOMapper {
     @Inject private RequestDTOFactory dtoFactory;
     @Inject private DTOMapper limsMapper;
-
-    public AffiliationDTO getAffiliationFromEntity(AffiliationEntity entity) {
-        AffiliationDTO result = dtoFactory.getAffiliationDTO(entity.getAffiliationPK().getOrganizationName(),entity.getAffiliationPK().getDepartment());
-        result.setAddress(entity.getAddress());
-        result.setUrl(entity.getUrl());
-        
-        return result;
-    }
     
     public RequestFormDTO getRequestFormDTOFromEntity(RequestEntity requestEntity, UserEntity requestorEntity, UserEntity piEntity) {
         return getRequestFormDTOFromEntity(requestEntity,requestorEntity,piEntity,true);
@@ -45,8 +35,7 @@ public class RequestDTOMapper {
     public RequestFormDTO getRequestFormDTOFromEntity(RequestEntity requestEntity, UserEntity requestorEntity, UserEntity piEntity, boolean loadLibraries) {
         UserDTO user = limsMapper.getUserDTOFromEntity(requestorEntity);
         UserDTO pi = limsMapper.getUserDTOFromEntity(piEntity);
-        AffiliationDTO affiliation = getAffiliationFromEntity(requestorEntity.getAffiliation());
-        RequestorDTO requestor = dtoFactory.getRequestorDTO(user, pi, affiliation);
+        RequestorDTO requestor = dtoFactory.getRequestorDTO(user, pi);
         RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,requestEntity.getReqDate(),requestEntity.getStatus());
         if (loadLibraries){
             for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {

@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service.request_form;
 
-import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
@@ -14,7 +13,6 @@ import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.*;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
-import at.ac.oeaw.cemm.lims.persistence.entity.request_form.AffiliationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity;
@@ -34,7 +32,6 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class RequestFormService {
-    @Inject private AffiliationDAO affiliationDAO;
     @Inject private RequestFormDAO requestFormDAO;
     @Inject private UserDAO userDAO;
     @Inject private SampleDAO sampleDAO;
@@ -49,15 +46,8 @@ public class RequestFormService {
             public Integer execute() throws Exception {                                
                 //1. Take care of requestor
                 RequestorDTO requestor = requestForm.getRequestor();
-                //AffiliationDTO affiliation = requestor.getAffiliation();
-                //AffiliationEntity affiliationEntity= new AffiliationEntity(affiliation.getName(),affiliation.getDepartment());
-                //affiliationEntity.setAddress(affiliation.getAddress());
-                //affiliationEntity.setUrl(affiliation.getUrl());
-                //affiliationDAO.saveOrUpdate(affiliationEntity);
                 UserEntity user = userDAO.getUserByID(requestor.getUser().getId());
                 if (user == null) throw new Exception("User "+requestor.getUser().getLogin()+" not found in DB");
-                //user.setAffiliation(affiliationEntity);
-                //userDAO.updateOrPersistUser(user);
                 
                 //2. Save the request
                 RequestEntity requestEntity = new RequestEntity();
@@ -143,23 +133,6 @@ public class RequestFormService {
         }
 
         requestLibraryDAO.delete(library);
-    }
-
-    public AffiliationDTO getAffiliationForUser(final Integer id) {
-        try {
-            return TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<AffiliationDTO>() {
-                        @Override
-                        public AffiliationDTO execute() throws Exception {
-                             UserEntity userEntity = userDAO.getUserByID(id);
-                             AffiliationEntity affiliationEntity = userEntity.getAffiliation();
-                             return dtoMapper.getAffiliationFromEntity(affiliationEntity);
-
-                        }
-                    });
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     public RequestFormDTO getFullRequestById(final Integer rid) {

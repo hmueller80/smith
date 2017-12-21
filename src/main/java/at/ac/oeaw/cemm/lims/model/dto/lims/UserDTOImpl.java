@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -21,9 +22,10 @@ public class UserDTOImpl implements UserDTO, Serializable {
     private String phone;
     private String mailAddress;
     private Integer pi;
-    private String userRole;
-
-    public UserDTOImpl(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole) {
+    private String userRole; 
+    private AffiliationDTO affiliation = null;
+    
+    public UserDTOImpl(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation) {
         this.id = id;
         this.userName = userName;
         this.login = login;
@@ -31,6 +33,7 @@ public class UserDTOImpl implements UserDTO, Serializable {
         this.mailAddress = mailAddress;
         this.pi = pi;
         this.userRole = userRole;
+        this.affiliation = affiliation;
     }
 
     @Override
@@ -132,6 +135,16 @@ public class UserDTOImpl implements UserDTO, Serializable {
         int hash = 7;
         hash = 53 * hash + Objects.hashCode(this.id);
         return hash;
+    }
+
+    @Override
+    public AffiliationDTO getAffiliation() {
+        return affiliation;
+    }
+
+    @Override
+    public void setAffiliation(AffiliationDTO affiliation) {
+        this.affiliation = affiliation;
     }
 
 }

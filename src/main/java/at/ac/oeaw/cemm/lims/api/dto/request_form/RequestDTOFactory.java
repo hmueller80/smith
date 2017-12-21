@@ -14,7 +14,6 @@ import java.util.Date;
  */
 public interface RequestDTOFactory {
 
-    AffiliationDTO getAffiliationDTO();
 
     RequestFormDTO getRequestFormDTO(RequestorDTO requestor);
 
@@ -28,11 +27,6 @@ public interface RequestDTOFactory {
 
     RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi);
     
-    RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi, AffiliationDTO affiliation);
-
-    
-    AffiliationDTO getAffiliationDTO(String organizationName, String department);
-
     RequestLibraryDTO getRequestLibraryDTO(Integer id);
 
     RequestSampleDTO getRequestSampleDTO(Integer id);

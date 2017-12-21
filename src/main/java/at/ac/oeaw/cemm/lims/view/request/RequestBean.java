@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.view.request;
 
-import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
@@ -81,13 +80,7 @@ public class RequestBean {
     
     protected void initInternal(Integer requestId){
          if(requestId==null) {              
-            AffiliationDTO affiliation = services.getRequestFormService().getAffiliationForUser(roleManager.getCurrentUser().getId());
-            RequestorDTO requestor;
-            if (affiliation != null) {
-                requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi(), affiliation);
-            } else {
-                requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
-            }
+            RequestorDTO requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
             request = dtoFactory.getRequestFormDTO(requestor);
             newRequest = true;
         } else {

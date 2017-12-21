@@ -13,8 +13,6 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
  */
 public interface RequestorDTO {
 
-    AffiliationDTO getAffiliation();
-
     UserDTO getPi();
 
     UserDTO getUser();

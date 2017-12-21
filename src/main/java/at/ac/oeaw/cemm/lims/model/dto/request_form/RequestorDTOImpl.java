@@ -16,20 +16,11 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 public class RequestorDTOImpl implements RequestorDTO {
     private final UserDTO user;
     private final UserDTO pi;
-    private final AffiliationDTO affiliation;
 
-     protected RequestorDTOImpl(UserDTO user, UserDTO pi, AffiliationDTO affiliation) {
-        this.user = user;
-        this.pi = pi;
-        this.affiliation = affiliation;
-    }
-    
     protected RequestorDTOImpl(UserDTO user, UserDTO pi) {
         this.user = user;
         this.pi = pi;
-        this.affiliation = new AffiliationDTOImpl();
-    }
-    
+    }  
     
     @Override
     public UserDTO getUser() {
@@ -41,12 +32,5 @@ public class RequestorDTOImpl implements RequestorDTO {
     public UserDTO getPi() {
         return pi;
     }
-
-
-    @Override
-    public AffiliationDTO getAffiliation() {
-        return affiliation;
-    }
-
     
 }

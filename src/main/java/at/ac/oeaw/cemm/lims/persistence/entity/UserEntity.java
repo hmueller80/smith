@@ -1,10 +1,8 @@
 package at.ac.oeaw.cemm.lims.persistence.entity;
 
-import at.ac.oeaw.cemm.lims.persistence.entity.request_form.AffiliationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 
 import javax.persistence.Column;
@@ -18,27 +16,10 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "user")
 public class UserEntity implements java.io.Serializable {
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "pi")
-    private int pi;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    private Set<RequestEntity> requestSet;
-    
-    @JoinColumns({
-        @JoinColumn(name = "organization_name", referencedColumnName = "organization_name")
-        , @JoinColumn(name = "organization_department", referencedColumnName = "department")})
-    @ManyToOne
-    private AffiliationEntity affiliation;
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,16 +38,26 @@ public class UserEntity implements java.io.Serializable {
     @Column(name = "mailadress")
     private String mailAddress;
 
-
     @Column(name = "userRole")
     private String userRole;
 
+    @Column(name = "pi")
+    private int pi;
+    
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<SampleRunEntity> sampleruns = new HashSet<SampleRunEntity>(0);
 
- 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<SampleEntity> samples = new HashSet<SampleEntity>(0);
+    
+    @JoinColumns({
+        @JoinColumn(name = "organization_department", referencedColumnName = "department_name")
+        , @JoinColumn(name = "organization_name", referencedColumnName = "organization_name")})
+    @ManyToOne
+    private DepartmentEntity department;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Set<RequestEntity> requestSet;
 
     public UserEntity() {
     }
@@ -195,12 +186,14 @@ public class UserEntity implements java.io.Serializable {
         this.requestSet = requestSet;
     }
 
-    public AffiliationEntity getAffiliation() {
-        return affiliation;
+    public DepartmentEntity getDepartment() {
+        return department;
     }
 
-    public void setAffiliation(AffiliationEntity affiliation) {
-        this.affiliation = affiliation;
+    public void setDepartment(DepartmentEntity department) {
+        this.department = department;
     }
+    
+    
     
 }

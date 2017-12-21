@@ -82,8 +82,10 @@ public class RequestServiceImpl implements RequestService {
                 
                 if (request.getRequestId()!=null){
                     RequestEntity requestEntity = requestFormDAO.getRequestById(request.getRequestId());
-                    requestEntity.setStatus(RequestFormDTO.STATUS_ACCEPTED);
-                    requestFormDAO.saveOrUpdate(requestEntity,false);
+                    if (requestEntity!=null){
+                        requestEntity.setStatus(RequestFormDTO.STATUS_ACCEPTED);
+                        requestFormDAO.saveOrUpdate(requestEntity,false);
+                    }
                 }
 
 

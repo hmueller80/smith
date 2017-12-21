@@ -12,6 +12,7 @@ import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.RequestFormBuilder;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
+import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
@@ -118,7 +119,9 @@ public class UploadSampleSheetBean {
                 }
             }else{
                 for (ValidatorMessage message: validation.getValidationMessages()){
-                    NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getDescription());
+                    if (ValidatorSeverity.FAIL.equals(message.getType())){
+                        NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getDescription());
+                    }
                 }
             }
         }
