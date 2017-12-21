@@ -37,7 +37,11 @@
                     </p:column>
                     <p:column>
                         <h:outputText rendered="#{navigationBean.isLoggedIn}" value="#{bundle['user.login.message']} " />                    
-                        <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/loggedUserInfo.xhtml" > #{newRoleManager.currentUser.login} </h:outputLink>
+                        <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/User/userDetails.jsf" > 
+                            <f:param name="uid" value="#{newRoleManager.currentUser.id}" />
+                            <f:param name="activeMenu" value="3" />
+                            #{newRoleManager.currentUser.login}
+                        </h:outputLink>
                     </p:column>
                 </p:panelGrid>
                 <h:form class="menubar" id="menuForm">

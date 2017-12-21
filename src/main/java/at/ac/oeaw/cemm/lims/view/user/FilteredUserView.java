@@ -33,7 +33,14 @@ public class FilteredUserView {
 
     @PostConstruct
     public void init() {
-        users = services.getUserService().getAllUsers();
+        if (roleManager.getHasUserAddPermission()){
+            users = services.getUserService().getAllUsers();
+        }else if (roleManager.isGroupLeader()){
+            users = services.getUserService().getAllUsersByPI(roleManager.getCurrentUser().getId());
+        }else if (roleManager.isUser()) {
+            users.add(roleManager.getCurrentUser());
+        }
+        
         filteredUsers= users;
     }
     

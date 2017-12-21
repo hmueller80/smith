@@ -118,7 +118,7 @@ public class NewRoleManager implements Serializable {
     }
     
      public boolean getHasUserAddPermission(){
-        return (Admin);
+        return (Admin || Technician );
     }
                   
     public boolean hasSampleModifyPermission(SampleDTO sample) {

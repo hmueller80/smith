@@ -6,84 +6,103 @@
                 template="/template.xhtml"> 
 
     <ui:define name="userDetails">
-        
+        <p:confirmDialog global="true">
+            <h:form>
+                <p:commandButton value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
+                <p:commandButton value="No" type="button"
+                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </h:form>
+        </p:confirmDialog>
+
         <h:form id="userDetailsForm"> 
-             
-            
-            <p:panel id="userDetailPanel" header="#{singleUserBean.currentUser.userName} #{bundle['user.details']}">
-                 
-                 <h:panelGrid columns="3" cellpadding="5">
-                                                             
-                     <h:outputLabel for="userID" value="#{bundle['user.id']}: * " />
-                            <h:outputText style="width:300px;"  id="userID" value="#{singleUserBean.currentUser.id}"/>
-                            <p:message for="userID" />
-                                    
-                            <p:separator id="customSeparator300" style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['user.details']}" />
-                            <p:separator id="customSeparator320" style="width:300px;height:5px" /> 
-
-                            <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
-                            <p:inputMask  style="width:300px;" id="userLogin" value="#{singleUserBean.currentUser.login}" mask="" immediate="true" required="true" 
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.isNew}"/>
-                            <p:message for="userLogin" />
-
-                            <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
-                            <p:inputMask  style="width:300px;" id="userName" value="#{singleUserBean.currentUser.userName}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <p:ajax update="pi"/>
-                            </p:inputMask>
-                            <p:message for="userName" />
-
-                            <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
-                            <p:inputMask  style="width:300px;" id="userEmail" value="#{singleUserBean.currentUser.mailAddress}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}" />
-                            <p:message for="userEmail" />
-
-                            <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="#{genericConverter}"
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <f:selectItems id="pi" value="#{singleUserBean.userPIs}" var="pi" itemLabel="#{pi.userName}" itemValue="#{pi}" />                                
-                            </h:selectOneMenu>     
-                            <p:message for="pi" />
-
-                            <h:outputLabel for="phone" value="#{bundle['user.phone']}:  " /> 
-                            <p:inputMask  style="width:300px;" id="phone" value="#{singleUserBean.currentUser.phone}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}"/>
-                            <p:message for="phone" />
-         
-                            <h:outputLabel for="role" value="#{bundle['user.role']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUser.userRole}" immediate="true"
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <f:selectItems id="role" value="#{singleUserBean.userRoles}" />                                
-                            </h:selectOneMenu>
-                            <p:message for="role" />
-                          
-                            <h:outputLabel for="pickList" value="#{bundle['user.communications']}:  " /> 
-                            <p:pickList id="pickList" 
-                                        value="#{singleUserBean.communications}" 
-                                        var ="communication" 
-                                        itemLabel="#{communication.userName}" 
-                                        itemValue="#{communication}" 
-                                        disabled="#{!singleUserBean.roleManager.hasUserAddPermission}"
-                                        converter="#{genericConverter}"
-                                        showSourceFilter="true" 
-                                        showTargetFilter="true"
-                                        filterMatchMode="contains"/>
-                            <p:message for="pickList" />
-                            
-                            <p:commandButton actionListener="#{singleUserBean.persist()}" 
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}" 
-                                             id="UserModbutton" value="#{bundle['button.text.modify.user']}" update="userDetailPanel">
-
-                            </p:commandButton>
-                            <p:message for="UserModbutton"/>
-
-                 </h:panelGrid>
-             
-             </p:panel>
-             
-         </h:form>
+            <div class="ui-g">
+                <div class="ui-g-8">
+                    <p:messages for ="userPersistMessages" showDetail="true" closable="true" />
+                </div>
+                <div class="ui-g-4">
+                    <p:commandButton 
+                        style="float:right;margin:1px"
+                        value="#{bundle['button.text.modify.user']}"
+                        icon="ui-icon-disk"
+                        actionListener="#{singleUserBean.persist()}" 
+                        disabled="#{!singleUserBean.userEditable}" 
+                        update="@all">
+                        <p:confirm header="Confirmation"
+                                   message="Are you sure to save all changes to this User?"
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                </div>
+            </div>
                
+            <p:panel id="userDetailPanel" header="#{singleUserBean.currentUser.userName} #{bundle['user.details']}">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <h:outputLabel for="userID" value="#{bundle['user.id']}: * " />
+                    <h:outputText style="width:300px;"  id="userID" value="#{singleUserBean.currentUser.id}"/>
+                    <p:message for="userID" />
+
+                    <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
+                    <p:inputMask  style="width:300px;" id="userLogin" value="#{singleUserBean.currentUser.login}" mask="" immediate="true" required="true" 
+                                  disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.isNew or !singleUserBean.userEditable}"/>
+                    <p:message for="userLogin" />
+
+                    <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
+                    <p:inputMask  style="width:300px;" id="userName" value="#{singleUserBean.currentUser.userName}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.userEditable}">
+                        <p:ajax update="@this piMenu"/>
+                    </p:inputMask>
+                    <p:message for="userName" />
+
+                    <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
+                    <p:inputMask  style="width:300px;" id="userEmail" value="#{singleUserBean.currentUser.mailAddress}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.userEditable}" />
+                    <p:message for="userEmail" />
+
+                    <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="#{genericConverter}"
+                                     disabled="#{!singleUserBean.userEditable}"
+                                     id="piMenu">
+                        <f:selectItems id="pi" value="#{singleUserBean.userPIs}" var="pi" itemLabel="#{pi.userName}" itemValue="#{pi}" />                                
+                    </h:selectOneMenu>     
+                    <p:message for="pi" />
+
+                    <h:outputLabel for="phone" value="#{bundle['user.phone']}:  " /> 
+                    <p:inputMask  style="width:300px;" id="phone" value="#{singleUserBean.currentUser.phone}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.userEditable}"/>
+                    <p:message for="phone" />
+
+                    <h:outputLabel for="role" value="#{bundle['user.role']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" 
+                                     required="true" 
+                                     value="#{singleUserBean.currentUser.userRole}"
+                                     disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.userEditable}"
+                                     >
+                        <p:ajax update ="@this piMenu" />
+                        <f:selectItems id="role" value="#{singleUserBean.userRoles}" />                                
+                    </h:selectOneMenu>
+                    <p:message for="role" />
+
+                    <h:outputLabel for="pickList" value="#{bundle['user.communications']}:  " /> 
+                    <p:pickList id="pickList" 
+                                value="#{singleUserBean.communications}" 
+                                var ="communication" 
+                                itemLabel="#{communication.userName}" 
+                                itemValue="#{communication}" 
+                                disabled="#{!singleUserBean.userEditable}"
+                                converter="#{genericConverter}"
+                                showSourceFilter="true" 
+                                showTargetFilter="true"
+                                filterMatchMode="contains"/>
+                    <p:message for="pickList" />
+
+                </h:panelGrid>
+
+            </p:panel>
+
+        </h:form>
+
     </ui:define>
 
 </ui:composition>

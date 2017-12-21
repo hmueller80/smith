@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.model.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *
@@ -124,6 +125,13 @@ public class UserDTOImpl implements UserDTO, Serializable {
         }
         
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.id);
+        return hash;
     }
 
 }

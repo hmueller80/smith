@@ -6,9 +6,11 @@
 package at.ac.oeaw.cemm.lims.model.validator.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.util.Set;
 
 /**
@@ -17,8 +19,12 @@ import java.util.Set;
  */
 public class UserDTOValidator extends AbstractValidator<UserDTO> {
     
-    Boolean isNew = false;
+    ServiceFactory services;
 
+    public UserDTOValidator(ServiceFactory services) {
+        this.services = services;
+    }
+    
     @Override
     public boolean validateInternal(UserDTO objectToValidate, Set<ValidatorMessage> messages) {
         boolean isValid = true;
@@ -27,7 +33,31 @@ public class UserDTOValidator extends AbstractValidator<UserDTO> {
             messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "User", "User is null"));
             return false;
         }
-
+        
+        if (Preferences.ROLE_GUEST.equals(objectToValidate.getUserRole())){
+            isValid = false;
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"Guest User","Guest User is not editable"));
+        }else if (Preferences.ROLE_GROUPLEADER.equalsIgnoreCase(objectToValidate.getUserRole())){
+            Integer userPi = objectToValidate.getPi();
+            if (userPi!=null && userPi!=objectToValidate.getId()){
+                isValid = false;
+                messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","Group leaders must be PIs of themselves"));
+            }
+        }else {
+            Integer userPi = objectToValidate.getPi();
+            if (userPi==null){
+                isValid = false;
+                messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","Users, Admins and technician must have a vald PI"));
+            }else{
+                UserDTO pi = services.getUserService().getUserByID(userPi);
+                if (pi == null) {
+                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","PI with ID "+pi.getId()+" not found in the user DB"));
+                }else if (!Preferences.ROLE_ADMIN.equals(pi.getUserRole()) && !Preferences.ROLE_GROUPLEADER.equals(pi.getUserRole())){
+                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","PI with name "+pi.getUserName()+" has role not allowed for PI: "+pi.getUserRole()));
+                }
+            }  
+        }
+                
         isValid = isValid && stringNotEmpty(objectToValidate.getLogin(), false, ValidatorSeverity.FAIL, "Login",messages);
         isValid = isValid && stringNotEmpty(objectToValidate.getPhone(), false, ValidatorSeverity.FAIL, "Phone",messages);
         isValid = isValid && validUserName(objectToValidate.getUserName(), ValidatorSeverity.FAIL,messages);
@@ -47,14 +77,6 @@ public class UserDTOValidator extends AbstractValidator<UserDTO> {
             return false;
         }
         return true;
-    }
-
-    public Boolean getIsNew() {
-        return isNew;
-    }
-
-    public void setIsNew(Boolean isNew) {
-        this.isNew = isNew;
     }
 
 }
