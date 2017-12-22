@@ -48,6 +48,9 @@ public class SingleUserBean {
     @ManagedProperty(value="#{orgaBean}")
     OrgaBean orgaBean;
     
+    @ManagedProperty(value="#{externalUserBean}")
+    ExternalUserBean externalUser;
+    
     private boolean isNew = false;
     private UserDTO currentUser;
     private UserDTO currentUserPI;
@@ -83,6 +86,8 @@ public class SingleUserBean {
                         roleManager.getCurrentUser().getId().equals(currentUserPI.getId()) ||
                         roleManager.getCurrentUser().getId().equals(currentUser.getId());
             }
+            externalUser.set(currentUser.getLogin());
+
         }else{
             isNew = true;
             currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null,myDTOFactory.getAffiliationDTO());
@@ -91,7 +96,7 @@ public class SingleUserBean {
             
         } 
         orgaBean.set(currentUser.getAffiliation().getOrganization(),currentUser.getAffiliation().getDepartment());
-            
+        
         List<UserDTO> coll = services.getUserService().getCollaborators(currentUser);
         List<UserDTO> possibleColl = services.getUserService().getAllUsers();
         possibleColl.remove(currentUser);
@@ -214,5 +219,15 @@ public class SingleUserBean {
     public void setOrgaBean(OrgaBean orgaBean) {
         this.orgaBean = orgaBean;
     }
+
+    public ExternalUserBean getExternalUser() {
+        return externalUser;
+    }
+
+    public void setExternalUser(ExternalUserBean externalUser) {
+        this.externalUser = externalUser;
+    }
+    
+    
  
 }
