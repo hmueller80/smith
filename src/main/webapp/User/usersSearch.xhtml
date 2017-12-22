@@ -83,8 +83,19 @@
                           filterMatchMode="exact">
                     <h:outputText value="#{user.pi}" />
                 </p:column>
+                
+                <p:column id="orgaColumn" filterBy="#{user.affiliation.organizationName}" 
+                          headerText="Organization"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.affiliation.organizationName}" />
+                </p:column>
 
-
+                <p:column id="deptColumn" filterBy="#{user.affiliation.departmentName}" 
+                          headerText="Department"
+                          filterMatchMode="contains">
+                    <h:outputText value="#{user.affiliation.departmentName}" />
+                </p:column>
+                
             </p:dataTable>
             
         </h:form>

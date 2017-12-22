@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.view.user;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -178,7 +179,8 @@ public class SingleUserBean {
     
     
     public void persist(){
-        
+        AffiliationDTO affiliation = myDTOFactory.getAffiliationDTO(orgaBean.getOrga(), orgaBean.getDept());
+        currentUser.setAffiliation(affiliation);
         UserDTOValidator userValidator = new UserDTOValidator(services);
         try{
             ValidationStatus validation = userValidator.isValid(currentUser);

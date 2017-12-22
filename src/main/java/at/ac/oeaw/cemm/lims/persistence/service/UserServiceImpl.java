@@ -255,7 +255,22 @@ public class UserServiceImpl implements UserService {
             userEntity.setPi(user.getPi());
         }
         userEntity.setUserRole(user.getUserRole());
-
+        
+        OrganizationEntity orga = organizationDAO.getOrganizationByName(user.getAffiliation().getOrganizationName());
+        if (orga!=null){
+            for (DepartmentEntity orgaDept: orga.getDepartmentSet()){
+                if (orgaDept.getDepartmentPK().getDepartmentName().equals(user.getAffiliation().getDepartmentName())){
+                    userEntity.setDepartment(orgaDept);
+                }
+            }
+        }
+        
+        if (userEntity.getDepartment() == null ) {
+            DepartmentEntity defaultDept = organizationDAO.getOrganizationByName(OrganizationDTO.DEFAULT_ORGA).getDepartmentSet().iterator().next();
+            userEntity.setDepartment(defaultDept);
+        }
+        
+        
         userDAO.updateOrPersistUser(userEntity);
         HibernateUtil.getSessionFactory().getCurrentSession().flush();
         
