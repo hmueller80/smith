@@ -5,6 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
+import at.ac.oeaw.cemm.lims.persistence.service.request_form.RequestFormService;
+
 /**
  *
  * @author dbarreca
@@ -20,5 +22,7 @@ public interface ServiceFactory {
     RunService getRunService();
     
     NewsService getNewsService();
+    
+    RequestFormService getRequestFormService();
     
 }

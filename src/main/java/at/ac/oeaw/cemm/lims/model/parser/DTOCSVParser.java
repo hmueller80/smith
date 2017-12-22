@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser;
 
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import javax.faces.context.FacesContext;
 import org.apache.commons.csv.CSVRecord;

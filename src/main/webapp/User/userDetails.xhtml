@@ -6,84 +6,309 @@
                 template="/template.xhtml"> 
 
     <ui:define name="userDetails">
+        <p:confirmDialog global="true">
+            <h:form>
+                <p:commandButton value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
+                <p:commandButton value="No" type="button"
+                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </h:form>
+        </p:confirmDialog>
+
+        <p:dialog widgetVar="addOrgaDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="addOrgaDialogHeader" value="Add a new Orga"/>
+            </f:facet>
+            <h:form id="addOrgaDialog">
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <h:outputLabel for="orgaName" value="Organization Name  " />
+                    <p:inputText  style="width:300px;" 
+                                  id="orgaName" 
+                                  value="#{singleUserBean.orgaBean.orgaName}" 
+                                  disabled="#{!singleUserBean.orgaBean.roleManager.hasUserAddPermission}"/>
+                    <p:message for="orgaName" />
+                
+                </h:panelGrid>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmAddButton'
+                        value="Add" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{singleUserBean.orgaBean.roleManager.hasUserAddPermission}"
+                        update="@this userDetailsForm"
+                        onclick="PF('addOrgaDialog').hide()"
+                        />
+                    <p:commandButton
+                        widgetVar='cancelAddButton'
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('addOrgaDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
         
-        <h:form id="userDetailsForm"> 
-             
-            
-            <p:panel id="userDetailPanel" header="#{singleUserBean.currentUser.userName} #{bundle['user.details']}">
-                 
-                 <h:panelGrid columns="3" cellpadding="5">
-                                                             
-                     <h:outputLabel for="userID" value="#{bundle['user.id']}: * " />
-                            <h:outputText style="width:300px;"  id="userID" value="#{singleUserBean.currentUser.id}"/>
-                            <p:message for="userID" />
-                                    
-                            <p:separator id="customSeparator300" style="width:300px;height:5px" /> 
-                            <h:outputText value="#{bundle['user.details']}" />
-                            <p:separator id="customSeparator320" style="width:300px;height:5px" /> 
+        <p:dialog widgetVar="addDeptDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="addDeptDialogHeader" value="Add a new Dept"/>
+            </f:facet>
+            <h:form id="addDeptDialog">
+                <h:panelGrid columns="3" cellpadding="5">
 
-                            <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
-                            <p:inputMask  style="width:300px;" id="userLogin" value="#{singleUserBean.currentUser.login}" mask="" immediate="true" required="true" 
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.isNew}"/>
-                            <p:message for="userLogin" />
-
-                            <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
-                            <p:inputMask  style="width:300px;" id="userName" value="#{singleUserBean.currentUser.userName}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <p:ajax update="pi"/>
-                            </p:inputMask>
-                            <p:message for="userName" />
-
-                            <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
-                            <p:inputMask  style="width:300px;" id="userEmail" value="#{singleUserBean.currentUser.mailAddress}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}" />
-                            <p:message for="userEmail" />
-
-                            <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="genericConverter"
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <f:selectItems id="pi" value="#{singleUserBean.userPIs}" var="pi" itemLabel="#{pi.userName}" itemValue="#{pi}" />                                
-                            </h:selectOneMenu>     
-                            <p:message for="pi" />
-
-                            <h:outputLabel for="phone" value="#{bundle['user.phone']}:  " /> 
-                            <p:inputMask  style="width:300px;" id="phone" value="#{singleUserBean.currentUser.phone}" mask="" immediate="true" required="true"
-                                          disabled="#{!singleUserBean.roleManager.hasUserAddPermission}"/>
-                            <p:message for="phone" />
-         
-                            <h:outputLabel for="role" value="#{bundle['user.role']}:  " /> 
-                            <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUser.userRole}" immediate="true"
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}">
-                                <f:selectItems id="role" value="#{singleUserBean.userRoles}" />                                
-                            </h:selectOneMenu>
-                            <p:message for="role" />
-                          
-                            <h:outputLabel for="pickList" value="#{bundle['user.communications']}:  " /> 
-                            <p:pickList id="pickList" 
-                                        value="#{singleUserBean.communications}" 
-                                        var ="communication" 
-                                        itemLabel="#{communication.userName}" 
-                                        itemValue="#{communication}" 
-                                        disabled="#{!singleUserBean.roleManager.hasUserAddPermission}"
-                                        converter="genericConverter"
-                                        showSourceFilter="true" 
-                                        showTargetFilter="true"
-                                        filterMatchMode="contains"/>
-                            <p:message for="pickList" />
-                            
-                            <p:commandButton actionListener="#{singleUserBean.persist()}" 
-                                             disabled="#{!singleUserBean.roleManager.hasUserAddPermission}" 
-                                             id="UserModbutton" value="#{bundle['button.text.modify.user']}" update="userDetailPanel">
-
-                            </p:commandButton>
-                            <p:message for="UserModbutton"/>
-
-                 </h:panelGrid>
-             
-             </p:panel>
-             
-         </h:form>
+                    <h:outputLabel for="orgaDept" value="Department Name  " />
+                    <p:inputText  style="width:300px;" 
+                                  id="orgaDept" 
+                                  value="#{singleUserBean.orgaBean.deptName}" 
+                                  disabled="#{!singleUserBean.orgaBean.roleManager.hasUserAddPermission}"/>
+                    <p:message for="orgaDept" />
+                
+                </h:panelGrid>
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmAddButton'
+                        value="Add" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{singleUserBean.orgaBean.roleManager.hasUserAddPermission}"
+                        update="@this userDetailsForm"
+                        onclick="PF('addDeptDialog').hide()"
+                        />
+                    <p:commandButton
+                        widgetVar='cancelAddButton'
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('addDeptDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        
+        <h:form id="userDetailsForm" style="height:100%"> 
+            <div class="ui-g">
+                <div class="ui-g-8">
+                    <p:messages for ="userPersistMessages" showDetail="true" closable="true" />
+                </div>
+                <div class="ui-g-4">
+                    <p:commandButton 
+                        style="float:right;margin:1px"
+                        value="#{bundle['button.text.modify.user']}"
+                        icon="ui-icon-disk"
+                        actionListener="#{singleUserBean.persist()}" 
+                        disabled="#{!singleUserBean.userEditable}" 
+                        update="@all">
+                        <p:confirm header="Confirmation"
+                                   message="Are you sure to save all changes to this User?"
+                                   icon="ui-icon-alert" />
+                    </p:commandButton>
+                </div>
+            </div>
                
+            <p:panel id="userDetailPanel" header="#{singleUserBean.currentUser.userName} #{bundle['user.details']}" style="height:90%">
+
+                <h:panelGrid columns="3" cellpadding="5">
+
+                    <h:outputLabel for="userID" value="#{bundle['user.id']}: * " />
+                    <h:outputText style="width:300px;"  id="userID" value="#{singleUserBean.currentUser.id}"/>
+                    <p:message for="userID" />
+
+                    <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
+                    <p:inputMask  style="width:300px;" id="userLogin" value="#{singleUserBean.currentUser.login}" mask="" immediate="true" required="true" 
+                                  disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.isNew or !singleUserBean.userEditable}"/>
+                    <p:message for="userLogin" />
+                    
+                    <h:outputLabel for="role" value="#{bundle['user.role']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" 
+                                     required="true" 
+                                     value="#{singleUserBean.currentUser.userRole}"
+                                     disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.userEditable}"
+                                     >
+                        <p:ajax update ="@this piMenu" />
+                        <f:selectItems id="role" value="#{singleUserBean.userRoles}" />                                
+                    </h:selectOneMenu>
+                    <p:message for="role" />
+
+                    <p:outputPanel style="display:inline-block">
+                        <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="User Details" />
+                    </p:outputPanel>                       
+                    <p:separator/>
+                    <p:outputPanel style="display:inline-block"/>
+                            
+                    <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
+                    <p:inputMask  style="width:300px;" id="userName" value="#{singleUserBean.currentUser.userName}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.userEditable}">
+                        <p:ajax update="@this piMenu userDetailPanel"/>
+                    </p:inputMask>
+                    <p:message for="userName" />
+
+                    <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
+                    <h:selectOneMenu style="width:300px;" required="true" value="#{singleUserBean.currentUserPI}" converter="#{genericConverter}"
+                                     disabled="#{!singleUserBean.userEditable}"
+                                     id="piMenu">
+                        <f:selectItems id="pi" value="#{singleUserBean.userPIs}" var="pi" itemLabel="#{pi.userName}" itemValue="#{pi}" />                                
+                    </h:selectOneMenu>     
+                    <p:message for="pi" />
+
+                    <h:outputLabel for="phone" value="#{bundle['user.phone']}:  " /> 
+                    <p:inputMask  style="width:300px;" id="phone" value="#{singleUserBean.currentUser.phone}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.userEditable}"/>
+                    <p:message for="phone" />
+                    
+
+                    <p:outputPanel style="display:inline-block">
+                        <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Communications" />
+                    </p:outputPanel>                       
+                    <p:separator/>
+                    <p:outputPanel style="display:inline-block"/>
+                    
+                         <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
+                    <p:inputMask  style="width:300px;" id="userEmail" value="#{singleUserBean.currentUser.mailAddress}" mask="" immediate="true" required="true"
+                                  disabled="#{!singleUserBean.roleManager.hasUserAddPermission or !singleUserBean.userEditable}" />
+                    <p:message for="userEmail" />
+                    
+                    <h:outputLabel for="pickList" value="#{bundle['user.communications']}:  " /> 
+                    <p:pickList id="pickList" 
+                                value="#{singleUserBean.communications}" 
+                                var ="communication" 
+                                itemLabel="#{communication.userName}" 
+                                itemValue="#{communication}" 
+                                disabled="#{!singleUserBean.userEditable}"
+                                converter="#{genericConverter}"
+                                showSourceFilter="true" 
+                                showTargetFilter="true"
+                                filterMatchMode="contains"/>
+                    <p:message for="pickList" />
+
+                    <p:outputPanel style="display:inline-block">
+                        <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Affiliation" />
+                    </p:outputPanel>                       
+                    <p:separator/>
+                    <p:outputPanel style="display:inline-block"/>
+                    
+                    <p:outputPanel style="display:inline-block"/>
+                    <p:commandButton 
+                        id ="saveAffiliationButton"
+                        style ="float:right;margin:1px;font-size: x-small;"
+                        icon="ui-icon-disk"
+                        value="Save Organization"
+                        rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
+                        disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"> 
+                        <p:confirm header="Confirmation"
+                                   message=
+                                            "Are you sure to update organization #{singleUserBean.orgaBean.orgaName} and department #{singleUserBean.orgaBean.deptName}?
+                                            (this won't update the user affiliation)"
+                                   icon="ui-icon-alert" 
+                                   />
+                    </p:commandButton>
+                    <h:outputText value="If your organization details are wrong or you cannot find your organization/department, please get in touch!" rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" />
+                    <p:outputPanel style="display:inline-block"/>
+
+                    
+                    <p:outputLabel for="orgaMenu" value="Organization: " />
+                    <h:panelGroup>
+                        <h:selectOneMenu 
+                            style="width:300px;float:left;margin:1px" 
+                            required="true" 
+                            value="#{singleUserBean.orgaBean.orga}" 
+                            converter="#{genericConverter}"
+                            disabled="#{!singleUserBean.userEditable}"                        
+                            id="orgaMenu">
+                            <f:selectItems id="orga" value="#{singleUserBean.orgaBean.orgas}" var="orga" itemLabel="#{orga.name}" itemValue="#{orga}" />   
+                            <p:ajax update ="userDetailsForm" />
+                        </h:selectOneMenu>     
+                        <p:commandButton 
+                            id ="addOrgaButton"
+                            style ="float:right;margin:1px;font-size: x-small;"
+                            onclick="PF('addOrgaDialog').show()"
+                            icon="ui-icon-plus"
+                            value="Add"
+                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                            />
+                        <p:commandButton 
+                            id ="deleteOrgaButton"
+                            style ="float:right;margin:1px;font-size: x-small;"
+                            icon="ui-icon-trash"
+                            value="Delete"
+                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
+                            disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"> 
+                             <p:confirm header="Confirmation"
+                                        message="Are you sure to delete organization #{singleUserBean.orgaBean.orgaName}?"
+                                   icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </h:panelGroup>
+                   
+                    <p:message for="orgaMenu" />   
+
+                    <p:outputLabel for="deptMenu" value="Department: " />
+                    <h:panelGroup>
+                        <h:selectOneMenu 
+                            style="width:300px;" 
+                            required="true" 
+                            value="#{singleUserBean.orgaBean.dept}"
+                            converter="#{genericConverter}"
+                            disabled="#{!singleUserBean.userEditable or singleUserBean.orgaBean.orgaName=='NONE'}"
+                            id="deptMenu">
+                            <p:ajax update ="userDetailsForm" />
+                            <f:selectItems id="dept" value="#{singleUserBean.orgaBean.departments}" var="dept" itemLabel="#{dept.name}" itemValue="#{dept}"  />                                
+                        </h:selectOneMenu>  
+                        <p:commandButton 
+                            id ="addDeptButton"
+                            style ="float:right;margin:1px;font-size: x-small;"
+                            onclick="PF('addDeptDialog').show()"
+                            icon="ui-icon-plus"
+                            value="Add"
+                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
+                            disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}" /> 
+                        <p:commandButton 
+                            id="deleteDeptButton"
+                            style ="float:right;margin:1px;font-size: x-small;"
+                            icon="ui-icon-trash"
+                            value="Delete"
+                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
+                            disabled="#{singleUserBean.orgaBean.deptName=='NONE'}"> 
+                             <p:confirm header="Confirmation"
+                                        message="Are you sure to delete department #{singleUserBean.orgaBean.deptName}?"
+                                   icon="ui-icon-alert" />
+                        </p:commandButton>
+                    </h:panelGroup>
+                    <p:message for="deptMenu" />   
+
+                    <p:outputLabel value="Organization Address: " />
+                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="orgaAddress" value="#{singleUserBean.orgaBean.orgaAddress}"/>
+                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                                 disabled ="#{singleUserBean.orgaBean.orgaName=='NONE'}"
+                                style="width:300px;"  id="orgaAddressInput" value="#{singleUserBean.orgaBean.orgaAddress}"/>
+                    <p:message for="orgaAddressInput" />   
+
+                    <p:outputLabel value="Organization URL: " />
+                    <h:outputText  rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="orgaUrl" value="#{singleUserBean.orgaBean.orgaURL}"/>
+                    <h:inputText  rendered="#{singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  
+                                  disabled ="#{singleUserBean.orgaBean.orgaName=='NONE'}"
+                                  id="orgaUrlInput" value="#{singleUserBean.orgaBean.orgaURL}"/>
+                    <p:message for="orgaUrlInput" />  
+                    
+                    <p:outputLabel value="Department Address: " />
+                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="deptAddress" value="#{singleUserBean.orgaBean.deptAddress}"/>
+                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                                 disabled ="#{singleUserBean.orgaBean.deptName=='NONE'}"
+                                 style="width:300px;"  id="deptAddressInput" value="#{singleUserBean.orgaBean.deptAddress}"/>
+                    <p:message for="deptAddressInput" />   
+
+                    <p:outputLabel value="Department URL: " />
+                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="deptUrl" value="#{singleUserBean.orgaBean.deptURL}"/>
+                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                                 disabled ="#{singleUserBean.orgaBean.deptName=='NONE'}"
+                                 style="width:300px;"  id="deptUrlInput" value="#{singleUserBean.orgaBean.deptURL}"/>
+                    <p:message for="deptUrlInput" />   
+
+                </h:panelGrid>
+
+            </p:panel>
+
+        </h:form>
+
     </ui:define>
 
 </ui:composition>

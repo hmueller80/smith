@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
@@ -31,8 +31,6 @@ import org.hibernate.transform.Transformers;
  */
 @ApplicationScoped
 public class LibraryDAO {
-    //https://www.thoughts-on-java.org/tips-to-boost-your-hibernate-performance/
-    //final static Logger logger = Logger.getLogger("org.hibernate.stat");    
     
     public LibraryDAO() {
         System.out.println("Initializing LibraryDAO");
@@ -90,6 +88,8 @@ public class LibraryDAO {
         DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
                 .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.conjunction(
+                    Restrictions.ne("status",SampleDTO.status_requested),
+                    Restrictions.ne("status",SampleDTO.status_queued)))
                     Restrictions.ne("status",SampleDTO.status_queued),
                     Restrictions.ne("status",SampleDTO.status_requested)))
                 .setProjection(Projections.distinct(Projections.property("library.id")));
@@ -104,6 +104,7 @@ public class LibraryDAO {
                 .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
                 .add(Subqueries.propertyNotIn("id", subquery))
                 //.addOrder(Order.desc("sample.submissionId"))
+                .addOrder(Order.desc("sample.submissionId"))
                 .addOrder(Order.desc("id"))
                 .setProjection(Projections.distinct(projList))
                 .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));

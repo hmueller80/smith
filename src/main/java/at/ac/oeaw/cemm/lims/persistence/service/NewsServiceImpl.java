@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.NewsDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.NewsService;
 import at.ac.oeaw.cemm.lims.persistence.dao.NewsDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity;

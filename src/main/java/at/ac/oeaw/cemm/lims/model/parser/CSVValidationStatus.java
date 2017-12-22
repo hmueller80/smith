@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser;
 
-import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import java.util.HashSet;
 import java.util.Set;
 

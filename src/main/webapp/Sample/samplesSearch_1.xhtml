@@ -36,8 +36,8 @@
                 </div>
             </h:form>
         </p:dialog>
-        
-         <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
+
+        <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
                 <h:outputText id="deleteDialogHeader" value="Delete Request"/>
             </f:facet>
@@ -47,7 +47,7 @@
                 <p:outputLabel value="Please select a request to delete"/>
                 <br/><br/>
                 <p:selectOneMenu  
-                    converter="genericConverter"
+                    converter="#{genericConverter}"
                     value ="#{deleteRequestBean.selectedRequest}"
                     immediate="true"
                     disabled="#{!deleteRequestBean.roleManager.hasSampleLoadPermission()}"
@@ -57,13 +57,13 @@
                         id="sampleSelect" 
                         value="#{deleteRequestBean.requestsAvailable}" 
                         var="sampleRequest" 
-                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestor.login})" itemValue="#{sampleRequest}" />
+                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestorUser.login})" itemValue="#{sampleRequest}" />
                     <p:ajax update="librarySelector" />
                 </p:selectOneMenu>     
                 <br /><br/>
                 <p:selectOneMenu  
                     id="librarySelector"
-                    converter="genericConverter"
+                    converter="#{genericConverter}"
                     value ="#{deleteRequestBean.selectedLibrary}"
                     immediate="true"
                     disabled="#{!deleteRequestBean.roleManager.hasSampleLoadPermission()}"
@@ -95,6 +95,50 @@
                         styleClass="ui-confirmdialog-no" 
                         icon="ui-icon-close" 
                         onclick="PF('deleteDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>        
+        
+         <p:dialog widgetVar="addSampleDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="addSampleHeader" value="Add Sample to Request"/>
+            </f:facet>
+            <h:form id="addSampleDialog">
+                <p:outputLabel value="Please select a request to which you want to add a sample"/>
+                <br/><br/>
+                <p:selectOneMenu                      converter="#{genericConverter}"
+                    value ="#{addSampleBean.selectedRequest}"
+                    immediate="true"
+                    disabled="#{!addSampleBean.roleManager.hasSampleLoadPermission()}"
+                    filter="true" 
+                    filterMatchMode="contains">
+                    <f:selectItems 
+                        id="sampleSelect" 
+                        value="#{addSampleBean.allRequests}" 
+                        var="sampleRequest" 
+                        itemLabel="#{sampleRequest.requestId} (requested by #{sampleRequest.requestorUser.login})" itemValue="#{sampleRequest}" />
+                    <p:ajax update="@this confirmAddSampleButton" partialSubmit="true"/>
+                </p:selectOneMenu>                     
+                <br /><br/>                
+                <div style="width:100%;text-align: center;">
+                    <p:button
+                        widgetVar='confirmAddSampleButton'
+                        id="confirmAddSampleButton"
+                        value="Add" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{addSampleBean.roleManager.hasSampleLoadPermission()}"
+                        outcome="/Sample/sampleDetails_1.jsf">
+                        <f:param name="rid" value="#{addSampleBean.selectedRequest.requestId}" />
+                        <f:param name="uid" value="#{addSampleBean.selectedRequest.requestorUser.login}" />
+                        <f:param name="activeMenu" value="1" />                           
+                    </p:button>
+                    <p:commandButton
+                        widgetVar='cancelAddSampleButton'
+                        value="Cancel" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('addSampleDialog').hide()"/>
                 </div>
             </h:form>
         </p:dialog>        
@@ -135,6 +179,9 @@
                                           oncomplete="PF('uploadDialog').show()"
                                           rendered="#{uploadSampleRequestNewBean.roleManager.hasSampleLoadPermission()}"
                                           update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" />
+                            <p:commandButton style="float:right;margin:1px" value="Add Sample" icon="ui-icon-plus"
+                                             rendered="#{addSampleBean.roleManager.hasSampleLoadPermission()}"
+                                             onclick="PF('addSampleDialog').show()" />
                             <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
                                              icon="ui-icon-arrowthick-1-s">
                                 <p:dataExporter type="csv" target="sampleTable" fileName="Samples"
@@ -182,7 +229,6 @@
                 <p:column id="nameColumn" filterBy="#{sample.name}"                      
                           headerText="#{bundle['samples.sample.name']}">
                     <h:outputText value="#{sample.name}" id="sampleNameValue"/>
-                    <p:tooltip id="toolTipName" value="#{sample.name}" for = "sampleNameValue" position="top"/>
                 </p:column>
 
                 <p:column id="statusColumn" filterBy="#{sample.status}"                     
@@ -210,7 +256,6 @@
                 <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
                           headerText="#{bundle['samples.description']}">
                     <h:outputText value="#{sample.description}" id="sampleDescriptionValue"/>
-                    <p:tooltip id="toolTipDescription" value="#{sample.description}" for = "sampleDescriptionValue" position="top"/>
                 </p:column>
 
             </p:dataTable>

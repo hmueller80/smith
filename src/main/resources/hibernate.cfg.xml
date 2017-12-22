@@ -45,19 +45,16 @@ Contributor(s):
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</property>
-    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">hmueller</property>
-    <property name="hibernate.connection.password"></property>
+
     <!--
     <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">hmueller</property>
     <property name="hibernate.connection.password"></property>
+    -->
+    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">hmueller</property>
+    <property name="hibernate.connection.password"></property>
     
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">root</property>
-    <property name="hibernate.connection.password">mzsqlroot</property>
-    
-        -->
     <property name="hibernate.show_sql">false</property>
     <property name="hibernate.current_session_context_class">thread</property>
     <property name="hibernate.connection.zeroDateTimeBehavior">convertToNull</property>
@@ -83,6 +80,11 @@ Contributor(s):
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.NewsEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.OrganizationEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.DepartmentEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity"/>        
     <!--mapping class="it.iit.genomics.cru.smith.entity.AlignedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.AnnotatedData"/>
     <mapping class="it.iit.genomics.cru.smith.entity.Attribute"/>

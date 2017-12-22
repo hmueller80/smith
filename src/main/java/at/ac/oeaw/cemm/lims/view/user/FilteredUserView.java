@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.user;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import java.util.LinkedList;
@@ -33,7 +33,14 @@ public class FilteredUserView {
 
     @PostConstruct
     public void init() {
-        users = services.getUserService().getAllUsers();
+        if (roleManager.getHasUserAddPermission()){
+            users = services.getUserService().getAllUsers();
+        }else if (roleManager.isGroupLeader()){
+            users = services.getUserService().getAllUsersByPI(roleManager.getCurrentUser().getId());
+        }else if (roleManager.isUser()) {
+            users.add(roleManager.getCurrentUser());
+        }
+        
         filteredUsers= users;
     }
     

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.dao.LaneDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
@@ -25,8 +25,8 @@ import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRunEntity;
 import java.util.HashSet;
 import java.util.Set;
-import at.ac.oeaw.cemm.lims.api.dto.RunDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 
 
 /**

@@ -5,13 +5,16 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
 import at.ac.oeaw.cemm.lims.persistence.dao.CommunicationsDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
+import at.ac.oeaw.cemm.lims.persistence.dao.OrganizationDAO;
+import at.ac.oeaw.cemm.lims.persistence.entity.OrganizationEntity;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
 
     @Inject  private UserDAO userDAO;
     @Inject  private CommunicationsDAO commDAO;
+    @Inject private OrganizationDAO organizationDAO;
     @Inject DTOMapper myDTOMapper;
 
     @Override
@@ -34,18 +38,18 @@ public class UserServiceImpl implements UserService {
         UserDTO user = null;
 
         try {
-            UserEntity userEntity = TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<UserEntity>() {
+            user = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<UserDTO>() {
                 @Override
-                public UserEntity execute() throws Exception {
-                    return userDAO.getUserByLogin(userLogin);
+                public UserDTO execute() throws Exception {
+                    UserEntity userEntity = userDAO.getUserByLogin(userLogin);
+                    if (userEntity != null) {
+                        return myDTOMapper.getUserDTOFromEntity(userEntity);
+                    }
+                    return null;
                 }
             });
-            
-            if (userEntity!=null) {
-                user = myDTOMapper.getUserDTOFromEntity(userEntity);
-            }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,21 +59,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserByID(final Integer Id) {
-       UserDTO user = null;
+        UserDTO user = null;
 
         try {
-            UserEntity userEntity = TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<UserEntity>() {
+            user = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<UserDTO>() {
                 @Override
-                public UserEntity execute() throws Exception {
-                    return userDAO.getUserByID(Id);
+                public UserDTO execute() throws Exception {
+                    
+                    UserEntity userEntity = userDAO.getUserByID(Id);
+                    
+                    if (userEntity != null) {
+                        return myDTOMapper.getUserDTOFromEntity(userEntity);
+                    }
+                    return null;
                 }
             });
-            
-            if (userEntity!=null) {
-                user = myDTOMapper.getUserDTOFromEntity(userEntity);
-            }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,5 +259,75 @@ public class UserServiceImpl implements UserService {
             userDAO.updateOrPersistUser(userEntity);
         }
         return userEntity;
+    }
+
+    @Override
+    public UserDTO getUserByMail(final String mailAddress) {
+        UserDTO user = null;
+        try {
+            user = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<UserDTO>() {
+                @Override
+                public UserDTO execute() throws Exception {
+                    UserEntity userEntity = userDAO.getUserByMail(mailAddress);
+
+                    if (userEntity != null) {
+                        return myDTOMapper.getUserDTOFromEntity(userEntity);
+                    }
+                    return null;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+    
+    @Override
+    public OrganizationDTO getOrganizationByName(final String name) {
+        OrganizationDTO orga = null;
+
+        try {
+            orga = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<OrganizationDTO>() {
+                @Override
+                public OrganizationDTO execute() throws Exception {
+                    OrganizationEntity orgaEntity = organizationDAO.getOrganizationByName(name);
+                    return myDTOMapper.getOrganizationFromEntity(orgaEntity);
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return orga;
+    }
+
+    @Override
+    public List<OrganizationDTO> getAllOrganizations() {
+        final List<OrganizationDTO> organizations = new LinkedList<>();
+        
+         try {
+            TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    List<OrganizationEntity> orgaEntities = organizationDAO.getAllOrganizations();
+                    if (orgaEntities!=null){
+                        for (OrganizationEntity orga: orgaEntities){
+                            organizations.add(myDTOMapper.getOrganizationFromEntity(orga));
+                        }
+                    }
+                   
+                    return null;
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return organizations;
     }
 }

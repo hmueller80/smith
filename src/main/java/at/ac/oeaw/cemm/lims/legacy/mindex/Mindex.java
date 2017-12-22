@@ -1,6 +1,6 @@
 package at.ac.oeaw.cemm.lims.legacy.mindex;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -18,7 +18,8 @@ public class UseIdOrGenerate extends IdentityGenerator {
 public Serializable generate(SessionImplementor session, Object obj) throws HibernateException {
     if (obj == null) throw new HibernateException(new NullPointerException()) ;
     //ALTER TABLE sample AUTO_INCREMENT = 1;
-    if ((((EntityWithSettableId) obj).getId()) == 0) {        
+    Integer existingId = ((EntityWithSettableId) obj).getId();
+    if (existingId == null || existingId == 0) {        
         Serializable id = super.generate(session, obj) ;
         //System.out.println("generating new sample id");
         return id;

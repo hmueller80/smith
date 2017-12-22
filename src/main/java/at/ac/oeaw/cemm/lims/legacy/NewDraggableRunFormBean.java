@@ -1,9 +1,9 @@
 package at.ac.oeaw.cemm.lims.legacy;
 
 
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.legacy.mindex.Mindex;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;

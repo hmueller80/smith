@@ -5,8 +5,8 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
-import at.ac.oeaw.cemm.lims.api.dto.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.RequestDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
 import java.util.Set;
@@ -33,5 +33,7 @@ public interface RequestService {
 
     public void deleteLibraryIfEmpty(String oldLibraryName);
 
-    public RequestDTO getMinimalRequestById(Integer rid);
+    public RequestDTO getMinimalRequestByIdAndRequestor(Integer rid, String requestor);
+
+    public  List<RequestDTO> getAllRequests();
 }

@@ -1,7 +1,7 @@
 package at.ac.oeaw.cemm.lims.analysis.impl.model;
 
 import at.ac.oeaw.cemm.lims.analysis.impl.model.SampleSheet;
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.BufferedReader;
 import java.io.File;

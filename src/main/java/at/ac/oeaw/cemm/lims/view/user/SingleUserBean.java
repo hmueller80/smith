@@ -5,19 +5,20 @@
  */
 package at.ac.oeaw.cemm.lims.view.user;
 
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import at.ac.oeaw.cemm.lims.api.dto.DTOFactory;
-import at.ac.oeaw.cemm.lims.model.validator.ValidatorException;
+import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.UserValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.UserDTOValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.PostConstruct;
@@ -35,7 +36,7 @@ import org.primefaces.model.DualListModel;
 @ManagedBean(name="singleUserBean")
 @ViewScoped
 public class SingleUserBean {
-    private final static String FORM_ID = "userDetailsForm";
+    private final static String FORM_ID = "userPersistMessages";
     
     @Inject private ServiceFactory services;
     @Inject private DTOFactory myDTOFactory;
@@ -43,30 +44,53 @@ public class SingleUserBean {
     @ManagedProperty(value="#{newRoleManager}")
     NewRoleManager roleManager;
     
+    @ManagedProperty(value="#{orgaBean}")
+    OrgaBean orgaBean;
+    
     private boolean isNew = false;
     private UserDTO currentUser;
     private UserDTO currentUserPI;
     private DualListModel<UserDTO> communications;
-            
+    private boolean isEditable;
+    
     @PostConstruct
     public void init() {
-   
         FacesContext context = FacesContext.getCurrentInstance();
         String uid = (String) context.getExternalContext().getRequestParameterMap().get("uid");
+        Integer userId = null;
+        if(uid!=null){
+            userId = Integer.parseInt(uid);
+        }
+        
+        initInternal(userId);
+    }
+    
+    private void initInternal(Integer uid){
+
         if (uid != null) {
             isNew = false;
-            currentUser = services.getUserService().getUserByID(Integer.parseInt(uid));
+            currentUser = services.getUserService().getUserByID(uid);
             currentUserPI = currentUser;
             if (!Objects.equals(currentUser.getPi(), currentUser.getId())){
                 currentUserPI = services.getUserService().getUserByID(currentUser.getPi());
             }
+            if (Preferences.ROLE_GUEST.equals(currentUser.getUserRole())){
+                isEditable = false;
+            }else{
+                isEditable = 
+                        roleManager.getHasUserAddPermission()|| 
+                        roleManager.getCurrentUser().getId().equals(currentUserPI.getId()) ||
+                        roleManager.getCurrentUser().getId().equals(currentUser.getId());
+            }
         }else{
             isNew = true;
-            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null);
-            currentUserPI = currentUser;
-
+            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null,myDTOFactory.getAffiliationDTO());
+            currentUserPI = services.getUserService().getUsersByRole(Preferences.ROLE_GROUPLEADER).get(0);
+            isEditable = roleManager.getHasUserAddPermission();
+            
         } 
-        
+        orgaBean.set(currentUser.getAffiliation().getOrganization(),currentUser.getAffiliation().getDepartment());
+            
         List<UserDTO> coll = services.getUserService().getCollaborators(currentUser);
         List<UserDTO> possibleColl = services.getUserService().getAllUsers();
         possibleColl.remove(currentUser);
@@ -91,25 +115,45 @@ public class SingleUserBean {
         currentUser.setPi(pi.getId());
     }
     
-    public List<UserDTO> getUserPIs() {
-        List<UserDTO> possiblePIs = services.getUserService().getUsersByRole(Preferences.ROLE_GROUPLEADER);
-        possiblePIs.addAll(services.getUserService().getUsersByRole(Preferences.ROLE_ADMIN));
-        if (!possiblePIs.contains(currentUser)){
-            possiblePIs.add(currentUser);
+    public String getCurrentUserRole() {
+        return currentUser.getUserRole();
+    }
+    
+    public void setCurrentUserRole(String role) {
+        currentUser.setUserRole(role);
+        if (Preferences.ROLE_GROUPLEADER.equalsIgnoreCase(role)){
+            setCurrentUserPI(currentUser);
         }
-        Collections.sort(possiblePIs,new Comparator<UserDTO>() {
-            @Override
-            public int compare(UserDTO lhs, UserDTO rhs) {
-                return lhs.getLogin().compareTo(rhs.getLogin());
-            }
-        });
-        
+    }
+    
+    public List<UserDTO> getUserPIs() {
+        List<UserDTO> possiblePIs;
+        if (Preferences.ROLE_GROUPLEADER.equals(currentUser.getUserRole())) {
+            possiblePIs = new LinkedList<>();
+            possiblePIs.add(currentUser);
+        } else {
+            possiblePIs = services.getUserService().getUsersByRole(Preferences.ROLE_GROUPLEADER);
+            possiblePIs.addAll(services.getUserService().getUsersByRole(Preferences.ROLE_ADMIN));
+
+            Collections.sort(possiblePIs, new Comparator<UserDTO>() {
+                @Override
+                public int compare(UserDTO lhs, UserDTO rhs) {
+                    return lhs.getLogin().compareTo(rhs.getLogin());
+                }
+            });
+        }
         return possiblePIs;
+    }
+    
+    public boolean isUserEditable(){
+        return isEditable;
     }
     
     
     public List<String> getUserRoles() {
-        return Preferences.ROLES;
+        List<String> possibleRoles = Preferences.ROLES;
+        possibleRoles.remove(Preferences.ROLE_GUEST);
+        return possibleRoles;
     }   
 
     public NewRoleManager getRoleManager() {
@@ -134,34 +178,39 @@ public class SingleUserBean {
     
     
     public void persist(){
-        final String COMPONENT = "UserModbutton";
         
-        UserValidator userValidator = new UserValidator(currentUser);
-        userValidator.setIsNew(isNew);
+        UserDTOValidator userValidator = new UserDTOValidator(services);
         try{
-            UserDTO validatedUser = userValidator.getValidatedObject();
-            PersistedEntityReceipt receipt = services.getUserService().persistOrUpdateUser(validatedUser,communications.getTarget(),isNew);
-            for (ValidatorMessage message:userValidator.getMessages()){
+            ValidationStatus validation = userValidator.isValid(currentUser);
+             for (ValidatorMessage message:validation.getValidationMessages()){
                 if (ValidatorSeverity.WARNING.equals(message.getType())){
-                    NgsLimsUtility.setWarningMessage(FORM_ID, COMPONENT, message.getSummary(), message.getDescription());
+                    NgsLimsUtility.setWarningMessage(FORM_ID, null, message.getSummary(), message.getDescription());
                 }
-            }
-            NgsLimsUtility.setSuccessMessage(FORM_ID, COMPONENT, "Success", "User saved");
-            isNew=false;
-            currentUser = services.getUserService().getUserByID(receipt.getId());
-            currentUserPI= services.getUserService().getUserByID(currentUser.getPi());
-        }catch(ValidatorException e){
-            for (ValidatorMessage message:e.getPayload()){
                 if (ValidatorSeverity.FAIL.equals(message.getType())){
-                    NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, message.getSummary(), message.getDescription());
+                    NgsLimsUtility.setFailMessage(FORM_ID, null, message.getSummary(), message.getDescription());
                 }
             }
+            
+            if (validation.isValid()) {
+                PersistedEntityReceipt receipt = services.getUserService().persistOrUpdateUser(currentUser, communications.getTarget(), isNew);
+
+                NgsLimsUtility.setSuccessMessage(FORM_ID, null, "Success", "User saved");
+                initInternal(receipt.getId());
+            }
+
         }catch(Exception e){
             e.printStackTrace();
-            NgsLimsUtility.setFailMessage(FORM_ID, COMPONENT, "DB error", e.getMessage());
+            NgsLimsUtility.setFailMessage(FORM_ID, null, "DB error", e.getMessage());
         }
-        
-          
+    }
+    
+   
+    public OrgaBean getOrgaBean() {
+        return orgaBean;
     }
 
+    public void setOrgaBean(OrgaBean orgaBean) {
+        this.orgaBean = orgaBean;
+    }
+ 
 }

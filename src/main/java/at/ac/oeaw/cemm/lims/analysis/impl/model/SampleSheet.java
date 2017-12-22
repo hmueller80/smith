@@ -5,8 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.analysis.impl.model;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleRunDTO;
-import at.ac.oeaw.cemm.lims.model.parser.runCSV.RunFormCSVHeader;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

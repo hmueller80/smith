@@ -250,4 +250,14 @@ public class SampleDAO {
 
         return query.list();
     }
+
+    public Integer getMaxRequestId() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria sampleCriteria = session.createCriteria(SampleEntity.class).setProjection(Projections.max("submissionId"));
+        Integer id = (Integer) sampleCriteria.uniqueResult();
+        if (id == null) {
+            id = 0;
+        }
+        return id;
+    }
 }

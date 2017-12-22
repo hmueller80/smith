@@ -4,8 +4,9 @@
  */
 package at.ac.oeaw.cemm.lims.view;
 
-import at.ac.oeaw.cemm.lims.api.dto.SampleDTO;
-import at.ac.oeaw.cemm.lims.api.dto.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.Serializable;
@@ -117,7 +118,7 @@ public class NewRoleManager implements Serializable {
     }
     
      public boolean getHasUserAddPermission(){
-        return (Admin);
+        return (Admin || Technician );
     }
                   
     public boolean hasSampleModifyPermission(SampleDTO sample) {
@@ -131,6 +132,25 @@ public class NewRoleManager implements Serializable {
         }
         
         return false;
+    }
+    
+    public boolean hasAnnotationSheetModifyPermission(RequestFormDTO requestForm) {
+        if (Admin || Technician) {
+            return true;
+        } else if (User || GroupLeader) {
+            if (currentUser.getLogin().equals(requestForm.getRequestor().getUser().getLogin())
+                || currentUser.getLogin().equals(requestForm.getRequestor().getPi().getLogin())
+                ||  currentUser.getMailAddress().equals(requestForm.getRequestor().getUser().getMailAddress())
+                ||  currentUser.getMailAddress().equals(requestForm.getRequestor().getPi().getMailAddress())){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public boolean hasAnnotationSheetDeletePermission() {
+        return (Admin || Technician);
     }
 
     public Set<Integer> getSubjectsIds() {

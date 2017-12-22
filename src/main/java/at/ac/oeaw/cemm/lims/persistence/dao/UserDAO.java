@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -51,6 +52,7 @@ public class UserDAO {
     public List<UserEntity> getAllUsers() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Criteria userCriteria = session.createCriteria(UserEntity.class);
+        userCriteria.addOrder(Order.asc("userName"));
         return userCriteria.list();
     }
 
@@ -87,6 +89,13 @@ public class UserDAO {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.saveOrUpdate(userEntity);
 
+    }
+
+    public UserEntity getUserByMail(String mailAddress) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria userCriteria = session.createCriteria(UserEntity.class).add(Restrictions.eq("mailAddress", mailAddress));
+        UserEntity user = (UserEntity) userCriteria.uniqueResult();
+        return user;
     }
 
 }
