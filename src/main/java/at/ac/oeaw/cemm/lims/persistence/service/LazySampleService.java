@@ -50,24 +50,24 @@ public class LazySampleService implements SampleService {
    
     @Override
      public SampleDTO getFullSampleById(final int sampleId) {
-        SampleEntity sample = null;
+        SampleDTO sample = null;
 
         try {
             sample = TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<SampleEntity>() {
+                    new TransactionManager.TransactionCallable<SampleDTO>() {
                 @Override
-                public SampleEntity execute() throws Exception {
+                public SampleDTO execute() throws Exception {
                     SampleEntity sample = sampleDAO.getSampleById(sampleId);
                     Hibernate.initialize(sample.getApplication());
                     Hibernate.initialize(sample.getSequencingIndexes());
-                    return sample;
+                    return myDTOMapper.getSampleDTOfromEntity(sample);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return myDTOMapper.getSampleDTOfromEntity(sample);
+        return sample;
     }
      
     @Override

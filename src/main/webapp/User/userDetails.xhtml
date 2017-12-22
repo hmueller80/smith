@@ -37,7 +37,8 @@
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
                         rendered = "#{singleUserBean.orgaBean.roleManager.hasUserAddPermission}"
-                        update="@this userDetailsForm"
+                        action ="#{singleUserBean.orgaBean.makeEditable()}"
+                        update="@this userDetailsForm addDeptDialog"
                         onclick="PF('addOrgaDialog').hide()"
                         />
                     <p:commandButton
@@ -61,7 +62,7 @@
                     <p:inputText  style="width:300px;" 
                                   id="orgaDept" 
                                   value="#{singleUserBean.orgaBean.deptName}" 
-                                  disabled="#{!singleUserBean.orgaBean.roleManager.hasUserAddPermission}"/>
+                                  disabled="#{!singleUserBean.orgaBean.editable}"/>
                     <p:message for="orgaDept" />
                 
                 </h:panelGrid>
@@ -71,7 +72,7 @@
                         value="Add" 
                         styleClass="ui-confirmdialog-yes" 
                         icon="ui-icon-check" 
-                        rendered = "#{singleUserBean.orgaBean.roleManager.hasUserAddPermission}"
+                        rendered = "#{singleUserBean.orgaBean.editable}"
                         update="@this userDetailsForm"
                         onclick="PF('addDeptDialog').hide()"
                         />
@@ -193,8 +194,10 @@
                         style ="float:right;margin:1px;font-size: x-small;"
                         icon="ui-icon-disk"
                         value="Save Organization"
-                        rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
-                        disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"> 
+                        rendered="#{singleUserBean.orgaBean.editable}"
+                        disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"
+                        actionListener ="#{singleUserBean.orgaBean.submitAll()}"
+                        update = "userDetailsForm addOrgaDialog addDeptDialog"> 
                         <p:confirm header="Confirmation"
                                    message=
                                             "Are you sure to update organization #{singleUserBean.orgaBean.orgaName} and department #{singleUserBean.orgaBean.deptName}?
@@ -202,10 +205,19 @@
                                    icon="ui-icon-alert" 
                                    />
                     </p:commandButton>
+                    <p:commandButton 
+                        id ="editableAffiliationButton"
+                        style ="float:right;margin:1px;font-size: x-small;"
+                        icon="ui-icon-disk"
+                        value="Edit Organization"
+                        rendered="#{singleUserBean.orgaBean.roleManager.hasUserAddPermission and !singleUserBean.orgaBean.editable}"
+                        disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"
+                        actionListener="#{singleUserBean.orgaBean.makeEditable()}"
+                        update="userDetailsForm addOrgaDialog addDeptDialog">
+                    </p:commandButton>
                     <h:outputText value="If your organization details are wrong or you cannot find your organization/department, please get in touch!" rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" />
                     <p:outputPanel style="display:inline-block"/>
-
-                    
+                
                     <p:outputLabel for="orgaMenu" value="Organization: " />
                     <h:panelGroup>
                         <h:selectOneMenu 
@@ -224,15 +236,18 @@
                             onclick="PF('addOrgaDialog').show()"
                             icon="ui-icon-plus"
                             value="Add"
-                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                            rendered="#{singleUserBean.orgaBean.roleManager.hasUserAddPermission}"
+                            update ="userDetailsForm"
                             />
                         <p:commandButton 
                             id ="deleteOrgaButton"
                             style ="float:right;margin:1px;font-size: x-small;"
                             icon="ui-icon-trash"
                             value="Delete"
-                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
-                            disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"> 
+                            rendered="#{singleUserBean.orgaBean.editable}"
+                            disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}"
+                            actionListener ="#{singleUserBean.orgaBean.deleteOrga()}"
+                            update = "userDetailsForm addOrgaDialog addDeptDialog"> 
                              <p:confirm header="Confirmation"
                                         message="Are you sure to delete organization #{singleUserBean.orgaBean.orgaName}?"
                                    icon="ui-icon-alert" />
@@ -259,15 +274,17 @@
                             onclick="PF('addDeptDialog').show()"
                             icon="ui-icon-plus"
                             value="Add"
-                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
+                            rendered="#{singleUserBean.orgaBean.editable}"
                             disabled="#{singleUserBean.orgaBean.orgaName=='NONE'}" /> 
                         <p:commandButton 
                             id="deleteDeptButton"
                             style ="float:right;margin:1px;font-size: x-small;"
                             icon="ui-icon-trash"
                             value="Delete"
-                            rendered="#{singleUserBean.roleManager.hasUserAddPermission}"
-                            disabled="#{singleUserBean.orgaBean.deptName=='NONE'}"> 
+                            rendered="#{singleUserBean.orgaBean.editable}"
+                            disabled="#{singleUserBean.orgaBean.deptName=='NONE'}"
+                            actionListener ="#{singleUserBean.orgaBean.deleteDept()}"
+                            update = "userDetailsForm addOrgaDialog addDeptDialog deptMenu"> 
                              <p:confirm header="Confirmation"
                                         message="Are you sure to delete department #{singleUserBean.orgaBean.deptName}?"
                                    icon="ui-icon-alert" />
@@ -276,29 +293,29 @@
                     <p:message for="deptMenu" />   
 
                     <p:outputLabel value="Organization Address: " />
-                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="orgaAddress" value="#{singleUserBean.orgaBean.orgaAddress}"/>
-                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                    <h:outputText rendered="#{!singleUserBean.orgaBean.editable}" style="width:300px;"  id="orgaAddress" value="#{singleUserBean.orgaBean.orgaAddress}"/>
+                    <h:inputText rendered="#{singleUserBean.orgaBean.editable}" 
                                  disabled ="#{singleUserBean.orgaBean.orgaName=='NONE'}"
                                 style="width:300px;"  id="orgaAddressInput" value="#{singleUserBean.orgaBean.orgaAddress}"/>
                     <p:message for="orgaAddressInput" />   
 
                     <p:outputLabel value="Organization URL: " />
-                    <h:outputText  rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="orgaUrl" value="#{singleUserBean.orgaBean.orgaURL}"/>
-                    <h:inputText  rendered="#{singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  
+                    <h:outputText  rendered="#{!singleUserBean.orgaBean.editable}" style="width:300px;"  id="orgaUrl" value="#{singleUserBean.orgaBean.orgaURL}"/>
+                    <h:inputText  rendered="#{singleUserBean.orgaBean.editable}" style="width:300px;"  
                                   disabled ="#{singleUserBean.orgaBean.orgaName=='NONE'}"
                                   id="orgaUrlInput" value="#{singleUserBean.orgaBean.orgaURL}"/>
                     <p:message for="orgaUrlInput" />  
                     
                     <p:outputLabel value="Department Address: " />
-                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="deptAddress" value="#{singleUserBean.orgaBean.deptAddress}"/>
-                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                    <h:outputText rendered="#{!singleUserBean.orgaBean.editable}" style="width:300px;"  id="deptAddress" value="#{singleUserBean.orgaBean.deptAddress}"/>
+                    <h:inputText rendered="#{singleUserBean.orgaBean.editable}" 
                                  disabled ="#{singleUserBean.orgaBean.deptName=='NONE'}"
                                  style="width:300px;"  id="deptAddressInput" value="#{singleUserBean.orgaBean.deptAddress}"/>
                     <p:message for="deptAddressInput" />   
 
                     <p:outputLabel value="Department URL: " />
-                    <h:outputText rendered="#{!singleUserBean.roleManager.hasUserAddPermission}" style="width:300px;"  id="deptUrl" value="#{singleUserBean.orgaBean.deptURL}"/>
-                    <h:inputText rendered="#{singleUserBean.roleManager.hasUserAddPermission}" 
+                    <h:outputText rendered="#{!singleUserBean.orgaBean.editable}" style="width:300px;"  id="deptUrl" value="#{singleUserBean.orgaBean.deptURL}"/>
+                    <h:inputText rendered="#{singleUserBean.orgaBean.editable}" 
                                  disabled ="#{singleUserBean.orgaBean.deptName=='NONE'}"
                                  style="width:300px;"  id="deptUrlInput" value="#{singleUserBean.orgaBean.deptURL}"/>
                     <p:message for="deptUrlInput" />   

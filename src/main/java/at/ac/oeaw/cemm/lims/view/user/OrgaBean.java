@@ -34,11 +34,12 @@ public class OrgaBean {
     
     private OrganizationDTO orga;
     private DepartmentDTO dept;
-
+    private Boolean editable = false;
     
     public void set(OrganizationDTO orga, DepartmentDTO department){
         this.orga = orga;
         this.dept = department;
+        this.editable = false;
     }
 
  
@@ -129,24 +130,61 @@ public class OrgaBean {
     }
     
     
-    public void submitOrga() {
-        NgsLimsUtility.setFailMessage("userPersistMessages", null, "User Error", "You don't have permission to add a new organization");
+    public void submitAll() {
+        if(orgaEditable()){
+            try{
+                if (orga.getDepartments().isEmpty()) orga.addDepartment(dtoFactory.getDepartmentDTO(DepartmentDTO.DEFAULT_DEPT));
+                services.getUserService().saveOrganization(orga);
+                orga = services.getUserService().getOrganizationByName(orga.getName());
+                String deptName = dept.getName();
+                dept = null;
+                for (DepartmentDTO dept: orga.getDepartments()){
+                    if (deptName.equals(dept.getName())){
+                        this.dept = dept;
+                    }
+                }
+                if (dept==null){
+                    dept = dtoFactory.getDepartmentDTO(DepartmentDTO.DEFAULT_DEPT);
+                    orga.addDepartment(dept);
+                }
+            }catch(Exception e){
+                NgsLimsUtility.setFailMessage("userPersistMessages", null, "DB Error", e.getMessage());
+            }
+        }
+        
+        editable = false;
     }
     
-    public void submitDept() {
-        NgsLimsUtility.setFailMessage("userPersistMessages", null, "User Error", "You don't have permission to add a new organization");
-    }
-    
+  
      public void deleteOrga() {
-        NgsLimsUtility.setFailMessage("userPersistMessages", null, "User Error", "You don't have permission to add a new organization");
-        //orga = dtoFactory.getOrganizationDTO(OrganizationDTO.DEFAULT_ORGA);
-        //orga.addDepartment(dtoFactory.getDepartmentDTO(DepartmentDTO.DEFAULT_DEPT));
+        if (orgaEditable()){
+            try {
+                services.getUserService().deleteOrgaByName(orga.getName());
+                orga = services.getUserService().getOrganizationByName(OrganizationDTO.DEFAULT_ORGA);
+                dept = orga.getDepartments().iterator().next();
+                editable = false;
+            } catch (Exception e) {
+                NgsLimsUtility.setFailMessage("userPersistMessages", null, "DB Error", e.getMessage());
+            }
+        }
+
     }
     
     public void deleteDept() {
-        NgsLimsUtility.setFailMessage("userPersistMessages", null, "User Error", "You don't have permission to add a new organization");
-        //orga.getDepartments().remove(dept);
-        //dept = dtoFactory.getDepartmentDTO(DepartmentDTO.DEFAULT_DEPT);
+        if(deptEditable()) {
+            orga.getDepartments().remove(dept);
+            dept = null;
+            for (DepartmentDTO dept: orga.getDepartments()){
+                if (DepartmentDTO.DEFAULT_DEPT.equals(dept.getName())){
+                    this.dept = dept;
+                }
+            }
+            if (dept==null){
+                dept = dtoFactory.getDepartmentDTO(DepartmentDTO.DEFAULT_DEPT);
+                orga.addDepartment(dept);
+            }
+            
+        }
     }
 
     public NewRoleManager getRoleManager() {
@@ -157,7 +195,38 @@ public class OrgaBean {
         this.roleManager = roleManager;
     }
 
+    public Boolean getEditable() {
+        return editable;
+    }
+
+   public void makeEditable(){
+       this.editable = roleManager.getHasUserAddPermission() && !OrganizationDTO.DEFAULT_ORGA.equals(orga.getName());
+   }
    
-    
+   private boolean orgaEditable(){
+        if(!roleManager.getHasUserAddPermission()) {
+            NgsLimsUtility.setFailMessage("userPersistMessages", null, "User Error", "You don't have permission to add a new organization");
+            return false;
+        }else if (OrganizationDTO.DEFAULT_ORGA.equals(orga.getName())){
+            NgsLimsUtility.setFailMessage("userPersistMessages", null, "Edit Error", "You cannot edit organization NONE");
+            return false;
+        }else if (!editable){
+            NgsLimsUtility.setFailMessage("userPersistMessages", null, "Edit Error", "You are not in the organization editing mode");
+            return false;
+        }
+        
+        return true;
+   }
+   
+    private boolean deptEditable(){
+        if(!orgaEditable()) {
+            return false;
+        }else if (DepartmentDTO.DEFAULT_DEPT.equals(dept.getName())){
+            NgsLimsUtility.setFailMessage("userPersistMessages", null, "Edit Error", "You cannot edit department NONE");
+            return false;
+        }
+        
+        return true;
+   }
     
 }

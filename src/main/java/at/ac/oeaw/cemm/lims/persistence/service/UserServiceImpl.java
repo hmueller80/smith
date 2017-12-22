@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.service;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.UserService;
@@ -14,10 +15,14 @@ import at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.dao.OrganizationDAO;
+import at.ac.oeaw.cemm.lims.persistence.entity.DepartmentEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.DepartmentPK;
 import at.ac.oeaw.cemm.lims.persistence.entity.OrganizationEntity;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -329,5 +334,67 @@ public class UserServiceImpl implements UserService {
         }
 
         return organizations;
+    }
+
+    @Override
+    public void saveOrganization(final OrganizationDTO orga) throws Exception {
+        TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    OrganizationEntity orgaToPersist = organizationDAO.getOrganizationByName(orga.getName());
+                    if (orgaToPersist == null) {                    
+                        orgaToPersist = new OrganizationEntity();
+                        orgaToPersist.setOrganizationName(orga.getName());
+                    }
+                    
+                    orgaToPersist.setAddress(orga.getAddress());
+                    orgaToPersist.setUrl(orga.getWebPage());
+                                      
+                    Set<DepartmentEntity> toKeep = new HashSet<>();
+                    for (DepartmentDTO dept: orga.getDepartments()){
+                        DepartmentEntity departmentToPersist = null;
+                        DepartmentPK departmentKey = new DepartmentPK(dept.getName(),orga.getName());                        
+                        for (DepartmentEntity existingDept: orgaToPersist.getDepartmentSet()){
+                            if(existingDept.getDepartmentPK().equals(departmentKey)){
+                                departmentToPersist = existingDept;
+                                break;
+                            }
+                        }
+                        if (departmentToPersist==null){
+                            departmentToPersist = new DepartmentEntity(departmentKey);
+                            orgaToPersist.getDepartmentSet().add(departmentToPersist);
+                        }
+                        
+                        departmentToPersist.setAddress(dept.getAddress());
+                        departmentToPersist.setUrl(dept.getWebPage());
+                        toKeep.add(departmentToPersist);
+                    }
+                    
+                    orgaToPersist.getDepartmentSet().retainAll(toKeep);
+                    
+                    organizationDAO.saveOrUpdate(orgaToPersist);
+                    return null;
+                }
+            });
+    }
+
+    @Override
+    public void deleteOrgaByName(final String name) throws Exception {
+         TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+                    OrganizationEntity orgaToDelete = organizationDAO.getOrganizationByName(name);
+                    if (orgaToDelete == null) {                    
+                        throw new Exception("Organization with name "+name+" not found in DB");
+                    }
+                    
+                    organizationDAO.deleteOrga(orgaToDelete);
+                  
+     
+                    return null;
+                }
+            });
     }
 }

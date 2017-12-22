@@ -36,6 +36,16 @@ public class OrganizationDAO {
         
         return query.list();
     }
+
+    public void saveOrUpdate(OrganizationEntity orgaToPersist) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.saveOrUpdate(orgaToPersist);
+    }
+
+    public void deleteOrga(OrganizationEntity orgaToDelete) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.delete(orgaToDelete);
+    }
     
     
 }
