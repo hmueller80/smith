@@ -5,9 +5,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml"> 
 
-    <ui:define name="usersSearch">
+    <ui:define name="content">
 
-        <h:form>
+        <h:form style="height:100%">
 
             <p:dataTable id="dataTable" 
                          var="user" 
@@ -15,7 +15,9 @@
                          widgetVar="usersTable" 
                          style="font-size: x-small;" 
                          paginator="true" 
-                         rows="30"
+                         rows="50"
+                         scrollable="true"
+                         scrollHeight="100%"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['user.emptymessage']}" 

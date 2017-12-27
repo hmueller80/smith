@@ -5,13 +5,12 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="home">
+    <ui:define name="content">
 
         <h:form>
 
-
             <p:tabView styleClass="homePageTabs">
-                <p:tab title="#{bundle['home.tab3.news.header']}">
+                <p:tab title="#{bundle['home.tab3.news.header']}" rendered="#{!navigationBean.roleManager.guest}">
                                                 
                     <p:fieldset legend="#{newNewsBean.getNewsItem(0).date}" toggleable="true" toggleSpeed="500" collapsed="false" >          
                                 <h:panelGrid columns="1" cellpadding="3">  

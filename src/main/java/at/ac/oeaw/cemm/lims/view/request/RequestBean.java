@@ -94,6 +94,15 @@ public class RequestBean {
             }
         }
     }
+    
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!newRequest){
+            if (!roleManager.hasAnnotationSheetModifyPermission(request)){
+                context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+            }
+        }
+    }
 
     public RequestFormDTO getRequest() {
         return request;

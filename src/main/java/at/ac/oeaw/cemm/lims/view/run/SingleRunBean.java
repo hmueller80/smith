@@ -64,6 +64,13 @@ public class SingleRunBean {
             }
         }
     }
+    
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!roleManager.getHasRunAddPermission()) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+        }
+    }
 
     public NewRoleManager getRoleManager() {
         return roleManager;

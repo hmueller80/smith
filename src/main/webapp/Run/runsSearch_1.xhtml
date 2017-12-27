@@ -5,7 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="runsSearch">
+    <ui:define name="content">
         
         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
@@ -83,15 +83,17 @@
             </h:form>
         </p:dialog>
         
-        <h:form id="runsTableForm">            
+        <h:form id="runsTableForm" style="height:100%">            
             
             <p:dataTable id="runsTable" 
                          var="run" 
                          value="#{runsSearchBeanLazy.runDataModel}" 
                          widgetVar="runsTable"
                          style="font-size: x-small;" 
-                         paginator="true" 
-                         rows="20"
+                         paginator="true"
+                         rows="50"
+                         scrollable="true"
+                         scrollHeight="100%"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
                          emptyMessage="#{bundle['runs.emptymessage']}"
@@ -131,10 +133,11 @@
                           headerText="#{bundle['runs.run.id']}"
                           filterBy="#{run.id.runId}"
                           sortBy="#{run.id.runId}">
-                        <h:link  outcome="runDetails.jsf" value="#{run.runId}">
+                    <h:link  outcome="runDetails.jsf" value="#{run.runId}" rendered ="#{runsSearchBeanLazy.roleManager.hasRunAddPermission}">
                             <f:param name="rid" value="#{run.runId}"/>
                             <f:param name="activeMenu" value="2" />                           
-                        </h:link>
+                    </h:link>
+                    <h:outputText value="#{run.runId}" rendered ="#{!runsSearchBeanLazy.roleManager.hasRunAddPermission}" />
                 </p:column>
 
                 <p:column id="idSamColumn"                      

@@ -5,7 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="requestSearch">
+    <ui:define name="content">
         
          <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
@@ -54,14 +54,16 @@
             </h:form>
         </p:dialog>
         
-        <h:form id="requestsTableForm">            
+        <h:form id="requestsTableForm" style="height:100%">            
             
             <p:dataTable id="requestsTable" 
                          var="myRequest" 
                          value="#{requestsSearchBeanLazy.requestDataModel}" 
                          widgetVar="requestsTable"
                          paginator="true" 
-                         rows="20"
+                         rows="50"
+                         scrollable="true"
+                         scrollHeight="100%"
                          style="font-size: x-small;" 
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"

@@ -104,6 +104,19 @@ public class SingleSampleBean implements Serializable {
         }
       
     }
+    
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (isNewForm){
+            if (!roleManager.hasSampleLoadPermission()){
+                context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+            }
+        }else{
+            if (!roleManager.hasSampleViewPermission(currentSample)){
+                context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+            }
+        }
+    }
 
     //FOR WELDING...
     public NewRoleManager getRoleManager() {

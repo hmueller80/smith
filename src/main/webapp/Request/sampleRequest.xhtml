@@ -5,7 +5,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="sampleRequest">
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{requestBean.hasViewPermission()}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
         
         <p:confirmDialog global="true">
             <h:form>

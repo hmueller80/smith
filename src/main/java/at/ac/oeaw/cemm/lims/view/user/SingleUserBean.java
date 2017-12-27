@@ -107,6 +107,13 @@ public class SingleUserBean {
         communications.setTarget(coll);
         
     }
+    
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!isEditable) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+        }
+    }
 
     public UserDTO getCurrentUser() {
         return currentUser;

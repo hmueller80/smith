@@ -5,7 +5,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="sampleSearch">
+    <ui:define name="content">
 
           <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
@@ -150,7 +150,7 @@
                          widgetVar="samplesTable"
                          style="font-size: x-small;"
                          paginator="true" 
-                         rows="100"
+                         rows="50"
                          scrollable="true"
                          scrollHeight="100%"
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}

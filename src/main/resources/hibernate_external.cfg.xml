@@ -62,7 +62,7 @@ Contributor(s):
     <property name="hibernate.c3p0.timeout">30</property>
     <property name="hibernate.c3p0.maxIdleTimeExcessConnections">5</property>
     <property name="hibernate.c3p0.idleConnectionTestPeriod">300</property>
-    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalUsers"/>
-    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalGroups"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalUserEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalGroupEntity"/>
   </session-factory>
 </hibernate-configuration>

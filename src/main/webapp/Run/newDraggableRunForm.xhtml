@@ -5,172 +5,163 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="newDraggableRunForm"> 
 
+    <ui:remove>
+        <ui:define name="noContent"> 
+            
+            <h:form id="NewDraggableRunForm">
 
+                <script type="text/javascript">
+                    function handleDrop(event, ui) {
 
+                        var droppedsample = ui.draggable;
 
-        <h:form id="NewDraggableRunForm">
+                        droppedsample.fadeOut('fast');
+                    }
+                </script>
 
-            <script type="text/javascript">
-                function handleDrop(event, ui) {
-
-                    var droppedsample = ui.draggable;
-
-                    droppedsample.fadeOut('fast');
-                }
-            </script>
-
-
-
-
-
-            <p:fieldset id="lane1" legend="#{bundle['newDraggableRunForm.lane']}" style="margin-top:20px">
-                <h:panelGrid columns="2">
+                <p:fieldset id="lane1" legend="#{bundle['newDraggableRunForm.lane']}" style="margin-top:20px">
                     <h:panelGrid columns="2">
-                    <p:panel header="Assemble flowcell lanes">
-                        <h:panelGrid columns="3">
-                            <h:outputLabel for="flowcell" value="Flowcell: " />
-                            <p:inputText id="flowcell" value="#{newDraggableRunFormBean.flowcell}" immediate="true"/>
-                            <p:message for="flowcell" />                                                                                                          
+                        <h:panelGrid columns="2">
+                            <p:panel header="Assemble flowcell lanes">
+                                <h:panelGrid columns="3">
+                                    <h:outputLabel for="flowcell" value="Flowcell: " />
+                                    <p:inputText id="flowcell" value="#{newDraggableRunFormBean.flowcell}" immediate="true"/>
+                                    <p:message for="flowcell" />                                                                                                          
 
-                            <h:outputLabel for="lane" value="lane:" />
-                            <p:inputMask id="lane" value="#{newDraggableRunFormBean.lane}" mask="9" immediate="true"/>
-                            <p:message for="lane" />
+                                    <h:outputLabel for="lane" value="lane:" />
+                                    <p:inputMask id="lane" value="#{newDraggableRunFormBean.lane}" mask="9" immediate="true"/>
+                                    <p:message for="lane" />
 
-                            <p:commandButton  value="Clear Lane" action="#{newDraggableRunFormBean.clearLane()}" type="submit" ajax="false" disabled="#{newDraggableRunFormBean.droppedSamplesListIsEmpty}">
-                            </p:commandButton> 
-                            <p:commandButton  value="Submit Lane" action="#{newDraggableRunFormBean.submitLane()}" type="submit" ajax="false" disabled="#{newDraggableRunFormBean.droppedSamplesListIsEmpty}">
-                            </p:commandButton> 
-                        </h:panelGrid>
-                    </p:panel>
-                    
-                </h:panelGrid>   
-                <h:panelGrid columns="2">
-                    <p:panel header="#{bundle['newDraggableRunForm.exportData']}">
-                        <h:commandLink>
-                            <p:graphicImage value="/img/csv.png" />
-                            <p:dataExporter type="csv" target="droppedSamples" fileName="Lane" pageOnly="false" />
-                        </h:commandLink>
+                                    <p:commandButton  value="Clear Lane" action="#{newDraggableRunFormBean.clearLane()}" type="submit" ajax="false" disabled="#{newDraggableRunFormBean.droppedSamplesListIsEmpty}">
+                                    </p:commandButton> 
+                                    <p:commandButton  value="Submit Lane" action="#{newDraggableRunFormBean.submitLane()}" type="submit" ajax="false" disabled="#{newDraggableRunFormBean.droppedSamplesListIsEmpty}">
+                                    </p:commandButton> 
+                                </h:panelGrid>
+                            </p:panel>
 
-                    </p:panel>   
-                </h:panelGrid>    
-                </h:panelGrid> 
-                <p:outputPanel id="dropArea">
-                    <h:outputText id="lb1" value="#{bundle['newDraggableRunForm.laserBalance']} #{newDraggableRunFormBean.laserbalance1}," style="font-size:16px;" />
-                    <h:outputText id="mm1" value=" #{bundle['newDraggableRunForm.mismatchesAllowed']} #{newDraggableRunFormBean.mismatchesL1}" style="font-size:16px;" />
-                    <p:dataTable id="droppedSamples" var="dsample" value="#{newDraggableRunFormBean.droppedSamples}" emptyMessage="#{bundle['newDraggableRunForm.dropSamplesHere']}" style="font-size: x-small;">
-                        <p:column headerText="#{bundle['newDraggableRunForm.id']}">
-                            <h:outputText value="#{dsample.id}" />
-                        </p:column>
+                        </h:panelGrid>   
+                        <h:panelGrid columns="2">
+                            <p:panel header="#{bundle['newDraggableRunForm.exportData']}">
+                                <h:commandLink>
+                                    <p:graphicImage value="/img/csv.png" />
+                                    <p:dataExporter type="csv" target="droppedSamples" fileName="Lane" pageOnly="false" />
+                                </h:commandLink>
 
-                        <p:column headerText="#{bundle['newDraggableRunForm.user']}">
-                            <h:outputText value="#{dsample.user.login}" />
-                        </p:column>
+                            </p:panel>   
+                        </h:panelGrid>    
+                    </h:panelGrid> 
+                    <p:outputPanel id="dropArea">
+                        <h:outputText id="lb1" value="#{bundle['newDraggableRunForm.laserBalance']} #{newDraggableRunFormBean.laserbalance1}," style="font-size:16px;" />
+                        <h:outputText id="mm1" value=" #{bundle['newDraggableRunForm.mismatchesAllowed']} #{newDraggableRunFormBean.mismatchesL1}" style="font-size:16px;" />
+                        <p:dataTable id="droppedSamples" var="dsample" value="#{newDraggableRunFormBean.droppedSamples}" emptyMessage="#{bundle['newDraggableRunForm.dropSamplesHere']}" style="font-size: x-small;">
+                            <p:column headerText="#{bundle['newDraggableRunForm.id']}">
+                                <h:outputText value="#{dsample.id}" />
+                            </p:column>
 
-                        <p:column headerText="#{bundle['newDraggableRunForm.date']}">
-                            <h:outputText value="#{dsample.requestDate}" />
-                        </p:column>
+                            <p:column headerText="#{bundle['newDraggableRunForm.user']}">
+                                <h:outputText value="#{dsample.user.login}" />
+                            </p:column>
 
-                        <p:column headerText="#{bundle['newDraggableRunForm.sampleName']}">
-                            <h:outputText value="#{dsample.name}" />
-                        </p:column>
+                            <p:column headerText="#{bundle['newDraggableRunForm.date']}">
+                                <h:outputText value="#{dsample.requestDate}" />
+                            </p:column>
 
-                        <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}">
-                            <h:outputText value="#{dsample.index.index}" />
-                        </p:column>
+                            <p:column headerText="#{bundle['newDraggableRunForm.sampleName']}">
+                                <h:outputText value="#{dsample.name}" />
+                            </p:column>
 
-                        <p:column style="width:32px">
-                            <p:commandButton icon="ui-icon-circle-minus" action="#{newDraggableRunFormBean.removeSelectedSample()}" type="submit" ajax="false">
-                                <f:setPropertyActionListener value="#{dsample}" target="#{newDraggableRunFormBean.selectedSample}"/>  
-                            </p:commandButton>
-                        </p:column>
-                    </p:dataTable>
+                            <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}">
+                                <h:outputText value="#{dsample.index.index}" />
+                            </p:column>
 
-                </p:outputPanel>
+                            <p:column style="width:32px">
+                                <p:commandButton icon="ui-icon-circle-minus" action="#{newDraggableRunFormBean.removeSelectedSample()}" type="submit" ajax="false">
+                                    <f:setPropertyActionListener value="#{dsample}" target="#{newDraggableRunFormBean.selectedSample}"/>  
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:outputPanel>
 
 
-            </p:fieldset>
-
-            <br/>
-
-            <p:droppable for="dropArea" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableSamples" onDrop="handleDrop" >
-                <p:ajax listener="#{newDraggableRunFormBean.onSampleDrop}" update="NewDraggableRunForm" />
-            </p:droppable>
-
-            <p:fieldset id="availableSamplesField" legend="#{bundle['newDraggableRunForm.availableSamples']}">
-
-                <!--
-                <h:outputLabel for="recipe" value="{bundle['recipe']}:  " /> 
-                <h:selectOneMenu value="{newDraggableRunFormBean.recipe}">
-                    <f:selectItems id="recipe" value="{newDraggableRunFormBean.recipes}"/>
-                    <p:ajax event="valueChange" listener="{newDraggableRunFormBean.onRecipeChange}" update="NewDraggableRunForm" />
-                </h:selectOneMenu>
-                -->
+                </p:fieldset>
 
                 <br/>
-                <p:dataTable lazy="false"  id="availableSamples" var="asample" value="#{newDraggableRunFormBean.sampleList}" style="font-size: x-small;" paginator="true" rows="50"
-                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
-                             {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                             emptyMessage="#{bundle['data.emptymessage']}" filteredValue="#{filterBean.requestedSample}">
-                    <p:column style="width:20px">
-                        <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
-                        <p:draggable for="dragIcon" />
-                    </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.id']}" filterBy="#{asample.id}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.id}" />
-                    </p:column>
+                <p:droppable for="dropArea" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableSamples" onDrop="handleDrop" >
+                    <p:ajax listener="#{newDraggableRunFormBean.onSampleDrop}" update="NewDraggableRunForm" />
+                </p:droppable>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.user']}" filterBy="#{asample.user.login}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.user.login}" />
-                    </p:column>
+                <p:fieldset id="availableSamplesField" legend="#{bundle['newDraggableRunForm.availableSamples']}">
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.status']}" filterBy="#{asample.status}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.status}" />
-                    </p:column>
+                    <!--
+                    <h:outputLabel for="recipe" value="{bundle['recipe']}:  " /> 
+                    <h:selectOneMenu value="{newDraggableRunFormBean.recipe}">
+                        <f:selectItems id="recipe" value="{newDraggableRunFormBean.recipes}"/>
+                        <p:ajax event="valueChange" listener="{newDraggableRunFormBean.onRecipeChange}" update="NewDraggableRunForm" />
+                    </h:selectOneMenu>
+                    -->
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.date']}" filterBy="#{asample.requestDate}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.requestDate}" />
-                    </p:column>
+                    <br/>
+                    <p:dataTable lazy="false"  id="availableSamples" var="asample" value="#{newDraggableRunFormBean.sampleList}" style="font-size: x-small;" paginator="true" rows="50"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
+                                 {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 emptyMessage="#{bundle['data.emptymessage']}" filteredValue="#{filterBean.requestedSample}">
+                        <p:column style="width:20px">
+                            <h:outputText id="dragIcon" styleClass="ui-icon ui-icon-arrow-4" />
+                            <p:draggable for="dragIcon" />
+                        </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.sampleName']}" filterBy="#{asample.name}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.name}" />
-                    </p:column>
-                    
-                    <p:column headerText="#{bundle['newDraggableRunForm.libraryName']}" filterBy="#{asample.libraryName}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.libraryName}" />
-                    </p:column>
+                        <p:column headerText="#{bundle['newDraggableRunForm.id']}" filterBy="#{asample.id}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.id}" />
+                        </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.mode']}" filterBy="#{asample.application.readMode}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.application.readMode}" />
-                    </p:column>
+                        <p:column headerText="#{bundle['newDraggableRunForm.user']}" filterBy="#{asample.user.login}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.user.login}" />
+                        </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.length']}" filterBy="#{asample.application.readLength}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.application.readLength}" />
-                    </p:column>
+                        <p:column headerText="#{bundle['newDraggableRunForm.status']}" filterBy="#{asample.status}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.status}" />
+                        </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.depth']}" filterBy="#{asample.application.depth}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.application.depth}" />
-                    </p:column>
+                        <p:column headerText="#{bundle['newDraggableRunForm.date']}" filterBy="#{asample.requestDate}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.requestDate}" />
+                        </p:column>
 
-                    <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}" filterBy="#{asample.index.index}" filterMatchMode="contains">
-                        <h:outputText value="#{asample.index.index}" />
-                    </p:column>
-                </p:dataTable>
-            </p:fieldset>
+                        <p:column headerText="#{bundle['newDraggableRunForm.sampleName']}" filterBy="#{asample.name}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.name}" />
+                        </p:column>
+
+                        <p:column headerText="#{bundle['newDraggableRunForm.libraryName']}" filterBy="#{asample.libraryName}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.libraryName}" />
+                        </p:column>
+
+                        <p:column headerText="#{bundle['newDraggableRunForm.mode']}" filterBy="#{asample.application.readMode}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.application.readMode}" />
+                        </p:column>
+
+                        <p:column headerText="#{bundle['newDraggableRunForm.length']}" filterBy="#{asample.application.readLength}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.application.readLength}" />
+                        </p:column>
+
+                        <p:column headerText="#{bundle['newDraggableRunForm.depth']}" filterBy="#{asample.application.depth}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.application.depth}" />
+                        </p:column>
+
+                        <p:column headerText="#{bundle['newDraggableRunForm.sampleIndex']}" filterBy="#{asample.index.index}" filterMatchMode="contains">
+                            <h:outputText value="#{asample.index.index}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
 
 
-            <p:separator/>
+                <p:separator/>
 
+            </h:form>
 
+        </ui:define>
 
-
-
-
-
-        </h:form>
-
-    </ui:define>
+    </ui:remove>
 
 </ui:composition>
