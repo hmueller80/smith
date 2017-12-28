@@ -48,7 +48,7 @@ public class RequestDTOMapper {
     }
 
     private RequestLibraryDTO getLibraryRequestDTOFromEntity(RequestLibraryEntity libraryEntity) {
-        RequestLibraryDTO library = dtoFactory.getRequestLibraryDTO(libraryEntity.getId());
+        RequestLibraryDTO library = dtoFactory.getRequestLibraryDTO(libraryEntity.getId(),false);
         library.setName(libraryEntity.getLibName());
         library.setReadMode(libraryEntity.getReadMode());
         library.setReadLength(libraryEntity.getReadLength().intValue());
@@ -67,7 +67,7 @@ public class RequestDTOMapper {
     }
 
     private RequestSampleDTO getRequestSampleDTOFromEntity(RequestSampleEntity sampleEntity) {
-        RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId());
+        RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId(),false);
         sample.setName(sampleEntity.getName());
         sample.setSampleDescription(sampleEntity.getDescription());
         sample.setOrganism(sampleEntity.getOrganism());

@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ColumnNames;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
@@ -30,7 +31,7 @@ public class SequencingRequestSubmission implements Serializable {
     private Integer sequencingRequestSubmissionId;
     private String sequencer = "";
 
-    public SequencingRequestSubmission(ArrayList<String> row, Map<String, Integer> header) {
+    public SequencingRequestSubmission(ArrayList<String> row, Map<ColumnNames, Integer> header) {
 
         libraryName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryName, row, header);
         sequencingType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.sequencingType, row, header);

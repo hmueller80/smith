@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet;
 
-import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,12 +16,14 @@ import java.util.Map;
  * @author dbarreca
  */
 public class ExcelParserUtils {
-
-    public static String extractFieldAsString(String fieldName, ArrayList<String> row, Map<String, Integer> header) {
+    public static final String DATE_FORMAT = "dd.MM.yyyy";
+    
+    public static String extractFieldAsString(String fieldName, ArrayList<String> row, Map<ColumnNames, Integer> header) {
         String fieldValue = "";
-
-        if (header.containsKey(fieldName) && row.size() > header.get(fieldName)) {
-            fieldValue = row.get(header.get(fieldName));
+        ColumnNames columnToExtract = new ColumnNames(fieldName,fieldName);
+        
+        if (header.containsKey(columnToExtract) && row.size() > header.get(columnToExtract)) {
+            fieldValue = row.get(header.get(columnToExtract));
         }
 
         return fieldValue;
@@ -41,8 +43,15 @@ public class ExcelParserUtils {
     }
 
     public static String getDateAsString(Date date) {
-        DateFormat df = new SimpleDateFormat("dd.MM.YYYY");
-        String result = df.format(date);
-        return result;
+        return new SimpleDateFormat(DATE_FORMAT).format(date);
+    }
+    
+    public static Date getStringAsDate(String dateString) {
+        try {
+           return new SimpleDateFormat(DATE_FORMAT).parse(dateString);
+        } catch (ParseException ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 }

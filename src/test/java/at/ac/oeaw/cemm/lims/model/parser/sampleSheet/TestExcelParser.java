@@ -23,9 +23,9 @@ import org.junit.Test;
  */
 public class TestExcelParser {
     
-    @Ignore
+    @Test
     public void testExcelPaser() throws ParsingException {
-        File file = new File("/Users/dbarreca/Dev/test_files/1044_MGL010_sampleannotationsheetI.xlsx");
+        File file = new File("/Users/dbarreca/Dev/test_files/1094_sample annotation sheet_AK55pool1-11_Glio_Klughammer.xlsx");
         
         ExcelParser parser = new ExcelParser(file);
         

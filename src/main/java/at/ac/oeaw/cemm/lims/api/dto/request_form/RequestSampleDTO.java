@@ -40,6 +40,8 @@ public interface RequestSampleDTO extends Sample {
     String getPrimerType();
 
     String getSampleDescription();
+    
+    Boolean isNameEditable();
 
     void setI5Adapter(String i5Adapter);
 

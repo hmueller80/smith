@@ -30,17 +30,19 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     private Double volume;
     private Double dnaConcentration;
     private Double totalSize;
+    private final Boolean nameEditable;
     
     @JsonIgnore
     private LinkedList<RequestSampleDTO> samples;
 
-    protected RequestLibraryDTOImpl(Integer id) {
+    protected RequestLibraryDTOImpl(Integer id, Boolean nameEditable) {
         this.id = id;
         uuid = UUID.randomUUID().toString();
         samples = new LinkedList<>();
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestLibraryDTOImpl() {
+    protected RequestLibraryDTOImpl(Boolean nameEditable) {
         id = null;
         uuid = UUID.randomUUID().toString();
         samples = new LinkedList<>();
@@ -50,10 +52,11 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
         lanes = 1;
         volume = 0.0;
         dnaConcentration = 0.0;
-        totalSize = 0.0;
+        totalSize = 0.0;        
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestLibraryDTOImpl(String uuid){
+    protected RequestLibraryDTOImpl(String uuid, Boolean nameEditable){
         id = null;
         this.uuid = uuid;
         samples = new LinkedList<>();
@@ -64,6 +67,21 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
         volume = 0.0;
         dnaConcentration = 0.0;
         totalSize = 0.0;
+        this.nameEditable = nameEditable;
+    }
+    
+     protected RequestLibraryDTOImpl() {
+        id = null;
+        uuid = UUID.randomUUID().toString();
+        samples = new LinkedList<>();
+        applicationName = "WGS";
+        readMode = "SR";
+        readLength = 50;
+        lanes = 1;
+        volume = 0.0;
+        dnaConcentration = 0.0;
+        totalSize = 0.0;        
+        this.nameEditable = true;
     }
     
     protected void resetLibraryData(){
@@ -184,12 +202,17 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     public String getUuid() {
         return uuid;
     }
+
+    @Override
+    public Boolean isNameEditable() {
+        return nameEditable;
+    }
     
     
     @JsonIgnore
     @Override
     public RequestLibraryDTO getCopyWithoutSamples() {
-        RequestLibraryDTO copy = new RequestLibraryDTOImpl(uuid);
+        RequestLibraryDTO copy = new RequestLibraryDTOImpl(uuid,nameEditable);
         copy.setName(name);
         copy.setApplicationName(applicationName);
         copy.setReadMode(readMode);

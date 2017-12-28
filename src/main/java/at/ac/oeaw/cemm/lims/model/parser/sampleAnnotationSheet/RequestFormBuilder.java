@@ -111,7 +111,7 @@ public class RequestFormBuilder {
      }
      
     private RequestLibraryDTO getLibrary(SequencingRequestSubmission seqRequest) throws ParsingException {
-        RequestLibraryDTO libraryDTO = myDTOFactory.getEmptyRequestLibraryDTO();
+        RequestLibraryDTO libraryDTO = myDTOFactory.getEmptyRequestLibraryDTO(false);
         libraryDTO.setName(seqRequest.getLibraryName());
         libraryDTO.setReadMode(seqRequest.getSequencingType());
         libraryDTO.setReadLength(
@@ -181,7 +181,7 @@ public class RequestFormBuilder {
     }
     
     private RequestSampleDTO getSample(LibrarySubmission libSubmission){
-        RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO();
+        RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO(false);
         sampleDTO.setName(libSubmission.getSampleName());
         
         if ((libSubmission.getLibraryLabel()== null || libSubmission.getLibraryLabel().trim().isEmpty())

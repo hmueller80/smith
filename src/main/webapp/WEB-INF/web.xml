@@ -43,6 +43,10 @@
         <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
     </context-param>
     <context-param>
+        <param-name>remotesampleannotationfolder</param-name>
+        <param-value>aaa</param-value>
+    </context-param>
+    <context-param>
         <param-name>remoterunfolderscaninterval</param-name>
         <param-value>5</param-value>
         <!--
@@ -52,18 +56,22 @@
     
     <context-param>
         <param-name>localrunfolder</param-name>
-        <!--param-value>/Users/dbarreca/Dev/temp/runs</param-value-->
-        <param-value>/C:/Temp/Runs/</param-value>
+        <param-value>/Users/dbarreca/Dev/temp/runs</param-value>
+        <!--param-value>/C:/Temp/Runs/</param-value-->
     </context-param>  
     <context-param>
         <param-name>localsamplesheetfolder</param-name>
-        <!--param-value>/Users/dbarreca/Dev/temp/runs/libraries</param-value-->
-        <param-value>/C:/Temp/Runs/libraries/</param-value>
+        <param-value>/Users/dbarreca/Dev/temp/runs/libraries</param-value>
+        <!--param-value>/C:/Temp/Runs/libraries/</param-value-->
     </context-param>
     <context-param>
         <param-name>localworkdir</param-name>
-        <!--param-value>/Users/dbarreca/Dev/temp/runs</param-value-->
-        <param-value>/C:/Temp/Runs/</param-value>
+        <param-value>/Users/dbarreca/Dev/temp/runs</param-value>
+        <!--param-value>/C:/Temp/Runs/</param-value-->
+    </context-param>
+      <context-param>
+        <param-name>localsampleannotationfolder</param-name>
+        <param-value>/Users/dbarreca/Dev/temp/sample_annotation/</param-value>
     </context-param>
     <context-param>
         <param-name>localmonitoringcutoffdate</param-name>
@@ -128,8 +136,8 @@
         <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
         <init-param>
             <param-name>uploadDirectory</param-name>
-            <!--param-value>/Users/dbarreca/Dev/temp/upload</param-value-->
-            <param-value>/C:/temp/work/</param-value>
+            <param-value>/Users/dbarreca/Dev/temp/upload</param-value>
+            <!--param-value>/C:/temp/work/</param-value-->
             <!--
         <param-value>/opt/glassfish4/glassfish/domains/bsfdb/applications/smith/upload/</param-value>
         <param-value>/C:/temp/work/</param-value>

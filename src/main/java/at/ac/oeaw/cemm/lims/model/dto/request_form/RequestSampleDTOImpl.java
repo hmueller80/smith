@@ -29,13 +29,21 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     private String primerType;
     private String primerName;
     private String primerSequence;
+    private final Boolean nameEditable;
     
-    protected RequestSampleDTOImpl(Integer id) {
+    protected RequestSampleDTOImpl(Integer id, boolean nameEditable) {
         this.id = id;
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestSampleDTOImpl() {
+    protected RequestSampleDTOImpl(boolean nameEditable) {
         id = null;
+        this.nameEditable = nameEditable;
+    }
+    
+     protected RequestSampleDTOImpl() {
+        id = null;
+        this.nameEditable = true;
     }
 
     @Override
@@ -169,6 +177,11 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
                 return (i7Index+i5Index).toUpperCase().trim();
             }
         }
+    }
+
+    @Override
+    public Boolean isNameEditable() {
+        return nameEditable;
     }
     
 }

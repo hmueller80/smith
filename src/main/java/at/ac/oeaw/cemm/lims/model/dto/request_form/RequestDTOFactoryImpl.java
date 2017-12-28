@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
@@ -33,31 +32,31 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     }
     
     @Override
-    public RequestLibraryDTO getRequestLibraryDTO() {
-        return new RequestLibraryDTOImpl();
+    public RequestLibraryDTO getRequestLibraryDTO(boolean nameEditabe) {
+        return new RequestLibraryDTOImpl(nameEditabe);
     }
     
     @Override
-    public RequestSampleDTO getRequestSampleDTO() {
-        return new RequestSampleDTOImpl();
+    public RequestSampleDTO getRequestSampleDTO(boolean nameEditabe) {
+        return new RequestSampleDTOImpl(nameEditabe);
     }
     
     @Override
-    public RequestLibraryDTO getRequestLibraryDTO(Integer id) {
-        return new RequestLibraryDTOImpl(id);
+    public RequestLibraryDTO getRequestLibraryDTO(Integer id,boolean nameEditabe) {
+        return new RequestLibraryDTOImpl(id,nameEditabe);
     }
     
     @Override
-    public RequestLibraryDTO getEmptyRequestLibraryDTO() {
-        RequestLibraryDTOImpl theResult = new RequestLibraryDTOImpl();
+    public RequestLibraryDTO getEmptyRequestLibraryDTO(boolean nameEditabe) {
+        RequestLibraryDTOImpl theResult = new RequestLibraryDTOImpl(nameEditabe);
         theResult.resetLibraryData();
         return theResult;
     }
 
     
     @Override
-    public RequestSampleDTO getRequestSampleDTO(Integer id) {
-        return new RequestSampleDTOImpl(id);
+    public RequestSampleDTO getRequestSampleDTO(Integer id, boolean nameEditabe) {
+        return new RequestSampleDTOImpl(id,nameEditabe);
     }
 
     @Override

@@ -19,16 +19,16 @@ public interface RequestDTOFactory {
 
     RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, Date date, String status);
 
-    RequestLibraryDTO getRequestLibraryDTO();
+    RequestLibraryDTO getRequestLibraryDTO(boolean nameEditabe);
 
-    RequestLibraryDTO getEmptyRequestLibraryDTO();
+    RequestLibraryDTO getEmptyRequestLibraryDTO(boolean nameEditabe);
 
-    RequestSampleDTO getRequestSampleDTO();
+    RequestSampleDTO getRequestSampleDTO(boolean nameEditabe);
 
     RequestorDTO getRequestorDTO(UserDTO requestor, UserDTO pi);
     
-    RequestLibraryDTO getRequestLibraryDTO(Integer id);
+    RequestLibraryDTO getRequestLibraryDTO(Integer id,boolean nameEditabe);
 
-    RequestSampleDTO getRequestSampleDTO(Integer id);
+    RequestSampleDTO getRequestSampleDTO(Integer id,boolean nameEditabe);
 
 }

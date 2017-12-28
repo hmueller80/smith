@@ -13,10 +13,67 @@
     
     <ui:define name="content">
         
-        <p:confirmDialog global="true">
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" appendTo="@(body)">
+            <p:graphicImage name="images/ajaxloadingbar.gif" />
+        </p:dialog>
+        
+        <p:dialog widgetVar="fileDialog" draggable="true" closable="true" resizable="false" modal="true" appendTo="@(body)" >
+            <h:form id="filesDialog">
+                <p:messages id="filesMessage" for="filesMessage" showDetail="true" closable="true"/>
+                <p:tree value="#{requestFileManagerBean.rootFolder}" 
+                        id = "files"
+                        var="selectedFile"
+                        selectionMode="single"
+                        selection="#{requestFileManagerBean.selectedNode}">
+                    <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                        <h:outputText value="#{selectedFile.name}"/>
+                    </p:treeNode>
+                    <p:treeNode type="document" icon="ui-icon-document">
+                        <h:outputText value="#{selectedFile.name}" />
+                    </p:treeNode>
+                    <p:ajax event="select" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                    <p:ajax event="contextMenu" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                </p:tree>
+                <p:fileUpload 
+                    id="fileUpload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    fileUploadListener="#{requestFileManagerBean.handleFileUpload}"
+                    label="Upload" multiple="false" mode="advanced" auto="true"
+                    sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt|xls|xlsx|pdf|img|doc|docx)$/"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or !requestFileManagerBean.isSelectedDirectory() or !requestBean.canView()}"
+                    update="@this :filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDelete"
+                     style="float:right;margin:1px;font-size:x-small;"
+                    value="Delete"
+                    icon="ui-icon-trash" 
+                    rendered ="#{requestFileManagerBean.roleManager.hasAnnotationSheetDeletePermission()}"
+                    actionListener ="#{requestFileManagerBean.deleteFile()}"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or requestFileManagerBean.isSelectedDirectory()}"
+                    update=":filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDownload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    value="Download" 
+                    ajax="false" 
+                    onclick="PrimeFaces.monitorDownload(start, stop);"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or requestFileManagerBean.isSelectedDirectory() or !requestBean.canView()}"
+                    icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{requestFileManagerBean.file}" />
+                </p:commandButton>
+                
+            </h:form>
+        </p:dialog>
+        
+        <p:confirmDialog global="true" widgetVar="confirmDialog">
             <h:form>
-                <p:commandButton value="Yes" type="button"
-                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
+                <p:commandButton 
+                                 widgetVar="confirmButton"
+                                 value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" 
+                                 icon="ui-icon-check" 
+                                 update=":menuForm:messages"
+                                 onclick="PF('statusDialog').show()"/>
                 <p:commandButton value="No" type="button"
                                  styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
             </h:form>
@@ -49,7 +106,13 @@
             <div class="ui-g">
                 <div class="ui-g-8"/>
                 <div class="ui-g-4">
-
+                    <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
+                                     value="View Files" 
+                                     icon="ui-icon-folder-collapsed"
+                                     rendered="#{requestBean.canView() and requestFileManagerBean.rootFolder != null}"
+                                     onclick ="PF('fileDialog').show()">
+                    </p:commandButton>
+                    
                     <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
                                      value="Upload in LIMS" 
                                      icon="ui-icon-arrow-1-n"
@@ -57,6 +120,7 @@
                                                  and requestBean.editable
                                                  and not requestBean.newRequest}"
                                      action = "#{uploadLIMSRequestBean.submitToLims()}"
+                                     oncomplete ="PF('statusDialog').hide()"
                                      update ="@all">
                             <p:confirm header="Confirmation"
                                        message="Are you sure to save all changes and upload this request to LIMS?"
@@ -69,7 +133,8 @@
                                      action ="#{requestBean.deleteRequest()}"
                                      rendered="#{requestBean.roleManager.hasAnnotationSheetDeletePermission() 
                                                  and requestBean.editable 
-                                                 and not requestBean.newRequest}" >
+                                                 and not requestBean.newRequest}"
+                                     oncomplete ="PF('statusDialog').hide()">
                                <p:confirm header="Confirmation"
                                        message="Are you sure to Delete this request?"
                                        icon="ui-icon-alert" />
@@ -100,7 +165,7 @@
                                    sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
                                    oncomplete="PF('uploadDialog').show()"
                                    update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" 
-                                   rendered="#{requestBean.wizStep=='personal' and requestBean.newRequest}"/>
+                                   rendered="#{requestBean.wizStep=='personal' and requestBean.editable}"/>
                  
                         <p:commandButton 
                             icon="ui-icon-arrow-1-w" 
@@ -130,7 +195,8 @@
                             value="#{requestBean.newRequest ? 'Submit' : 'Update'}" 
                             action ="#{requestBean.submitAndRedirect()}"
                             update="@all"
-                            rendered="#{requestBean.wizStep=='libraries' and requestBean.editable}">
+                            rendered="#{requestBean.wizStep=='libraries' and requestBean.editable}"
+                            oncomplete ="PF('statusDialog').hide()">
                            <p:confirm header="Confirmation"
                                        message="Are you sure to #{requestBean.newRequest ? 'Submit' : 'Update'} this request?"
                                        icon="ui-icon-alert" />
@@ -144,6 +210,7 @@
 
                 <p:tab id="personal" title="Personal" >
                     <div style="width: 100%; text-align:center" >
+                        <p:messages for="requestMessages" id="requestMessages" showDetail="true" closable="true" />
                         <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
                             
                             <p:outputPanel style="display:inline-block"/>
@@ -246,6 +313,7 @@
 
                     <div id="example"/>
                     <script type="text/javascript">
+                         /* <![CDATA[ */
                         var data;
                         var $ = jQuery;
                         var table;
@@ -332,12 +400,22 @@
                                 manualRowResize: true,
                                 minSpareRows: 1,
                                 afterChange: dataChangeCallback,
-                                afterRemoveRow: dataChangeCallback
+                                afterRemoveRow: dataChangeCallback,
+                                cells: function(row,col,prop) {
+                                    var cellProperties = {};
+                                    if (col===0 && data[row]['nameEditable']===false && data[row]['nameEditable']!==null){
+                                        cellProperties.readOnly = true;
+                                    }else{
+                                        cellProperties.readOnly = false;
+                                    }
+                                    
+                                    return cellProperties;
+                                }
                             };
 
-                            table = new Handsontable(container, settings);
+                            table = new Handsontable(container, settings);    
                         });
-
+                    /* ]]> */
                     </script>  
                 </p:tab>
 
@@ -350,6 +428,7 @@
 
                     <div id="exampleLib" />
                     <script type="text/javascript">
+                        /* <![CDATA[ */
                         var dataLib;
                         var $ = jQuery;
                         var tableLib;
@@ -424,12 +503,22 @@
                                 afterRemoveRow: dataChangeCallback,
                                 afterCreateRow: function (index, numberOfRows) {
                                     dataLib.splice(index, numberOfRows);
+                                },
+                                cells: function(row,col,prop) {
+                                    var cellProperties = {};
+                                    if (col===0 && dataLib[row]['nameEditable']===false && dataLib[row]['nameEditable']!==null){
+                                        cellProperties.readOnly = true;
+                                    }else{
+                                        cellProperties.readOnly = false;
+                                    }
+                                    
+                                    return cellProperties;
                                 }
                             };
 
                             tableLib = new Handsontable(container, settings);
                         });
-
+                    /* ]]> */
                     </script>  
                 </p:tab>
 

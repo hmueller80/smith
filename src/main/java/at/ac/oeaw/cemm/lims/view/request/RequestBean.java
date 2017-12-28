@@ -13,22 +13,26 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestLibraryDTOImpl;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestSampleDTOImpl;
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.SampleAnnotationWriter;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
+import at.ac.oeaw.cemm.lims.util.Preferences;
 import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -37,6 +41,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.io.FileUtils;
 import org.primefaces.event.FlowEvent;
 
 /**
@@ -46,13 +51,16 @@ import org.primefaces.event.FlowEvent;
 @ManagedBean(name = "requestBean")
 @ViewScoped
 public class RequestBean {
-
+    private final static String SAMPLE_ANNOTATION_FILENAME = "SampleAnnotationSheet.xlsx";
     private final ObjectMapper objectMapper = new ObjectMapper();
+    
     private RequestFormDTO request;
+    
     private boolean areSamplesFailed = false;
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
     private boolean newRequest = false;
+    private File excelFile = null;
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -87,7 +95,11 @@ public class RequestBean {
             newRequest = false;
             request = services.getRequestFormService().getFullRequestById(requestId);
             if (request == null) {
-                throw new IllegalStateException("Sample with rid "+requestId+" is null");
+                throw new IllegalStateException("Request with rid "+requestId+" is null");
+            }
+            excelFile = new File(getSampleAnnotationPath(),SAMPLE_ANNOTATION_FILENAME);
+            if(!excelFile.exists()){
+                throw new IllegalStateException("Excel not found for request with rid "+requestId);
             }
             if (!isEditable()){
                 NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
@@ -97,19 +109,46 @@ public class RequestBean {
     
     public void hasViewPermission() {
         FacesContext context = FacesContext.getCurrentInstance();
-        if (!newRequest){
-            if (!roleManager.hasAnnotationSheetModifyPermission(request)){
-                context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
-            }
+        if (!canView()) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
         }
     }
+
+    public boolean canView(){
+        return newRequest || roleManager.hasAnnotationSheetModifyPermission(request);
+    }
+    
+    public boolean isEditable() {
+        boolean isFormEditable = (newRequest)|| (!newRequest && RequestFormDTO.STATUS_NEW.equals(request.getStatus()));
+        return isFormEditable && roleManager.hasAnnotationSheetModifyPermission(request);
+    }
+
+    public void setEditable(boolean value) {
+    }
+    
 
     public RequestFormDTO getRequest() {
         return request;
     }
 
-    protected void setRequest(RequestFormDTO request) {
+    protected void setRequest(RequestFormDTO request, File excel) {
+        
+        //checks on request ID
+        if (this.request.getRequestId()!=null && request.getRequestId()==null){
+            request.setRequestId(this.request.getRequestId());
+        }else if (!Objects.equals(this.request.getRequestId(), request.getRequestId())){
+            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Excel uplad", "The uploaded and loaded requests have different ID");
+            return;
+        }
+        
+        //checks on user
+        if (!newRequest && !this.request.getRequestorUser().getLogin().equals(request.getRequestorUser().getLogin())){
+            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Excel uplad", "The uploaded and loaded requests have different requestors");
+            return;
+        }
+        
         this.request = request;
+        excelFile = excel;
     }
     
 
@@ -150,7 +189,7 @@ public class RequestBean {
             for (RequestSampleDTO sample : receivedSamples) {
                 RequestLibraryDTO library = libraries.get(sample.getLibrary());
                 if (library == null) {
-                    library = dtoFactory.getRequestLibraryDTO();
+                    library = dtoFactory.getRequestLibraryDTO(true);
                     library.setName(sample.getLibrary());
                     libraries.put(library.getName(), library);
                 }
@@ -263,7 +302,10 @@ public class RequestBean {
     }
 
     public String onFlowProcess(FlowEvent event) {
-        if (event.getOldStep().equals("libraries") && areLibrariesFailed) {
+        if (event.getOldStep().equals("personal") && (newRequest && excelFile==null)) {
+            NgsLimsUtility.setFailMessage("requestMessages", null, "Excel error", "Please upload a sample sheet");
+            wizardStep = event.getOldStep();
+        }else if (event.getOldStep().equals("libraries") && areLibrariesFailed) {
             wizardStep = event.getOldStep();
         } else if (event.getOldStep().equals("samples")) {
             if (areSamplesFailed) {
@@ -293,6 +335,13 @@ public class RequestBean {
                     if (newRequest) {
                         request.setRequestId(requestIdBean.getNextId());
                     }
+                    SampleAnnotationWriter excelWriter = new SampleAnnotationWriter(excelFile,request);
+                    File path = getSampleAnnotationPath();
+                    if (!path.exists()){
+                        path.mkdir();
+                    }
+                    excelWriter.writeToFile(SAMPLE_ANNOTATION_FILENAME,path);
+                    
                     services.getRequestFormService().saveRequestForm(request, newRequest);
                     success = true;
                     NgsLimsUtility.setSuccessMessage("validationMessages", null, "Request Updated", "");
@@ -317,6 +366,8 @@ public class RequestBean {
         if (submit()){
             if (newRequest){
                 return "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+            }else {
+                return "sampleRequest.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
             }
         }
         
@@ -328,6 +379,10 @@ public class RequestBean {
         try{
             if(!newRequest && RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
                 services.getRequestFormService().bulkDeleteRequest(request.getRequestId());
+                File path = getSampleAnnotationPath();
+                if (path.exists()) {
+                    FileUtils.deleteDirectory(path);
+                }
                 NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+request.getRequestId()
                         +" requested by "+request.getRequestor().getUser().getLogin());
                 
@@ -346,11 +401,9 @@ public class RequestBean {
         return newRequest;
     }
     
-    public boolean isEditable() {
-        return RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetModifyPermission(request);
+  
+    protected File getSampleAnnotationPath(){
+        return new File(Preferences.getAnnotationSheetFolder(),request.getRequestId() + "_" + request.getRequestorUser().getLogin());
     }
-
-    public void setEditable(boolean value) {
-    }
-
+    
 }

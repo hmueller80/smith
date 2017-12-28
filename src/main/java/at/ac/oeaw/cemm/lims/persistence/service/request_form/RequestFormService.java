@@ -17,6 +17,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.service.TransactionManager;
+import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,7 +44,7 @@ public class RequestFormService {
         return TransactionManager.doInTransaction(
                 new TransactionManager.TransactionCallable<Integer>() {
             @Override
-            public Integer execute() throws Exception {                                
+            public Integer execute() throws Exception {       
                 //1. Take care of requestor
                 RequestorDTO requestor = requestForm.getRequestor();
                 UserEntity user = userDAO.getUserByID(requestor.getUser().getId());

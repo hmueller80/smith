@@ -47,6 +47,8 @@ public interface RequestLibraryDTO extends Library, Application{
     String getUuid();
 
     Double getVolume();
+    
+    Boolean isNameEditable();
 
     void resetSamples();
 

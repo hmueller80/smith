@@ -59,6 +59,7 @@ public class UploadSampleSheetBean {
         try {
             String applicationPath = context.getExternalContext().getRealPath("/");
             destination = applicationPath + "upload" + File.separator;
+            System.out.println("Upload folder "+destination);
         } catch (UnsupportedOperationException uoe) {
             uoe.printStackTrace();
         }
@@ -82,7 +83,8 @@ public class UploadSampleSheetBean {
             return;
         }
         System.out.println("Parsing data");
-        ValidatedCSV<RequestFormDTO> parsedCSV = requestFormBuilder.buildRequestFromExcel(new File(destination + fileName));
+        File excelFile = new File(destination + fileName);
+        ValidatedCSV<RequestFormDTO> parsedCSV = requestFormBuilder.buildRequestFromExcel(excelFile);
         //--------------LOG PARSING STATUS ------------------------------------
         System.out.println("---------Parsed file " + fileName + "----------");
         System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
@@ -109,7 +111,7 @@ public class UploadSampleSheetBean {
             if (!roleManager.hasAnnotationSheetModifyPermission(requestForm)){
                 NgsLimsUtility.setFailMessage(messageBoxComponent, null, "User Error", "You don't have permission to upload this excel");
             }else if (validation.isValid()) {
-                requestBean.setRequest(requestForm);
+                requestBean.setRequest(requestForm,excelFile);
                 NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
                 for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
                     NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());

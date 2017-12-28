@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,6 +32,7 @@ public class ExcelParser{
     protected ArrayList<ArrayList<String>>  samplesSheet = new ArrayList<>();
     protected ArrayList<ArrayList<String>> librariesSheet = new ArrayList<>();
     protected ArrayList<ArrayList<String>> requestsSheet = new ArrayList<>();
+    protected File orginalFile;
     
     public ExcelParser(File file) throws ParsingException {
         String fileName = file.getName();
@@ -40,6 +43,9 @@ public class ExcelParser{
         }
         
         try {
+            orginalFile = file;
+            
+            ZipSecureFile.setMinInflateRatio(0.005);
             Workbook wb = WorkbookFactory.create(file);
            
             int sheets = wb.getNumberOfSheets();
@@ -108,7 +114,6 @@ public class ExcelParser{
                 if (firstRowInSheet == null) {
                     firstRowInSheet = row.getRowNum();
                 }
-                ArrayList<String> parsedRow = new ArrayList<>();
                 for (int j = row.getFirstCellNum(); j < row.getLastCellNum(); j++) {
 
                     Cell c = row.getCell(j);
@@ -125,7 +130,6 @@ public class ExcelParser{
                         maxColumnInSheet = j;
                     }
 
-                    parsedRow.add(content.trim());
                 }
 
                 if (skipOthers) {
@@ -148,19 +152,38 @@ public class ExcelParser{
         if (c != null) {
             CellType currentCellType = c.getCellTypeEnum();
             switch (currentCellType) {
-                case _NONE:
-                case BLANK:
-                case ERROR:
-                    break;
                 case NUMERIC:
-                    content = String.valueOf(c.getNumericCellValue());
+                    if (DateUtil.isCellDateFormatted(c)){
+                        content = ExcelParserUtils.getDateAsString(c.getDateCellValue());
+                    }else{
+                        content = String.valueOf(c.getNumericCellValue());
+                    }
                     break;
                 case STRING:
                     content = c.getStringCellValue();
                     break;
+                case BOOLEAN:
+                    content = String.valueOf(c.getBooleanCellValue());
+                    break;
                 case FORMULA:
+                    switch(c.getCachedFormulaResultTypeEnum()){
+                        case STRING:
+                            content = c.getStringCellValue();
+                            break;
+                        case NUMERIC:
+                            if (DateUtil.isCellDateFormatted(c)) {
+                                content = ExcelParserUtils.getDateAsString(c.getDateCellValue());
+                            } else {
+                                content = String.valueOf(c.getNumericCellValue());
+                            }
+                            break;
+                        case BOOLEAN:
+                            content = String.valueOf(c.getBooleanCellValue());
+                            break;
+                        default:
+                            break;
+                    }
                 default:
-                    c.toString();
                     break;
             }
         }

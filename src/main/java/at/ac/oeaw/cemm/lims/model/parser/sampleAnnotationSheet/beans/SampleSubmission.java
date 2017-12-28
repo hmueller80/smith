@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ColumnNames;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
@@ -35,14 +36,14 @@ public class SampleSubmission implements Serializable {
     private Integer sampleSubmissionId;
 
     
-    public SampleSubmission(ArrayList<String> row, Map<String, Integer> header) {
+    public SampleSubmission(ArrayList<String> row, Map<ColumnNames, Integer> header) {
 
         sampleName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleName,row,header);
         sampleDescription = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.SampleDescription, row, header);
         organism = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Organism,row,header);
         sex = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Sex,row,header);
         age = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Age,row,header);
-        cellType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.CellType,row,header);
+        cellType = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.BioCellType,row,header);
         genotype = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Genotype,row,header);
         familyRelations = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.FamilyRelations,row,header);
         phenotype = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.Phenotype,row,header);
