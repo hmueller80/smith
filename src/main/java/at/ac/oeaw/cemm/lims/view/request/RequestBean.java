@@ -40,7 +40,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -108,7 +107,7 @@ public class RequestBean {
             if (request == null) {
                 throw new IllegalStateException("Request with rid "+requestId+" is null");
             }
-            excelFile = new File(getSampleAnnotationPath(),SAMPLE_ANNOTATION_FILENAME);
+            excelFile = new File(getSampleAnnotationPath(request),SAMPLE_ANNOTATION_FILENAME);
             if(!excelFile.exists()){
                 throw new IllegalStateException("Excel not found for request with rid "+requestId);
             }
@@ -116,10 +115,10 @@ public class RequestBean {
                 NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
             }
             if (!isRequestorCemm() && request.getAuthorizationFileName()!=null && !request.getAuthorizationFileName().trim().isEmpty()){
-                authFile = new File(getSampleAnnotationPath(),request.getAuthorizationFileName());
+                authFile = new File(getSampleAnnotationPath(request),request.getAuthorizationFileName());
             }
             
-            fileManager.init(getSampleAnnotationPath(),authFile == null ? null : authFile.getName());
+            fileManager.init(getSampleAnnotationPath(request),authFile == null ? null : authFile.getName());
         }
     }
     
@@ -346,9 +345,9 @@ public class RequestBean {
     }
     
     public void uploadAuthorizationForm(FileUploadEvent event){
-        File folder = new File(Preferences.getAnnotationSheetFolder(),UUID.randomUUID().toString());
+        File folder = new File(Preferences.getAnnotationSheetFolder(),"TEMP_"+UUID.randomUUID().toString());
         if (!newRequest){
-            folder = getSampleAnnotationPath();
+            folder = getSampleAnnotationPath(request);
         }        
         authFile = fileManager.handleFileUpload(event,"legalMessage",folder,true);
         if (authFile!=null && authFile.exists()){
@@ -399,7 +398,7 @@ public class RequestBean {
                         request.setRequestId(requestIdBean.getNextId());
                     }
                     SampleAnnotationWriter excelWriter = new SampleAnnotationWriter(excelFile,request);
-                    File path = getSampleAnnotationPath();
+                    File path = getSampleAnnotationPath(request);
                     if (!path.exists()){
                         path.mkdir();
                     }
@@ -444,22 +443,8 @@ public class RequestBean {
     
     
     public String deleteRequest() {
-        try{
-            if(!newRequest && RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
-                services.getRequestFormService().bulkDeleteRequest(request.getRequestId());
-                File path = getSampleAnnotationPath();
-                if (path.exists()) {
-                    FileUtils.deleteDirectory(path);
-                }
-                NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+request.getRequestId()
-                        +" requested by "+request.getRequestor().getUser().getLogin());
-                
-                return "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId();
-            }else{
-                NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", "This request cannot be deleted due to status or user role");
-            }
-        }catch(Exception e){
-            NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", e.getMessage());
+        if (!newRequest){
+            return DeleteRequestFormBean.deleteRequestInternal(request, roleManager, services, "validationMessages", "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId());
         }
         
         return null;
@@ -470,7 +455,7 @@ public class RequestBean {
     }
     
   
-    protected File getSampleAnnotationPath(){
+    protected static File getSampleAnnotationPath(RequestFormDTO request){
         return new File(Preferences.getAnnotationSheetFolder(),request.getRequestId() + "_" + request.getRequestorUser().getLogin());
     }
     
