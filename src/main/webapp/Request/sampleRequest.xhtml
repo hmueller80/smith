@@ -99,11 +99,11 @@
             </h:form>
         </p:dialog>
         
-        <h:form id="requestWizard">
+        <h:form id="requestWizard" style="height: 100%">
             <p:messages id="formMessages" for="informationMessages" showDetail="true"/>
             <p:messages id="submitMessages" for="validationMessages" showDetail="true" closable="true"/>
 
-            <div class="ui-g">
+            <div class="ui-g" style="height:30px">
                 <div class="ui-g-8"/>
                 <div class="ui-g-4">
                     <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
@@ -155,7 +155,7 @@
             <p:separator />
             
             <h:panelGroup id="wizNav">
-                <div class="ui-g">
+                <div class="ui-g" style="height:40px">
                     <div class="ui-g-2"/>
                     <div class="ui-g-2" style="text-align:right">
 
@@ -206,7 +206,7 @@
                 </div>
             </h:panelGroup>
 
-            <p:wizard widgetVar="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false">
+            <p:wizard widgetVar="theWiz" id="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false" style="height:calc(100% - 90px)">
 
                 <p:tab id="personal" title="Personal" >
                     <div style="width: 100%; text-align:center" >
@@ -304,7 +304,7 @@
                         </p:panelGrid>
                     </div>
                 </p:tab>
-                <p:tab id="samples" title="samples">
+                <p:tab id="samples" title="samples" >
                     <p:inputText id="samplesData" type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
                         <p:ajax event="change" update="@this sampleMessage :requestWizard:libraryData" oncomplete="refresh()" partialSubmit="true"/>
                     </p:inputText>
@@ -342,6 +342,7 @@
                         $(document).ready(function () {
                             data = JSON.parse(PF('tableData').getJQ().val());
                             var container = document.getElementById('example');
+                            var tableHeight =$('#example').parent().height()-$('#requestWizard\\:sampleMessage').outerHeight(true);
                             var editable = (PF('editableSamples').getJQ().val() == 'true');
                             var settings = {
                                 data: data,
@@ -394,6 +395,7 @@
                                     }
 
                                 ],
+                                height: tableHeight,
                                 rowHeaders: true,
                                 colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
                                 contextMenu: true,
@@ -457,6 +459,7 @@
                         $(document).ready(function () {
                             dataLib = JSON.parse(PF('tableDataLib').getJQ().val());
                             var container = document.getElementById('exampleLib');
+                            var tableHeight =$('#exampleLib').parent().height()-$('#requestWizard\\:libraryMessage').outerHeight(true);
                             var editable = (PF('editableLibraries').getJQ().val() == 'true');
                             var settings = {
                                 data: dataLib,
@@ -485,19 +488,26 @@
                                     },
                                     {
                                         data: 'volume',
-                                        type: 'numeric'
+                                        type: 'numeric',
+                                        numericFormat: {
+                                            pattern:'0.0[0000]'
+                                        }
                                     },
                                     {
                                         data: 'dnaConcentration',
-                                        type: 'numeric'
+                                        type: 'numeric',
+                                        numericFormat: {
+                                            pattern:'0.0[0000]'
+                                        }
                                     },
                                     {
                                         data: 'totalSize',
                                         type: 'numeric'
                                     }],
                                 rowHeaders: true,
-                                colHeaders: ['Library Name', 'Application', 'Read Mode', 'Read Length', 'Lanes', 'Volume', 'DNA Concentration', 'Total size'],
+                                colHeaders: ['Library Name', 'Application', 'Read Mode', 'Read Length', 'Lanes', 'Volume [μL]', 'DNA Concentration [nM]', 'Total size [bp]'],
                                 manualRowResize: true,
+                                height:tableHeight,
                                 minSpareRows: 0,
                                 afterChange: dataChangeCallback,
                                 afterRemoveRow: dataChangeCallback,

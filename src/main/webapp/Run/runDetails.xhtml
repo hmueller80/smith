@@ -53,8 +53,14 @@
             <p:separator />
 
 
-            <p:dataTable var="sampleRun" value="#{singleRunBean.allSamples}"
-                         sortBy="#{sampleRun.lane}" expandableRowGroups="true">
+            <p:dataTable 
+                id="sampleRunTable"
+                var="sampleRun" 
+                value="#{singleRunBean.allSamples}"
+                sortBy="#{sampleRun.lane}" 
+                expandableRowGroups="true"
+                style="font-size: x-small;height:calc(100% - 165px)"
+                scrollable="true">
                 <p:headerRow>
                     <p:column colspan="6">
                         <h:outputText value="Lane #{sampleRun.lane}" />

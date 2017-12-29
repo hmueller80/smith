@@ -48,25 +48,32 @@
             </h:form>
         </p:dialog>
 
-        <p:panel id="sampleDetailPanel" header="#{singleSampleBean.sampleName} #{bundle['samples.details']}">
+        <p:panel id="sampleDetailPanel" header="#{singleSampleBean.sampleName} #{bundle['samples.details']}" style="height:98%">
             <h:form id="generalSampleForm">
 
                 <div class="ui-g" style="width: 100%">
                     <div class="ui-g-8">
-                        <h:panelGrid columns="2">
+                        <h:panelGrid columns="3">
 
                             <h:outputLabel for="sampleID"
                                            value="#{bundle['samples.sample.id']}: * " />
                             <h:outputText id="sampleID"
                                           value="#{singleSampleBean.currentSample.id}" />
-
+                            <p:outputPanel style="display:inline-block"/>
+                            
                             <h:outputLabel for="requestId" value="Request Id: " />
                             <h:outputText id="requestId"
                                           value="#{singleSampleBean.currentSample.submissionId}" />
-
+                            <p:outputPanel style="display:inline-block"/>
+                            
                             <h:outputLabel for="status" value="#{bundle['samples.status']}: " />
                             <h:outputText id="status"
                                           value="#{singleSampleBean.currentSample.status}" />
+                            <p:outputPanel style="display:inline-block">
+                                <p:messages for="modifyPermission" showDetail="true" id="sampleModifyPermissionMsg"/>
+                            </p:outputPanel>
+                            
+
                         </h:panelGrid>
                     </div>
                     <div class="ui-g-4">
@@ -92,11 +99,9 @@
                     </div>
                 </div>
 
-                <p:messages for="modifyPermission" showDetail="true" />
             </h:form>
 
-            <p:spacer/>
-            <p:tabView id="tabMenu" dynamic="true">
+            <p:tabView id="tabMenu" dynamic="true" style="height:calc(100% - 100px);overflow:hidden">
                 <p:ajax event="tabChange" listener="#{singleSampleBean.refresh}" update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :generalSampleForm" />
                 <p:tab title="Requestor">
                     <h:panelGrid columns="3"> 
@@ -127,7 +132,7 @@
                     </h:panelGrid>                                        
                 </p:tab>
                 <p:tab title="Sample Details">
-                    <h:form id="SampleDetailsForm">
+                    <h:form id="SampleDetailsForm" style="height: 100%" >
                         <div class="ui-g" style="width: 100%">
                             <div class="ui-g-12">
                                 <p:commandButton
@@ -146,90 +151,91 @@
 
                             </div>
                         </div>
+                        <div style="height:calc(100% - 44px);overflow-y: scroll ">
+                            <h:panelGrid columns="3" cellpadding="4" >
 
-                        <h:panelGrid columns="3" cellpadding="4">
-
-                            <h:outputLabel for="sampleName"
-                                           value="#{bundle['samples.sample.name']}:  " />
-                            <p:inputText id="sampleName" style="width:300px;" required="true"
-                                         requiredMessage="Sample Name is required"
-                                         value="#{singleSampleBean.sampleName}"
-                                         disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax update="@this :tabMenu:libraryForm sampleMessage" />
-                            </p:inputText>
-                            <p:message id="sampleMessage" for="sampleName" />
-
-
-                            <h:outputLabel for="organism"
-                                           value="#{bundle['samples.organism']}:  " />
-                            <p:inputText id="organism" style="width:300px;" required="true"
-                                         requiredMessage="Organism is required"
-                                         value="#{singleSampleBean.currentSample.organism}"
-                                         disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax update="@this organismMessage" />
-                            </p:inputText>
-                            <p:message id="organismMessage" for="organism" />
-
-                            <h:outputLabel for="sampleConcentration"
-                                           value="#{bundle['samples.concentration']}:  " />
-                            <p:inputNumber id="sampleConcentration"
-                                           value="#{singleSampleBean.currentSample.concentration}"
-                                           decimalSeparator="." required="true"
-                                           requiredMessage="Sample Concentration is required"
-                                           validatorMessage="Sample Concentration must be a positive number"
-                                           disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax update="@this concentrationMessage" />
-                                <f:validateDoubleRange minimum="0.0" />
-                            </p:inputNumber>
-                            <p:message id="concentrationMessage" for="sampleConcentration" />
+                                <h:outputLabel for="sampleName"
+                                               value="#{bundle['samples.sample.name']}:  " />
+                                <p:inputText id="sampleName" style="width:300px;" required="true"
+                                             requiredMessage="Sample Name is required"
+                                             value="#{singleSampleBean.sampleName}"
+                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
+                                    <p:ajax update="@this :tabMenu:libraryForm sampleMessage" />
+                                </p:inputText>
+                                <p:message id="sampleMessage" for="sampleName" />
 
 
-                            <h:outputLabel for="totalAmount"
-                                           value="#{bundle['samples.total.amount']}:  " />
-                            <p:inputNumber id="totalAmount"
-                                           value="#{singleSampleBean.currentSample.totalAmount}"
-                                           decimalSeparator="." required="true"
-                                           requiredMessage="Total Amount is required"
-                                           validatorMessage="Total Amount must be a positive number"
-                                           disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax update="@this totalAmountMessage" />
-                                <f:validateDoubleRange minimum="0.0" />
-                            </p:inputNumber>
-                            <p:message for="totalAmount" id="totalAmountMessage" />
+                                <h:outputLabel for="organism"
+                                               value="#{bundle['samples.organism']}:  " />
+                                <p:inputText id="organism" style="width:300px;" required="true"
+                                             requiredMessage="Organism is required"
+                                             value="#{singleSampleBean.currentSample.organism}"
+                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
+                                    <p:ajax update="@this organismMessage" />
+                                </p:inputText>
+                                <p:message id="organismMessage" for="organism" />
 
-                            <h:outputLabel for="bulkFragmentSize"
-                                           value="#{bundle['samples.bulk.fragment.size']}:  " />
-                            <p:inputNumber id="bulkFragmentSize"
-                                           value="#{singleSampleBean.currentSample.bulkFragmentSize}"
-                                           decimalSeparator="." required="true"
-                                           requiredMessage="Fragment size is required"
-                                           validatorMessage="Fragment size ust be a positive number"
-                                           disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                <p:ajax update="@this fragmentSizeMessage" />
-                                <f:validateDoubleRange minimum="0.0" />
-                            </p:inputNumber>
-                            <p:message for="bulkFragmentSize" id="fragmentSizeMessage" />
+                                <h:outputLabel for="sampleConcentration"
+                                               value="#{bundle['samples.concentration']}:  " />
+                                <p:inputNumber id="sampleConcentration"
+                                               value="#{singleSampleBean.currentSample.concentration}"
+                                               decimalSeparator="." required="true"
+                                               requiredMessage="Sample Concentration is required"
+                                               validatorMessage="Sample Concentration must be a positive number"
+                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
+                                    <p:ajax update="@this concentrationMessage" />
+                                    <f:validateDoubleRange minimum="0.0" />
+                                </p:inputNumber>
+                                <p:message id="concentrationMessage" for="sampleConcentration" />
 
-                            <h:outputLabel for="sampleDescription"
-                                           value="#{bundle['samples.description']}: " />
-                            <p:inputTextarea id="sampleDescription"
-                                             style="width:300px;height:100px;"
-                                             value="#{singleSampleBean.currentSample.description}"
-                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
-                            <p:message for="sampleDescription" />
 
-                            <h:outputLabel for="comments"
-                                           value="#{bundle['samples.comments']}: " />
-                            <p:inputTextarea id="comments" style="width:300px;height:100px;"
-                                             value="#{singleSampleBean.currentSample.comment}"
-                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
-                            <p:message for="comments" />
+                                <h:outputLabel for="totalAmount"
+                                               value="#{bundle['samples.total.amount']}:  " />
+                                <p:inputNumber id="totalAmount"
+                                               value="#{singleSampleBean.currentSample.totalAmount}"
+                                               decimalSeparator="." required="true"
+                                               requiredMessage="Total Amount is required"
+                                               validatorMessage="Total Amount must be a positive number"
+                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
+                                    <p:ajax update="@this totalAmountMessage" />
+                                    <f:validateDoubleRange minimum="0.0" />
+                                </p:inputNumber>
+                                <p:message for="totalAmount" id="totalAmountMessage" />
 
-                        </h:panelGrid>
+                                <h:outputLabel for="bulkFragmentSize"
+                                               value="#{bundle['samples.bulk.fragment.size']}:  " />
+                                <p:inputNumber id="bulkFragmentSize"
+                                               value="#{singleSampleBean.currentSample.bulkFragmentSize}"
+                                               decimalSeparator="." required="true"
+                                               requiredMessage="Fragment size is required"
+                                               validatorMessage="Fragment size ust be a positive number"
+                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
+                                    <p:ajax update="@this fragmentSizeMessage" />
+                                    <f:validateDoubleRange minimum="0.0" />
+                                </p:inputNumber>
+                                <p:message for="bulkFragmentSize" id="fragmentSizeMessage" />
+
+                                <h:outputLabel for="sampleDescription"
+                                               value="#{bundle['samples.description']}: " />
+                                <p:inputTextarea id="sampleDescription"
+                                                 style="width:300px;height:100px;"
+                                                 value="#{singleSampleBean.currentSample.description}"
+                                                 disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
+                                <p:message for="sampleDescription" />
+
+                                <h:outputLabel for="comments"
+                                               value="#{bundle['samples.comments']}: " />
+                                <p:inputTextarea id="comments" style="width:300px;height:100px;"
+                                                 value="#{singleSampleBean.currentSample.comment}"
+                                                 disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
+                                <p:message for="comments" />
+
+                            </h:panelGrid>
+                        </div>
                     </h:form>
                 </p:tab>
                 <p:tab title="Application Details" rendered="#{!singleSampleBean.isNewForm}">
-                    <h:form id="libraryForm">
+                    <h:form id="libraryForm" style="height:100%">
                         <div class="ui-g" style="width: 100%">
                             <div class="ui-g-12">
                                 <p:commandButton
@@ -276,14 +282,12 @@
 
                         </h:panelGrid>
 
-                    <p:spacer />
                         <p:dataTable id="libraryTable"
                                      var="sample"
                                      value="#{singleSampleBean.currentLibrary.samples}"
                                      widgetVar="libraryTable"
-                                     style="font-size: x-small;"
+                                     style="font-size: x-small;height:calc(100% - 102px)"
                                      scrollable="true"
-                                     scrollHeight="100%"
                                      emptyMessage="#{bundle['sample.emptymessage']}"
                                      sortBy="#{sample.submissionId}" 
                                      sortOrder="descending"
