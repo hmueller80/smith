@@ -8,6 +8,7 @@
     <ui:define name="metadata" >
         <f:metadata>
             <f:viewAction action="#{singleUserBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(4)}" />
         </f:metadata>
     </ui:define>
     
@@ -100,20 +101,27 @@
                 <h:panelGrid columns="3" cellpadding="5">
 
                     <h:outputLabel for="password" value="Password  " />
-                    <p:inputText  style="width:300px;" 
+                    <p:password  style="width:300px;" 
                                   id="password" 
+                                  match="passwordConfirm"
+                                  required="true"
+                                  requiredMessage="The password is required"
+                                  validatorMessage="The password does not match the confirm password"
                                   value="#{singleUserBean.externalUser.password}" 
                                   disabled="#{!singleUserBean.externalUser.canSetPassword()}"/>
                     <p:message for="password" />
                     
                     <h:outputLabel for="passwordConfirm" value="Confirm Password  " />
-                    <p:inputText  style="width:300px;" 
-                                  id="passwordConfirm" 
+                    <p:password  style="width:300px;" 
+                                  id="passwordConfirm"
+                                  required="true"
+                                  requiredMessage="The confirm password is required"                                  
                                   value="#{singleUserBean.externalUser.confirmPassword}" 
                                   disabled="#{!singleUserBean.externalUser.canSetPassword()}"/>
                     <p:message for="passwordConfirm" />
                 
                 </h:panelGrid>
+                <p:messages id="messages" showDetail="true" autoUpdate="true" />
                 <div style="width:100%;text-align: center;">
                     <p:commandButton
                         widgetVar='confirmAddButton'
@@ -123,7 +131,7 @@
                         rendered = "#{singleUserBean.externalUser.canSetPassword()}"
                         action ="#{singleUserBean.externalUser.setPasswordForUser()}"
                         update="@this userDetailsForm"
-                        onclick="PF('addOrgaDialog').hide()"
+                        onsuccess="PF('setPwdDialog').hide()"
                         />
                     <p:commandButton
                         widgetVar='cancelAddButton'

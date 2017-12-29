@@ -327,7 +327,7 @@ public class SingleSampleBean implements Serializable {
 
         System.out.println("Deletion success");
 
-        return "sampleDeleted_1?sid="+currentSample.getId()+"&activeMenu=1&faces-redirect=true";
+        return "sampleDeleted_1?faces-redirect=true&sid="+currentSample.getId();
     }
     
     public boolean isEditable() {

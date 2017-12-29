@@ -365,9 +365,9 @@ public class RequestBean {
     public String submitAndRedirect() {
         if (submit()){
             if (newRequest){
-                return "requestCreated.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+                return "requestCreated.jsf?faces-redirect=true&rid="+request.getRequestId();
             }else {
-                return "sampleRequest.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+                return "sampleRequest.jsf?faces-redirect=true&rid="+request.getRequestId();
             }
         }
         
@@ -386,7 +386,7 @@ public class RequestBean {
                 NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+request.getRequestId()
                         +" requested by "+request.getRequestor().getUser().getLogin());
                 
-                return "requestDeleted.jsf?faces-redirect=true&activeMenu=4&rid="+request.getRequestId();
+                return "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId();
             }else{
                 NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", "This request cannot be deleted due to status or user role");
             }

@@ -5,6 +5,12 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{menuBean.setMenuIndex(1)}" />
+        </f:metadata>
+    </ui:define>
+    
     <ui:define name="content">
         
          <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
@@ -86,9 +92,7 @@
                                 value="Add Request" 
                                 icon="ui-icon-plus"
                                 id="addRequestButton"
-                                outcome="/Request/sampleRequest.jsf">
-                                <f:param name="activeMenu" value="4" />                           
-                            </p:button>
+                                outcome="/Request/sampleRequest.jsf"/>
                             <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
                                              icon="ui-icon-arrowthick-1-s">
                                 <p:dataExporter type="csv" target="requestsTable" fileName="Requests"
@@ -104,7 +108,6 @@
                           sortBy="#{myRequest.id}">
                         <h:link  outcome="sampleRequest.jsf" value="#{myRequest.requestId}">
                             <f:param name="rid" value="#{myRequest.requestId}"/>
-                            <f:param name="activeMenu" value="4" />                           
                         </h:link>
                 </p:column>
 

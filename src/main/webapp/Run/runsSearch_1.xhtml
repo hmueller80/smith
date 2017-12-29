@@ -4,7 +4,13 @@
                 xmlns:f="http://java.sun.com/jsf/core"    
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
-
+    
+     <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{menuBean.setMenuIndex(3)}" />
+        </f:metadata>
+    </ui:define>
+    
     <ui:define name="content">
         
         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
@@ -135,7 +141,6 @@
                           sortBy="#{run.id.runId}">
                     <h:link  outcome="runDetails.jsf" value="#{run.runId}" rendered ="#{runsSearchBeanLazy.roleManager.hasRunAddPermission}">
                             <f:param name="rid" value="#{run.runId}"/>
-                            <f:param name="activeMenu" value="2" />                           
                     </h:link>
                     <h:outputText value="#{run.runId}" rendered ="#{!runsSearchBeanLazy.roleManager.hasRunAddPermission}" />
                 </p:column>
@@ -145,7 +150,6 @@
                           filterBy="#{run.id.samId}">
                     <h:link id="sampleId" outcome="/Sample/sampleDetails_1.jsf" value="#{run.sample.id}" >
                         <f:param name="sid" value="#{run.sample.id}"/>
-                        <f:param name="activeMenu" value="1" />         
                     </h:link>   
                 </p:column>
 
