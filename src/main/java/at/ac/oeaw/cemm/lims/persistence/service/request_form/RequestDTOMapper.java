@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.service.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
@@ -36,7 +37,10 @@ public class RequestDTOMapper {
         UserDTO user = limsMapper.getUserDTOFromEntity(requestorEntity);
         UserDTO pi = limsMapper.getUserDTOFromEntity(piEntity);
         RequestorDTO requestor = dtoFactory.getRequestorDTO(user, pi);
-        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,requestEntity.getReqDate(),requestEntity.getStatus());
+        BillingInfoDTO billingInfo = dtoFactory.getBillingInfoDTO(requestEntity.getBillingContact(), requestEntity.getBillingAddress(), requestEntity.getBillingCode());
+        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,billingInfo,requestEntity.getReqDate(),requestEntity.getStatus());
+        requestForm.setAuthorizationFileName(requestEntity.getAuthFormName());
+
         if (loadLibraries){
             for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {
                 RequestLibraryDTO library = getLibraryRequestDTOFromEntity(libraryEntity);

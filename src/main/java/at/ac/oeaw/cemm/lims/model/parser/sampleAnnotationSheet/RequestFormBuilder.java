@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
@@ -54,7 +55,8 @@ public class RequestFormBuilder {
             }
             
             RequestorDTO requestor = myDTOFactory.getRequestorDTO(requestorUser, piUser);
-            RequestFormDTO requestDTO = myDTOFactory.getRequestFormDTO(requestor);
+            BillingInfoDTO billingInfo = myDTOFactory.getBillingInfoDTO(parser.getSummary().getBillingContact(), parser.getSummary().getBillingAddress(), parser.getSummary().getBillingCode());
+            RequestFormDTO requestDTO = myDTOFactory.getRequestFormDTO(requestor,billingInfo);
             
             for (SequencingRequestSubmission sequencingRequest: parser.getSequencingRequestSubmission()){
                 RequestLibraryDTO libraryDTO = getLibrary(sequencingRequest);

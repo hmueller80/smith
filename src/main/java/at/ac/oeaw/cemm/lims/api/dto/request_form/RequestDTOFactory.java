@@ -15,9 +15,9 @@ import java.util.Date;
 public interface RequestDTOFactory {
 
 
-    RequestFormDTO getRequestFormDTO(RequestorDTO requestor);
+    RequestFormDTO getRequestFormDTO(RequestorDTO requestor, BillingInfoDTO billingInfo);
 
-    RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, Date date, String status);
+    RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor, BillingInfoDTO billingInfo, Date date, String status);
 
     RequestLibraryDTO getRequestLibraryDTO(boolean nameEditabe);
 
@@ -30,5 +30,8 @@ public interface RequestDTOFactory {
     RequestLibraryDTO getRequestLibraryDTO(Integer id,boolean nameEditabe);
 
     RequestSampleDTO getRequestSampleDTO(Integer id,boolean nameEditabe);
+    
+    BillingInfoDTO getBillingInfoDTO(String contact, String address, String code);
 
+    BillingInfoDTO getEmptyBillingInfoDTO();
 }

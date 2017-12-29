@@ -32,6 +32,12 @@ public interface RequestFormDTO  extends Request {
     
     String getDateAsString();
     
+    BillingInfoDTO getBillingInfo();
+    
+    String getAuthorizationFileName();
+    
+    void setAuthorizationFileName(String fileName);
+    
     @Override
     public Integer getRequestId();
     

@@ -176,7 +176,8 @@
                             rendered="#{requestBean.wizStep!='personal'}"/>
                     </div>
                     <div class="ui-g-4" style="text-align: center;">
-                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Request</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Requestor</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='legal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Legal</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='samples' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Samples</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='libraries' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Libraries</p:outputPanel>
                     </div>
@@ -230,6 +231,10 @@
                             <h:outputLabel for="requestStatus" value="Request Status: " />
                             <h:outputText style="width:300px;"  id="requestStatus" value="#{requestBean.request.status}"/>
                             <p:message for="requestStatus" />                           
+                            
+                            <h:outputLabel for="requestDate" value="Request Date: " />
+                            <h:outputText style="width:300px;"  id="requestDate" value="#{requestBean.request.dateAsString}"/>
+                            <p:message for="requestDate" />     
 
                             <p:outputPanel style="display:inline-block"/>
                             <p:outputPanel style="display:inline-block"/>
@@ -301,6 +306,75 @@
                             <h:outputText style="width:300px;"  id="orgaUrl" value="#{requestBean.request.requestor.user.affiliation.url}"/>
                             <p:message for="orgaUrl" />   
 
+                        </p:panelGrid>
+                    </div>
+                </p:tab>
+                <p:tab id="legal" title="legal">
+                    <div style="width: 100%; text-align:center" >
+
+                        <p:messages for="legalMessage" id="legalMessage" showDetail="true" closable="true" />
+
+                        <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
+
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Billing" />
+                            </p:outputPanel>                       
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <h:outputLabel for="billingContact" value="Billing Contact: " />
+                            <h:inputText style="width:300px;"  
+                                         id="billingContact" 
+                                         required="true" 
+                                         requiredMessage="Billing contact is required"
+                                         value="#{requestBean.request.billingInfo.contact}"/>
+                            <p:message for="billingContact" />
+
+                            <h:outputLabel for="billingAddress" value="Billing Address " />
+                            <p:inputTextarea  
+                                         id="billingAddress" 
+                                         rows="6" cols="33"
+                                         maxlength="198"
+                                         required="true" 
+                                         requiredMessage="Billing address is required"
+                                         value="#{requestBean.request.billingInfo.address}"/>
+                            <p:message for="billingAddress" />                        
+
+                            <h:outputLabel for="billingCode" value="Billing Code: " />
+                            <h:inputText style="width:300px;"  
+                                         id="billingCode" 
+                                         value="#{requestBean.request.billingInfo.billingCode}"/>
+                            <p:message for="billingCode" />
+
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+
+                            <p:outputPanel style="display:inline-block" rendered="#{!requestBean.requestorCemm}">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Autorization Form" />
+                            </p:outputPanel>                       
+                            <p:separator rendered="#{!requestBean.requestorCemm}"/>
+                            <p:outputPanel style="display:inline-block" rendered="#{!requestBean.requestorCemm}"/>
+
+                            <h:outputLabel for="authorizationFormName" value="Authorization Form File: " rendered="#{!requestBean.requestorCemm}"/>
+                            <h:panelGroup rendered = "#{!requestBean.requestorCemm}">
+                                <h:outputText style="width:300px;"  
+                                              id="authorizationFormName" 
+                                              value="#{requestBean.request.authorizationFileName}"
+                                              />
+                                <p:fileUpload 
+                                    style="float:right;margin-left:2px;font-size:x-small;"
+                                    fileUploadListener="#{requestBean.uploadAuthorizationForm}"
+                                    label="Upload" multiple="false" mode="advanced" auto="true"
+                                    sizeLimit="100000000" allowTypes="/(\.|\/)(pdf|doc|docx)$/" 
+                                    update="@this :filesDialog :filesDialog:files :filesDialog:filesMessage authorizationFormName"/>
+                            </h:panelGroup>                           
+                            <p:message for="authorizationFormName" rendered="#{!requestBean.requestorCemm}"/>
                         </p:panelGrid>
                     </div>
                 </p:tab>

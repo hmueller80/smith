@@ -56,6 +56,11 @@ public class RequestFormService {
                 requestEntity.setReqDate(requestForm.getDate());
                 requestEntity.setStatus(requestForm.getStatus());
                 requestEntity.setUserId(user);
+                requestEntity.setAuthFormName(requestForm.getAuthorizationFileName());
+                requestEntity.setBillingContact(requestForm.getBillingInfo().getContact());
+                requestEntity.setBillingAddress(requestForm.getBillingInfo().getAddress());
+                requestEntity.setBillingCode(requestForm.getBillingInfo().getBillingCode());
+               
                 requestFormDAO.saveOrUpdate(requestEntity,isNew);
                 
                 //2. Take care of libraries

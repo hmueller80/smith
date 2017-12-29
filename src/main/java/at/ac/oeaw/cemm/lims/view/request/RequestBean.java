@@ -17,6 +17,7 @@ import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.SampleAnnotationW
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.BillingInfoValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import at.ac.oeaw.cemm.lims.util.RequestIdBean;
@@ -27,21 +28,26 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 
 /**
@@ -55,18 +61,23 @@ public class RequestBean {
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     private RequestFormDTO request;
-    
+
+    private boolean isRequestFailed = false;    
     private boolean areSamplesFailed = false;
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
     private boolean newRequest = false;
     private File excelFile = null;
+    private File authFile = null;
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
     
     @ManagedProperty(value = "#{requestIdBean}")
     private RequestIdBean requestIdBean;
+    
+    @ManagedProperty(value = "#{requestFileManagerBean}")
+    private RequestFileManagerBean fileManager;
     
     @Inject
     private RequestDTOFactory dtoFactory;
@@ -85,11 +96,11 @@ public class RequestBean {
         initInternal(requestId);
        
     }
-    
+
     protected void initInternal(Integer requestId){
          if(requestId==null) {              
             RequestorDTO requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
-            request = dtoFactory.getRequestFormDTO(requestor);
+            request = dtoFactory.getRequestFormDTO(requestor,dtoFactory.getEmptyBillingInfoDTO());
             newRequest = true;
         } else {
             newRequest = false;
@@ -104,6 +115,11 @@ public class RequestBean {
             if (!isEditable()){
                 NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
             }
+            if (!isRequestorCemm() && request.getAuthorizationFileName()!=null && !request.getAuthorizationFileName().trim().isEmpty()){
+                authFile = new File(getSampleAnnotationPath(),request.getAuthorizationFileName());
+            }
+            
+            fileManager.init(getSampleAnnotationPath(),authFile == null ? null : authFile.getName());
         }
     }
     
@@ -284,23 +300,62 @@ public class RequestBean {
             ex.printStackTrace();
         }
     }
-
-    public NewRoleManager getRoleManager() {
-        return roleManager;
+    
+    private boolean isLegalValid(){
+        if (!isRequestorCemm()){
+            if (authFile==null || !authFile.exists()){
+                NgsLimsUtility.setFailMessage("legalMessage", "", "Authorization Form", "Please upload the sequencing authorization form");
+                return false;
+            }
+        }
+        
+        BillingInfoValidator billingValidator = new BillingInfoValidator();
+        ValidationStatus billingValidation = billingValidator.isValid(request.getBillingInfo());
+        
+        if (!billingValidation.isValid()){
+            for (ValidatorMessage message: billingValidation.getValidationMessages()){
+                if (ValidatorSeverity.FAIL.equals(message.getType())){
+                    NgsLimsUtility.setFailMessage("legalMessage", "", message.getSummary(), message.getDescription());
+                }
+            }
+            return false;
+        }
+        
+        for (ValidatorMessage message : billingValidation.getValidationMessages()) {
+            if (ValidatorSeverity.WARNING.equals(message.getType())) {
+                NgsLimsUtility.setFailMessage("legalMessage", "", message.getSummary(), message.getDescription());
+            }
+        }
+        
+        return true;
     }
-
-    public void setRoleManager(NewRoleManager roleManager) {
-        this.roleManager = roleManager;
+    
+    public boolean isRequestorCemm(){
+        boolean hasCemmMail;
+        
+        try{
+            hasCemmMail = request.getRequestorUser().getMailAddress().split("@")[1].equalsIgnoreCase("cemm.oeaw.ac.at");
+        }catch(Exception e){
+            hasCemmMail = false;
+        }
+        
+        boolean hasCemmAffiliation = request.getRequestor().getUser().getAffiliation().getOrganizationName().equalsIgnoreCase("cemm");
+        
+        return hasCemmMail || hasCemmAffiliation;
+ 
     }
-
-    public RequestIdBean getRequestIdBean() {
-        return requestIdBean;
+    
+    public void uploadAuthorizationForm(FileUploadEvent event){
+        File folder = new File(Preferences.getAnnotationSheetFolder(),UUID.randomUUID().toString());
+        if (!newRequest){
+            folder = getSampleAnnotationPath();
+        }        
+        authFile = fileManager.handleFileUpload(event,"legalMessage",folder,true);
+        if (authFile!=null && authFile.exists()){
+            request.setAuthorizationFileName(authFile.getName());
+        }
     }
-
-    public void setRequestIdBean(RequestIdBean requestIdBean) {
-        this.requestIdBean = requestIdBean;
-    }
-
+ 
     public String onFlowProcess(FlowEvent event) {
         if (event.getOldStep().equals("personal") && (newRequest && excelFile==null)) {
             NgsLimsUtility.setFailMessage("requestMessages", null, "Excel error", "Please upload a sample sheet");
@@ -315,7 +370,15 @@ public class RequestBean {
             } else {
                 wizardStep = event.getNewStep();
             }
-        } else {
+        } else if (event.getOldStep().equals("legal")){
+            isRequestFailed = !isLegalValid();
+            if (isRequestFailed){
+                wizardStep = event.getOldStep();
+            }else{
+                wizardStep = event.getNewStep();
+                
+            }
+        }else{
             wizardStep = event.getNewStep();
         }
 
@@ -329,7 +392,7 @@ public class RequestBean {
     protected boolean submit() {
         Boolean success = false;
 
-        if (!areSamplesFailed && !areLibrariesFailed) {
+        if (!areSamplesFailed && !areLibrariesFailed && isLegalValid()) {
             if (isEditable()) {
                 try {
                     if (newRequest) {
@@ -341,6 +404,11 @@ public class RequestBean {
                         path.mkdir();
                     }
                     excelWriter.writeToFile(SAMPLE_ANNOTATION_FILENAME,path);
+                    
+                    if (!isRequestorCemm() && (!authFile.getParentFile().getAbsolutePath().equals(path.getAbsolutePath()))){
+                        Files.move(authFile.toPath(), (new File(path,authFile.getName())).toPath(), REPLACE_EXISTING);
+                        FileUtils.deleteDirectory(authFile.getParentFile());
+                    }
                     
                     services.getRequestFormService().saveRequestForm(request, newRequest);
                     success = true;
@@ -356,7 +424,7 @@ public class RequestBean {
                 NgsLimsUtility.setFailMessage("validationMessages", null, "User error", "You don't have permission to upload this request");
             }
         } else {
-            NgsLimsUtility.setFailMessage("validationMessages", null, "Validation error", "Samples or Libraries have not passed validation");
+            NgsLimsUtility.setFailMessage("validationMessages", null, "Validation error", "Samples, Libraries or legal informations (and sequencing auth. form) have not passed validation");
         }
 
         return success;
@@ -364,7 +432,7 @@ public class RequestBean {
 
     public String submitAndRedirect() {
         if (submit()){
-            if (newRequest){
+            if (newRequest){ 
                 return "requestCreated.jsf?faces-redirect=true&rid="+request.getRequestId();
             }else {
                 return "sampleRequest.jsf?faces-redirect=true&rid="+request.getRequestId();
@@ -404,6 +472,31 @@ public class RequestBean {
   
     protected File getSampleAnnotationPath(){
         return new File(Preferences.getAnnotationSheetFolder(),request.getRequestId() + "_" + request.getRequestorUser().getLogin());
+    }
+    
+    
+    public NewRoleManager getRoleManager() {
+        return roleManager;
+    }
+
+    public void setRoleManager(NewRoleManager roleManager) {
+        this.roleManager = roleManager;
+    }
+
+    public RequestIdBean getRequestIdBean() {
+        return requestIdBean;
+    }
+
+    public void setRequestIdBean(RequestIdBean requestIdBean) {
+        this.requestIdBean = requestIdBean;
+    }
+
+    public RequestFileManagerBean getFileManager() {
+        return fileManager;
+    }
+
+    public void setFileManager(RequestFileManagerBean fileManager) {
+        this.fileManager = fileManager;
     }
     
 }

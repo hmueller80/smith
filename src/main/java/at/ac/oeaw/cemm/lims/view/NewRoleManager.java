@@ -165,5 +165,5 @@ public class NewRoleManager implements Serializable {
         return subjectsIds;
     }
 
-
+   
     }

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.generic.User;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
@@ -31,23 +32,27 @@ public class RequestFormDTOImpl implements RequestFormDTO {
     private final RequestorDTO requestor;    
     private final Date date;
     private final String status;
+    private final BillingInfoDTO billingInfo;
+    private String authorizationFileName = "";
     
     private Map<String, RequestLibraryDTO> libraries;
 
-    protected RequestFormDTOImpl(Integer id, RequestorDTO requestor, Date date, String status){
+    protected RequestFormDTOImpl(Integer id, RequestorDTO requestor, BillingInfoDTO billingInfo, Date date, String status){
         this.id = id;
         this.requestor = requestor;
         this.date = date;
         this.status = status;
+        this.billingInfo = billingInfo;
         libraries = new LinkedHashMap<>();
     }
     
-    protected RequestFormDTOImpl(RequestorDTO requestor) {
+    protected RequestFormDTOImpl(RequestorDTO requestor,BillingInfoDTO billingInfo) {
         id = null;
         this.requestor = requestor;
         libraries = new LinkedHashMap<>();
         date = new Date();
         this.status = RequestFormDTO.STATUS_NEW;
+        this.billingInfo = billingInfo;
     }
     
     @Override
@@ -156,6 +161,21 @@ public class RequestFormDTOImpl implements RequestFormDTO {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public BillingInfoDTO getBillingInfo() {
+        return billingInfo;
+    }
+
+    @Override
+    public String getAuthorizationFileName() {
+        return authorizationFileName;
+    }
+
+    @Override
+    public void setAuthorizationFileName(String fileName) {
+        this.authorizationFileName = fileName;
     }
   
 }

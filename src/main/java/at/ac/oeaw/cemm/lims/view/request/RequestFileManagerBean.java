@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.FileNameMap;
 import java.net.URLConnection;
-import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
@@ -39,22 +38,25 @@ public class RequestFileManagerBean {
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
 
-    @ManagedProperty(value = "#{requestBean}")
-    private RequestBean requestBean;
     
-    private TreeNode rootFolder;
+    private TreeNode rootFolder=null;
     private TreeNode selectedNode;
+    private String authFileName = null;
+    private File rootFolderPath = null;
     
-    @PostConstruct
-    public void init(){
-        if(requestBean.isNewRequest()){
-            rootFolder = null;
-        }else {
-           File rootFolderPath = requestBean.getSampleAnnotationPath();
-           rootFolder = new DefaultTreeNode(rootFolderPath,null);
-           selectedNode = rootFolder;
-           recursivelyExplore(rootFolder, rootFolderPath);
-           
+    public void init(File sampleAnnotationPath, String authFileName ){
+        if(sampleAnnotationPath!=null){
+           this.authFileName = authFileName;
+           rootFolderPath = sampleAnnotationPath;           
+           initInternal();
+        }
+    }
+    
+    private void initInternal() {
+        selectedNode = rootFolder;
+        if (rootFolderPath != null) {
+            rootFolder = new DefaultTreeNode(rootFolderPath,null);
+            recursivelyExplore(rootFolder, (File) rootFolder.getData());
         }
     }
     
@@ -84,36 +86,45 @@ public class RequestFileManagerBean {
         return ((File) selectedNode.getData()).isDirectory();
     }
     
-    public void handleFileUpload(FileUploadEvent event) {
-        if (!requestBean.canView()) {
-            NgsLimsUtility.setFailMessage("filesMessage", null, "File Upload", "You do not have permission to upload this file");
-            return;
-        }
+     public void handleFileUpload(FileUploadEvent event){
+          handleFileUpload(event,"filesMessage",((File) selectedNode.getData()), false);
+     }
+    
+    public File handleFileUpload(FileUploadEvent event, String messageComponent, File folder, boolean overwrite) {
 
         UploadedFile file = event.getFile();
         if (file == null){
-            NgsLimsUtility.setFailMessage("filesMessage", null, "File Upload", "No file selected"); 
-            return;
+            NgsLimsUtility.setFailMessage(messageComponent, null, "File Upload", "No file selected"); 
+            return null;
         }
         
         String fileName = file.getFileName();
 
         if (fileName.trim().toLowerCase().replace("_", "").replace("-", "").replace(" ", "").contains("sampleannotationsheet")) {
-            NgsLimsUtility.setFailMessage("filesMessage", null, "File Upload", "You cannot upload a sample annotation sheet.");
-            return;
+            NgsLimsUtility.setFailMessage(messageComponent, null, "File Upload", "You cannot upload a sample annotation sheet.");
+            return null;
         }
         
         InputStream in = null;
         OutputStream out = null;
         try {
-            File toWrite = new File ( ((File) selectedNode.getData()).getAbsolutePath(),fileName);
+            if (folder.exists() && !folder.isDirectory()){
+                NgsLimsUtility.setFailMessage(messageComponent, null, "File Upload", folder.getAbsolutePath()+"is not a directory");
+            }
+            if (!folder.exists()){
+                folder.mkdir();
+            }
+            
+            File toWrite = new File ( folder ,fileName);
             if (toWrite.exists()){
-                NgsLimsUtility.setFailMessage("filesMessage", null, "File Upload", "This file already exists");
-                return;                
+                if (!overwrite) {
+                    NgsLimsUtility.setFailMessage(messageComponent, null, "File Upload", "This file already exists");
+                    return null;                
+                }
             }
             
             in = file.getInputstream();
-            out = new FileOutputStream(toWrite);
+            out = new FileOutputStream(toWrite,false);
 
             int reader = 0;
             byte[] bytes = new byte[(int) file.getSize()];
@@ -121,10 +132,11 @@ public class RequestFileManagerBean {
                 out.write(bytes, 0, reader);
             }
             out.flush();
-            NgsLimsUtility.setSuccessMessage("filesMessage", null, "File Upload", "File "+fileName+" Uploaded correctly");
-            init();
+            NgsLimsUtility.setSuccessMessage(messageComponent, null, "File Upload", "File "+fileName+" Uploaded correctly");
+            initInternal();
+            return toWrite;
         } catch (Exception ex) {
-            NgsLimsUtility.setFailMessage("filesMessage", null, "File Upload", "Error while uploading file "+ex.getMessage());
+            NgsLimsUtility.setFailMessage(messageComponent, null, "File Upload", "Error while uploading file "+ex.getMessage());
             ex.printStackTrace();
         }finally {
             if (in!=null){
@@ -138,6 +150,8 @@ public class RequestFileManagerBean {
                 } catch (IOException ex) {}
             }
         }
+        
+        return null;
 
     }
     
@@ -158,10 +172,15 @@ public class RequestFileManagerBean {
             NgsLimsUtility.setFailMessage("filesMessage", null, "Delete File", "You cannot delete a sample annotation sheet.");
             return;
         }
+        
+        if (authFileName!=null && toDelete.getName().equals(authFileName)){
+            NgsLimsUtility.setFailMessage("filesMessage", null, "Delete File", "You cannot delete an authorization form.");
+            return;
+        }
          
         if (toDelete.delete()){
             NgsLimsUtility.setSuccessMessage("filesMessage", null, "Delete File", "File "+toDelete.getName()+" deleted correctly");
-            init();
+            initInternal();
         }else{
             NgsLimsUtility.setFailMessage("filesMessage", null, "Delete File", "File "+toDelete.getName()+" could not be deleted");
         }
@@ -180,14 +199,6 @@ public class RequestFileManagerBean {
 
     public void setRoleManager(NewRoleManager roleManager) {
         this.roleManager = roleManager;
-    }
-
-    public RequestBean getRequestBean() {
-        return requestBean;
-    }
-
-    public void setRequestBean(RequestBean requestBean) {
-        this.requestBean = requestBean;
     }
            
  
