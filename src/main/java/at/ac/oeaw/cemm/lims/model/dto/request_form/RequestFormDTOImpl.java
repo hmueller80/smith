@@ -33,6 +33,7 @@ public class RequestFormDTOImpl implements RequestFormDTO {
     private final Date date;
     private final String status;
     private final BillingInfoDTO billingInfo;
+    private String annotationSheetFileName = "";
     private String authorizationFileName = "";
     
     private Map<String, RequestLibraryDTO> libraries;
@@ -176,6 +177,16 @@ public class RequestFormDTOImpl implements RequestFormDTO {
     @Override
     public void setAuthorizationFileName(String fileName) {
         this.authorizationFileName = fileName;
+    }
+
+    @Override
+    public String getSampleAnnotationFileName() {
+        return annotationSheetFileName;
+    }
+
+    @Override
+    public void setSampleAnnotationFileName(String fileName) {
+        this.annotationSheetFileName = fileName;
     }
   
 }

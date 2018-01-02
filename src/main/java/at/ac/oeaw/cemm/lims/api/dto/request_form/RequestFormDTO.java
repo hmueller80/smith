@@ -35,8 +35,12 @@ public interface RequestFormDTO  extends Request {
     BillingInfoDTO getBillingInfo();
     
     String getAuthorizationFileName();
+
+    String getSampleAnnotationFileName();
     
     void setAuthorizationFileName(String fileName);
+    
+    void setSampleAnnotationFileName(String fileName);
     
     @Override
     public Integer getRequestId();

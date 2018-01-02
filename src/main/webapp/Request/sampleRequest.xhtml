@@ -83,7 +83,7 @@
         
         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
-                <h:outputText id="uploadDialogHeader" value="#{uploadSampleSheetBean.fileName}"/>
+                <h:outputText id="uploadDialogHeader" value="Sample Annotation Sheet"/>
             </f:facet>
             <h:form id="uploadDialog">
                 <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
@@ -160,7 +160,7 @@
                     <div class="ui-g-2" style="text-align:right">
 
                      <p:fileUpload style="float:left;margin:1px"
-                                   fileUploadListener="#{uploadSampleSheetBean.handleFileUpload}"
+                                   fileUploadListener="#{requestBean.uploadSampleSheet}"
                                    label="Upload Excel" multiple="false" mode="advanced" auto="true"
                                    sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
                                    oncomplete="PF('uploadDialog').show()"

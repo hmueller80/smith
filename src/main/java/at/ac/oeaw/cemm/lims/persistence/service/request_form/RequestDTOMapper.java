@@ -40,7 +40,8 @@ public class RequestDTOMapper {
         BillingInfoDTO billingInfo = dtoFactory.getBillingInfoDTO(requestEntity.getBillingContact(), requestEntity.getBillingAddress(), requestEntity.getBillingCode());
         RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,billingInfo,requestEntity.getReqDate(),requestEntity.getStatus());
         requestForm.setAuthorizationFileName(requestEntity.getAuthFormName());
-
+        requestForm.setSampleAnnotationFileName(requestEntity.getAnnotationSheetName());
+        
         if (loadLibraries){
             for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {
                 RequestLibraryDTO library = getLibraryRequestDTOFromEntity(libraryEntity);

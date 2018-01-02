@@ -64,6 +64,7 @@ public class RequestFormService {
                 }
                 requestEntity.setStatus(requestForm.getStatus());
                 requestEntity.setAuthFormName(requestForm.getAuthorizationFileName());
+                requestEntity.setAnnotationSheetName(requestForm.getSampleAnnotationFileName());
                 requestEntity.setBillingContact(requestForm.getBillingInfo().getContact());
                 requestEntity.setBillingAddress(requestForm.getBillingInfo().getAddress());
                 requestEntity.setBillingCode(requestForm.getBillingInfo().getBillingCode());

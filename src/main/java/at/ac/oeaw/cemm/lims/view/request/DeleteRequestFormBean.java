@@ -77,7 +77,7 @@ public class DeleteRequestFormBean {
         try{
             if(RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
                 services.getRequestFormService().bulkDeleteRequest(request.getRequestId());
-                File path = RequestBean.getSampleAnnotationPath(request);
+                File path = RequestBean.buildSampleAnnotationPath(request);
 
                 if (path.exists()) {
                     FileUtils.deleteDirectory(path);

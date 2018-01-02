@@ -31,6 +31,7 @@ add constraint fk_affiliation  foreign key (organization_department,organization
     billing_address VARCHAR(200),
     billing_code VARCHAR(200),
     auth_form_name VARCHAR(100),
+    annotation_sheet_name VARCHAR(100),
     status varchar(100),
     primary key(id),
     foreign key (user_id) references user(user_id)

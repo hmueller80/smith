@@ -57,6 +57,9 @@ public class RequestEntity implements Serializable, EntityWithSettableId {
           
     @Column(name = "auth_form_name")
     private String authFormName;
+
+    @Column(name = "annotation_sheet_name")
+    private String annotationSheetName;
     
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
@@ -143,8 +146,14 @@ public class RequestEntity implements Serializable, EntityWithSettableId {
     public void setAuthFormName(String authFormName) {
         this.authFormName = authFormName;
     }
-    
-    
+
+    public String getAnnotationSheetName() {
+        return annotationSheetName;
+    }
+
+    public void setAnnotationSheetName(String annotationSheetName) {
+        this.annotationSheetName = annotationSheetName;
+    }   
 
     @Override
     public int hashCode() {

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.view.request;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
@@ -14,10 +15,14 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestLibraryDTOImpl;
 import at.ac.oeaw.cemm.lims.model.dto.request_form.RequestSampleDTOImpl;
+import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
+import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.RequestFormBuilder;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.SampleAnnotationWriter;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.BillingInfoValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.request_form.RequestLibraryValidator;
 import at.ac.oeaw.cemm.lims.util.Preferences;
@@ -36,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,7 +61,9 @@ import org.primefaces.event.FlowEvent;
 @ManagedBean(name = "requestBean")
 @ViewScoped
 public class RequestBean {
-    private final static String SAMPLE_ANNOTATION_FILENAME = "SampleAnnotationSheet.xlsx";
+    private final static String SAMPLE_ANNOTATION_FILENAME = "SampleAnnotationSheet";
+    private final static String SEQUENCING_AUTHORIZATION_FORM = "SequencingAuthorizationForm";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     
     private RequestFormDTO request;
@@ -66,8 +72,11 @@ public class RequestBean {
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
     private boolean newRequest = false;
+    
+    private File sampleAnnotationPath;
     private File excelFile = null;
     private File authFile = null;
+    
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -80,6 +89,8 @@ public class RequestBean {
     
     @Inject
     private RequestDTOFactory dtoFactory;
+    @Inject
+    private RequestFormBuilder requestFormBuilder;
     @Inject
     private ServiceFactory services;
     
@@ -101,27 +112,31 @@ public class RequestBean {
             RequestorDTO requestor = dtoFactory.getRequestorDTO(roleManager.getCurrentUser(), roleManager.getPi());
             request = dtoFactory.getRequestFormDTO(requestor,dtoFactory.getEmptyBillingInfoDTO());
             newRequest = true;
+            sampleAnnotationPath = new File(Preferences.getAnnotationSheetFolder(),"TEMP_"+UUID.randomUUID().toString());
         } else {
             newRequest = false;
             request = services.getRequestFormService().getFullRequestById(requestId);
             if (request == null) {
                 throw new IllegalStateException("Request with rid "+requestId+" is null");
             }
-            excelFile = new File(getSampleAnnotationPath(request),SAMPLE_ANNOTATION_FILENAME);
+            sampleAnnotationPath =  buildSampleAnnotationPath(request);
+            excelFile = new File(sampleAnnotationPath,request.getSampleAnnotationFileName());
             if(!excelFile.exists()){
                 throw new IllegalStateException("Excel not found for request with rid "+requestId);
             }
-            if (!isEditable()){
-                NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
-            }
-            if (!isRequestorCemm() && request.getAuthorizationFileName()!=null && !request.getAuthorizationFileName().trim().isEmpty()){
-                authFile = new File(getSampleAnnotationPath(request),request.getAuthorizationFileName());
+            
+            if (!isRequestorCemm()){
+                authFile = new File(sampleAnnotationPath,request.getAuthorizationFileName());
                 if (!authFile.exists()) {
                     throw new IllegalStateException("Sequence Authorization not found for request with rid " + requestId);
                 }
             }
             
-            fileManager.init(getSampleAnnotationPath(request),authFile == null ? null : authFile.getName());
+            if (!isEditable()){
+                NgsLimsUtility.setSuccessMessage("informationMessages", null, "This request form is not editable", "You might not have permission to edit this request or it has already been accepted");
+            }         
+            
+            fileManager.init(sampleAnnotationPath);
         }
     }
     
@@ -152,30 +167,7 @@ public class RequestBean {
     protected void setRequest(RequestFormDTO request, File excel) {
         
         //checks on request ID
-        if (this.request.getRequestId()!=null && request.getRequestId()==null){
-            request.setRequestId(this.request.getRequestId());
-        }else if (!Objects.equals(this.request.getRequestId(), request.getRequestId())){
-            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Excel uplad", "The uploaded and loaded requests have different ID");
-            return;
-        }
-        
-        //checks on user
-        if (!newRequest && !this.request.getRequestorUser().getLogin().equals(request.getRequestorUser().getLogin())){
-            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Excel uplad", "The uploaded and loaded requests have different requestors");
-            return;
-        }
-        
-        this.request = request;
-        
-        if (isRequestorCemm() && (request.getBillingInfo().getAddress() == null || request.getBillingInfo().getAddress().isEmpty())){
-            OrganizationDTO cemm = services.getUserService().getOrganizationByName("CeMM");
-            request.getBillingInfo().setAddress(cemm.getAddress());
-        }
-        
-        if (isRequestorCemm() && (request.getBillingInfo().getContact() == null || request.getBillingInfo().getContact().isEmpty())){
-            request.getBillingInfo().setContact(request.getRequestor().getPi().getUserName());
-        }
-        
+      
         excelFile = excel;
     }
     
@@ -343,29 +335,88 @@ public class RequestBean {
     }
     
     public boolean isRequestorCemm(){
+        return checkCemmUser(request.getRequestor().getUser());
+    }
+    
+    private boolean checkCemmUser(UserDTO user){
         boolean hasCemmMail;
         
         try{
-            hasCemmMail = request.getRequestorUser().getMailAddress().split("@")[1].equalsIgnoreCase("cemm.oeaw.ac.at");
+            hasCemmMail = user.getMailAddress().split("@")[1].equalsIgnoreCase("cemm.oeaw.ac.at");
         }catch(Exception e){
             hasCemmMail = false;
         }
         
-        boolean hasCemmAffiliation = request.getRequestor().getUser().getAffiliation().getOrganizationName().equalsIgnoreCase("cemm");
+        boolean hasCemmAffiliation = user.getAffiliation().getOrganizationName().equalsIgnoreCase("cemm");
         
         return hasCemmMail || hasCemmAffiliation;
- 
     }
     
     public void uploadAuthorizationForm(FileUploadEvent event){
-        if (isEditable()){
-            File folder = new File(Preferences.getAnnotationSheetFolder(),"TEMP_"+UUID.randomUUID().toString());
-            if (!newRequest){
-                folder = getSampleAnnotationPath(request);
-            }        
-            authFile = fileManager.handleFileUpload(event,"legalMessage",folder,true);
-            if (authFile!=null && authFile.exists()){
+        if (isEditable()){    
+            File newAuthFile = fileManager.handleFileUpload(event,"legalMessage",sampleAnnotationPath,SEQUENCING_AUTHORIZATION_FORM,true);
+            if (newAuthFile!=null && newAuthFile.exists()){
+                if (authFile!=null && authFile.exists()){
+                    authFile.delete();
+                }
+                authFile = newAuthFile;
                 request.setAuthorizationFileName(authFile.getName());
+            }
+        }
+    }
+
+    public void uploadSampleSheet(FileUploadEvent event) {
+        String messageBoxComponent = "uploadDialogMsg";
+
+        if (isEditable() && newRequest) {
+            excelFile = fileManager.handleFileUpload(event, messageBoxComponent, sampleAnnotationPath, SAMPLE_ANNOTATION_FILENAME, true);
+            if (excelFile != null && excelFile.exists()) {
+                ValidatedCSV<RequestFormDTO> parsedCSV = requestFormBuilder.buildRequestFromExcel(excelFile);
+
+                if (parsedCSV.getValidationStatus().isFailed()) {
+                    this.excelFile = null;
+                    for (ParsingMessage message : parsedCSV.getValidationStatus().getFailMessages()) {
+                        NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                    }
+                } else {
+                    RequestFormDTO requestForm = parsedCSV.getRequestObj();
+                    RequestValidator validator = new RequestValidator(new RequestLibraryValidator(), services);
+                    ValidationStatus validation = validator.isValid(requestForm);
+                    if (!roleManager.hasAnnotationSheetModifyPermission(requestForm)) {
+                        NgsLimsUtility.setFailMessage(messageBoxComponent, null, "User Error", "You don't have permission to upload this excel");
+                    } else if (validation.isValid()) {
+                        requestForm.setSampleAnnotationFileName(excelFile.getName());
+                         
+                        if (checkCemmUser(requestForm.getRequestor().getUser())) {
+                            if (requestForm.getBillingInfo().getAddress() == null || requestForm.getBillingInfo().getAddress().isEmpty()) {
+                                OrganizationDTO cemm = services.getUserService().getOrganizationByName("CeMM");
+                                requestForm.getBillingInfo().setAddress(cemm.getAddress());
+                            }
+
+                            if (requestForm.getBillingInfo().getContact() == null || requestForm.getBillingInfo().getContact().isEmpty()) {
+                                requestForm.getBillingInfo().setContact(requestForm.getRequestor().getPi().getUserName());
+                            }
+                        }
+                                              
+                        this.request = requestForm;
+
+                        NgsLimsUtility.setSuccessMessage(messageBoxComponent, null, "Parsing Success!", "");
+                        for (ParsingMessage message : parsedCSV.getValidationStatus().getWarningMessages()) {
+                            NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getMessage());
+                        }
+                        for (ValidatorMessage message : validation.getValidationMessages()) {
+                            NgsLimsUtility.setWarningMessage(messageBoxComponent, null, message.getSummary(), message.getDescription());
+                        }
+                    } else {
+                        this.excelFile = null;
+                        for (ValidatorMessage message : validation.getValidationMessages()) {
+                            if (ValidatorSeverity.FAIL.equals(message.getType())) {
+                                NgsLimsUtility.setFailMessage(messageBoxComponent, null, message.getSummary(), message.getDescription());
+                            }
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -408,19 +459,31 @@ public class RequestBean {
         if (!areSamplesFailed && !areLibrariesFailed && isLegalValid()) {
             if (isEditable()) {
                 try {
+                    File targetPath = sampleAnnotationPath;
+                    
                     if (newRequest) {
                         request.setRequestId(requestIdBean.getNextId());
+                        targetPath = buildSampleAnnotationPath(request);
+                        if (!targetPath.exists()){
+                            targetPath.mkdir();
+                        }
                     }
-                    SampleAnnotationWriter excelWriter = new SampleAnnotationWriter(excelFile,request);
-                    File path = getSampleAnnotationPath(request);
-                    if (!path.exists()){
-                        path.mkdir();
-                    }
-                    excelWriter.writeToFile(SAMPLE_ANNOTATION_FILENAME,path);
                     
-                    if (!isRequestorCemm() && (!authFile.getParentFile().getAbsolutePath().equals(path.getAbsolutePath()))){
-                        Files.move(authFile.toPath(), (new File(path,authFile.getName())).toPath(), REPLACE_EXISTING);
-                        FileUtils.deleteDirectory(authFile.getParentFile());
+                    SampleAnnotationWriter excelWriter = new SampleAnnotationWriter(excelFile,request);
+                    excelWriter.writeToFile();
+                    
+                    if (!excelFile.getParentFile().getAbsolutePath().equals(targetPath.getAbsolutePath())){
+                         Files.move(excelFile.toPath(), (new File(targetPath,excelFile.getName())).toPath(), REPLACE_EXISTING);
+                    }
+                    
+                    if (!isRequestorCemm() && (!authFile.getParentFile().getAbsolutePath().equals(targetPath.getAbsolutePath()))){
+                        Files.move(authFile.toPath(), (new File(targetPath,authFile.getName())).toPath(), REPLACE_EXISTING);
+                        
+                    }
+                    
+                    if (newRequest){
+                        FileUtils.deleteDirectory(sampleAnnotationPath);
+                        sampleAnnotationPath = targetPath;
                     }
                     
                     services.getRequestFormService().saveRequestForm(request, newRequest);
@@ -468,9 +531,8 @@ public class RequestBean {
         return newRequest;
     }
     
-  
-    protected static File getSampleAnnotationPath(RequestFormDTO request){
-        return new File(Preferences.getAnnotationSheetFolder(),request.getRequestId() + "_" + request.getRequestorUser().getLogin());
+    protected static File buildSampleAnnotationPath(RequestFormDTO request){
+        return new File(Preferences.getAnnotationSheetFolder(),request.getRequestId() + "_" + request.getRequestorUser().getLogin());    
     }
     
     

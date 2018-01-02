@@ -61,13 +61,7 @@ public class SampleAnnotationWriter extends ExcelParser {
        updateRequestSheet(requestForm);        
     }
     
-    public void writeToFile(String fileName, File folder) throws ParsingException {
-        if (!folder.exists()) {
-            throw new ParsingException("Excel Writing", "The specified directory " + folder.getName() + " does not exists");
-        }
-        if (!folder.isDirectory()) {
-            throw new ParsingException("Excel Writing", "The specified file " + folder.getName() + " is not a directory");
-        }
+    public void writeToFile() throws ParsingException {
 
         Workbook wb = null;
         FileOutputStream fos = null;
@@ -96,7 +90,7 @@ public class SampleAnnotationWriter extends ExcelParser {
             
             fis.close();
             
-            fos = new FileOutputStream(new File(folder,fileName));
+            fos = new FileOutputStream(orginalFile);
             wb.write(fos);
             
         } catch (IOException | EncryptedDocumentException | InvalidFormatException  ex) {
