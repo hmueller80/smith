@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.request;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
@@ -61,7 +62,6 @@ public class RequestBean {
     
     private RequestFormDTO request;
 
-    private boolean isRequestFailed = false;    
     private boolean areSamplesFailed = false;
     private boolean areLibrariesFailed = false;
     private String wizardStep = "personal";
@@ -116,6 +116,9 @@ public class RequestBean {
             }
             if (!isRequestorCemm() && request.getAuthorizationFileName()!=null && !request.getAuthorizationFileName().trim().isEmpty()){
                 authFile = new File(getSampleAnnotationPath(request),request.getAuthorizationFileName());
+                if (!authFile.exists()) {
+                    throw new IllegalStateException("Sequence Authorization not found for request with rid " + requestId);
+                }
             }
             
             fileManager.init(getSampleAnnotationPath(request),authFile == null ? null : authFile.getName());
@@ -163,6 +166,16 @@ public class RequestBean {
         }
         
         this.request = request;
+        
+        if (isRequestorCemm() && (request.getBillingInfo().getAddress() == null || request.getBillingInfo().getAddress().isEmpty())){
+            OrganizationDTO cemm = services.getUserService().getOrganizationByName("CeMM");
+            request.getBillingInfo().setAddress(cemm.getAddress());
+        }
+        
+        if (isRequestorCemm() && (request.getBillingInfo().getContact() == null || request.getBillingInfo().getContact().isEmpty())){
+            request.getBillingInfo().setContact(request.getRequestor().getPi().getUserName());
+        }
+        
         excelFile = excel;
     }
     
@@ -345,13 +358,15 @@ public class RequestBean {
     }
     
     public void uploadAuthorizationForm(FileUploadEvent event){
-        File folder = new File(Preferences.getAnnotationSheetFolder(),"TEMP_"+UUID.randomUUID().toString());
-        if (!newRequest){
-            folder = getSampleAnnotationPath(request);
-        }        
-        authFile = fileManager.handleFileUpload(event,"legalMessage",folder,true);
-        if (authFile!=null && authFile.exists()){
-            request.setAuthorizationFileName(authFile.getName());
+        if (isEditable()){
+            File folder = new File(Preferences.getAnnotationSheetFolder(),"TEMP_"+UUID.randomUUID().toString());
+            if (!newRequest){
+                folder = getSampleAnnotationPath(request);
+            }        
+            authFile = fileManager.handleFileUpload(event,"legalMessage",folder,true);
+            if (authFile!=null && authFile.exists()){
+                request.setAuthorizationFileName(authFile.getName());
+            }
         }
     }
  
@@ -370,8 +385,7 @@ public class RequestBean {
                 wizardStep = event.getNewStep();
             }
         } else if (event.getOldStep().equals("legal")){
-            isRequestFailed = !isLegalValid();
-            if (isRequestFailed){
+            if (!isLegalValid()){
                 wizardStep = event.getOldStep();
             }else{
                 wizardStep = event.getNewStep();

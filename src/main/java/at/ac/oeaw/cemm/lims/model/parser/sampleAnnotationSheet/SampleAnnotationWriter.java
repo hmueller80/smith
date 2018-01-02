@@ -36,6 +36,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellUtil;
 
 /**
  *
@@ -130,65 +131,68 @@ public class SampleAnnotationWriter extends ExcelParser {
     }
     
     private void writeSheet(Sheet sheet, ArrayList<ArrayList<String>> rows, BidiMap<ColumnNames, Integer> header, Integer headerIndex, boolean isTransposed) {
-
-        Font font = sheet.getWorkbook().createFont();
-        font.setFontHeightInPoints((short) 11);
-        font.setFontName("Arial");
-        font.setColor(IndexedColors.BLACK.getIndex());
-        font.setBold(false);
-        font.setItalic(false);
-        sheet.getWorkbook().getCellStyleAt(0).setFont(font);
         
-        Font boldFont = sheet.getWorkbook().createFont();
-        boldFont.setFontHeightInPoints((short) 11);
-        boldFont.setFontName("Arial");
-        boldFont.setColor(IndexedColors.BLACK.getIndex());
-        boldFont.setBold(true);
-        boldFont.setItalic(false);
+        Font font = getFont(sheet.getWorkbook(),false,false);
+        CellStyle defaultCellStyle = sheet.getWorkbook().getCellStyleAt(0);
+        defaultCellStyle.setFont(font);
+        defaultCellStyle.setBorderBottom(BorderStyle.NONE);
+        defaultCellStyle.setBorderTop(BorderStyle.NONE);
+        defaultCellStyle.setBorderLeft(BorderStyle.NONE);
+        defaultCellStyle.setBorderRight(BorderStyle.NONE);
 
-        Font italicFont = sheet.getWorkbook().createFont();
-        italicFont.setFontHeightInPoints((short) 11);
-        italicFont.setFontName("Arial");
-        italicFont.setColor(IndexedColors.BLACK.getIndex());
-        italicFont.setBold(false);
-        italicFont.setItalic(true);
+        Font boldFont = getFont(sheet.getWorkbook(),true,false);
+        Font italicFont =  getFont(sheet.getWorkbook(),false,true);
 
+        CellStyle topRowStyle=defaultCellStyle;
+        CellStyle topSummaryRowStyle=defaultCellStyle;
+        CellStyle leftSummaryColumnStyle=defaultCellStyle;
+        
         int rowNumber = 0;
         int headerLength = 0;
         for (ArrayList<String> row : rows) {
             Row currentRow = sheet.createRow(rowNumber);
-          
+            
             if (!isTransposed && rowNumber == headerIndex) {
-                currentRow.setRowStyle(sheet.getWorkbook().createCellStyle());
-                currentRow.getRowStyle().setFont(boldFont);
-                currentRow.getRowStyle().setBorderBottom(BorderStyle.MEDIUM);
+                topRowStyle = currentRow.getRowStyle();
+                if (topRowStyle == null){
+                    topRowStyle = sheet.getWorkbook().createCellStyle();
+                }
+                topRowStyle.setFont(boldFont);
+                topRowStyle.setBorderBottom(BorderStyle.MEDIUM);
+                currentRow.setRowStyle(topRowStyle);
+
                 headerLength = row.size();
             } else if (isTransposed && rowNumber == 0) {
-                currentRow.setRowStyle(sheet.getWorkbook().createCellStyle());
-                currentRow.getRowStyle().setFont(italicFont);
-                currentRow.getRowStyle().setBorderBottom(BorderStyle.MEDIUM);
-                sheet.setDefaultColumnStyle(0, sheet.getWorkbook().createCellStyle());
-                sheet.getColumnStyle(0).setFont(boldFont);
-                sheet.getColumnStyle(0).setBorderRight(BorderStyle.MEDIUM);
+                topSummaryRowStyle = currentRow.getRowStyle();
+                if (topSummaryRowStyle == null){
+                    topSummaryRowStyle = sheet.getWorkbook().createCellStyle();
+                }
+                topSummaryRowStyle.setFont(italicFont);
+                topSummaryRowStyle.setBorderBottom(BorderStyle.MEDIUM);
+                currentRow.setRowStyle(topSummaryRowStyle);
+                
+                leftSummaryColumnStyle = sheet.getColumnStyle(0);
+                if (leftSummaryColumnStyle==null){
+                    leftSummaryColumnStyle = sheet.getWorkbook().createCellStyle();
+                }
+                leftSummaryColumnStyle.setFont(boldFont);
+                leftSummaryColumnStyle.setBorderRight(BorderStyle.MEDIUM);
+                sheet.setDefaultColumnStyle(0,leftSummaryColumnStyle );
             } 
             
             
             int colNumber = 0;
             for (String value : row) {
                 Cell currentCell = currentRow.createCell(colNumber, CellType.STRING);
-                CellStyle style = sheet.getWorkbook().createCellStyle();
-                currentCell.setCellStyle(style);             
-                style.setFont(font);
                 
                 if (!isTransposed && rowNumber == headerIndex) {
-                    style.setFont(boldFont);
-                    style.setBorderBottom(BorderStyle.MEDIUM);
+                    currentCell.setCellStyle(topRowStyle);
                 } else if (isTransposed && rowNumber == 0) {
-                    style.setFont(italicFont);
-                    style.setBorderBottom(BorderStyle.MEDIUM);
-                } else if (isTransposed && colNumber ==0){
-                    style.setFont(boldFont);
-                    style.setBorderRight(BorderStyle.MEDIUM);
+                   currentCell.setCellStyle(topSummaryRowStyle);
+                } else if (isTransposed && colNumber == 0){
+                    currentCell.setCellStyle(leftSummaryColumnStyle);
+                }else {
+                    currentCell.setCellStyle(defaultCellStyle);
                 }
                 
                 if (!isTransposed && rowNumber > headerIndex && header.containsValue(colNumber)) {
@@ -213,7 +217,7 @@ public class SampleAnnotationWriter extends ExcelParser {
                             if (!value.isEmpty()) {
                                 currentCell.setCellType(CellType.NUMERIC);
                                 currentCell.setCellValue(ExcelParserUtils.getStringAsDate(value));
-                                currentCell.getCellStyle().setDataFormat(sheet.getWorkbook().getCreationHelper().createDataFormat().getFormat("dd.MM.YYYY"));
+                                CellUtil.setCellStyleProperty(currentCell, CellUtil.DATA_FORMAT, sheet.getWorkbook().getCreationHelper().createDataFormat().getFormat("dd.MM.YYYY"));
                             }else{
                                 currentCell.setCellType(CellType.BLANK);
                             }
@@ -241,8 +245,22 @@ public class SampleAnnotationWriter extends ExcelParser {
         }
 
     }
-    
-    
+   
+    private Font getFont (Workbook wb, boolean bold, boolean italic) {
+        Font theFont = wb.findFont(bold, IndexedColors.BLACK.getIndex(), (short) 11, "Arial", italic, false, Font.SS_NONE, Font.U_NONE);
+        if (theFont == null) {
+            theFont = wb.createFont();
+        }
+        
+        theFont.setFontHeightInPoints((short) 11);
+        theFont.setFontName("Arial");
+        theFont.setColor(IndexedColors.BLACK.getIndex());
+        theFont.setBold(bold);
+        theFont.setItalic(italic);
+
+        return theFont;
+    }
+
     private void updateSubmissionSummary(RequestFormDTO requestForm) {
          UserDTO requestor = requestForm.getRequestor().getUser();
          for (ArrayList<String>row : summarySheet){
@@ -264,7 +282,14 @@ public class SampleAnnotationWriter extends ExcelParser {
                 row.set(1, ExcelParserUtils.getDateAsString(requestForm.getDate()));
             } else if (row.contains(ExcelParserConstants.LabHeadContact)){
                 row.set(1, requestForm.getRequestor().getPi().getMailAddress());
+            } else if (row.contains(ExcelParserConstants.BillingContact)){
+                row.set(1, requestForm.getBillingInfo().getContact());
+            } else if (row.contains(ExcelParserConstants.BillingAddress)){
+                row.set(1, requestForm.getBillingInfo().getAddress());
+            } else if (row.contains(ExcelParserConstants.BillingCode)){
+                row.set(1, requestForm.getBillingInfo().getBillingCode());
             }
+            
         }
     }
     

@@ -165,7 +165,7 @@
                                    sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
                                    oncomplete="PF('uploadDialog').show()"
                                    update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" 
-                                   rendered="#{requestBean.wizStep=='personal' and requestBean.editable}"/>
+                                   rendered="#{requestBean.wizStep=='personal' and requestBean.editable and requestBean.newRequest}"/>
                  
                         <p:commandButton 
                             icon="ui-icon-arrow-1-w" 
@@ -331,22 +331,25 @@
                                          id="billingContact" 
                                          required="true" 
                                          requiredMessage="Billing contact is required"
+                                         disabled ="#{!requestBean.editable}"
                                          value="#{requestBean.request.billingInfo.contact}"/>
                             <p:message for="billingContact" />
 
                             <h:outputLabel for="billingAddress" value="Billing Address " />
-                            <p:inputTextarea  
+                            <p:inputTextarea  style="width:300px;"
                                          id="billingAddress" 
                                          rows="6" cols="33"
                                          maxlength="198"
                                          required="true" 
                                          requiredMessage="Billing address is required"
+                                         disabled ="#{!requestBean.editable}"
                                          value="#{requestBean.request.billingInfo.address}"/>
                             <p:message for="billingAddress" />                        
 
                             <h:outputLabel for="billingCode" value="Billing Code: " />
                             <h:inputText style="width:300px;"  
                                          id="billingCode" 
+                                         disabled ="#{!requestBean.editable}"
                                          value="#{requestBean.request.billingInfo.billingCode}"/>
                             <p:message for="billingCode" />
 
@@ -368,6 +371,7 @@
                                               value="#{requestBean.request.authorizationFileName}"
                                               />
                                 <p:fileUpload 
+                                    rendered ="#{requestBean.editable}"
                                     style="float:right;margin-left:2px;font-size:x-small;"
                                     fileUploadListener="#{requestBean.uploadAuthorizationForm}"
                                     label="Upload" multiple="false" mode="advanced" auto="true"
@@ -472,16 +476,16 @@
                                 height: tableHeight,
                                 rowHeaders: true,
                                 colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
-                                contextMenu: true,
+                                contextMenu: editable,
                                 manualRowResize: true,
-                                minSpareRows: 1,
+                                minSpareRows: editable ? 1:0,
                                 afterChange: dataChangeCallback,
                                 afterRemoveRow: dataChangeCallback,
                                 cells: function(row,col,prop) {
                                     var cellProperties = {};
                                     if (col===0 && data[row]['nameEditable']===false && data[row]['nameEditable']!==null){
                                         cellProperties.readOnly = true;
-                                    }else{
+                                    }else if (editable){
                                         cellProperties.readOnly = false;
                                     }
                                     
@@ -592,7 +596,7 @@
                                     var cellProperties = {};
                                     if (col===0 && dataLib[row]['nameEditable']===false && dataLib[row]['nameEditable']!==null){
                                         cellProperties.readOnly = true;
-                                    }else{
+                                    }else if (editable) {
                                         cellProperties.readOnly = false;
                                     }
                                     

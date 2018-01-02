@@ -76,6 +76,7 @@ public class UploadSampleSheetBean {
         }
         System.out.println("getting data");
         try {
+            //this does not work: possible collisions
             transferFile(file);
         } catch (Exception ex) {
             NgsLimsUtility.setFailMessage(messageBoxComponent, null, "File transfer", "Error while transfering the file: " + ex.getMessage());
