@@ -11,6 +11,7 @@ import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import java.util.List;
+import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -80,6 +81,7 @@ public class LibraryDAO {
         session.delete(library);
     }   
 
+    /*
     public List<MinimalLibraryEntity> getDeleatableLibraries() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         
@@ -103,6 +105,52 @@ public class LibraryDAO {
                 .addOrder(Order.desc("id"))
                 .setProjection(Projections.distinct(projList))
                 .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
+        
+        return query.list();
+     }
+*/
+    
+    public List<MinimalLibraryEntity> getDeleatableLibraries() {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        Criteria crit1 = session.createCriteria(SampleEntity.class);        
+        crit1.add(Restrictions.disjunction(
+                Restrictions.eq("status",SampleDTO.status_queued),
+                Restrictions.eq("status",SampleDTO.status_requested))
+                ).setProjection(Projections.distinct(Projections.property("library.id")));
+        
+        Criteria crit2 = session.createCriteria(SampleEntity.class);        
+        crit2.add(Restrictions.disjunction(
+                Restrictions.eq("status",SampleDTO.status_running),
+                Restrictions.eq("status",SampleDTO.status_analyzed))
+                ).setProjection(Projections.distinct(Projections.property("library.id")));
+        
+        List<Integer> rq = crit1.list();
+        List<Integer> ar = crit2.list();
+        List<Integer> deletableLibIds = new ArrayList<Integer>();
+        for(Integer i : rq){
+            if(!ar.contains(i)){
+                deletableLibIds.add(i);
+            }
+        }
+        //for(Integer i : deletableLibIds){
+        //    System.out.println("deletable library id " + i);
+        //}
+                
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("sample.submissionId").as("requestId"));
+        projList.add(Projections.property("sample.user").as("requestor"));
+        projList.add(Projections.property("id").as("libraryId"));
+        projList.add(Projections.property("libraryName").as("libraryName"));
+        
+        Criteria query = session.createCriteria(LibraryEntity.class)
+            .createAlias("samples", "sample",JoinType.INNER_JOIN)                
+            .add(Restrictions.in("id",deletableLibIds))
+            .addOrder(Order.desc("id"))
+            .setProjection(Projections.distinct(projList))
+            .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
+        
+        
         
         return query.list();
      }
