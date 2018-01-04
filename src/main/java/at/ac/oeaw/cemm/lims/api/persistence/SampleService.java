@@ -32,11 +32,11 @@ public interface SampleService {
 
     int getSamplesCount(final Map<String, Object> filters);
 
-    PersistedEntityReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception;
+    PersistedEntityReceipt updateSample(final SampleDTO sample) throws Exception;
     
     Boolean checkIdxExistence(final String sequence);
 
-    List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate);
+    List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate) throws Exception;
     
     List<SampleDTO> getSamplesByStatus(String status);
     

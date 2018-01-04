@@ -590,9 +590,13 @@ a.ui-button:active,
    font-size: 3vmin;
    display: block;
 }
-.highlighted-sample {
+
+#tabMenu\3AlibraryForm\3AlibraryTable_data .ui-state-highlight {
     background-color: #bde7f0;
+    border: 1px solid #40b9d4;
+    color: #333333;
 }
+
 .index-collision-red{
     background-color:#fddfdf;
 }

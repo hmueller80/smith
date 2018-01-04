@@ -190,13 +190,13 @@ public class LazySampleService implements SampleService {
     }
     
     @Override
-    public PersistedEntityReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception {
+    public PersistedEntityReceipt updateSample(final SampleDTO sample) throws Exception {
         
         PersistedEntityReceipt receipt = TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<PersistedEntityReceipt>() {
             @Override
             public PersistedEntityReceipt execute() throws Exception {
                 UserEntity user = userDAO.getUserByID(sample.getUser().getId());
-                return persistOrUpdateSingleSample(sample,isNew,user);
+                return persistOrUpdateSingleSample(sample,false,user);
             }
         });
         
@@ -253,25 +253,21 @@ public class LazySampleService implements SampleService {
      }
     
     @Override
-    public List<PersistedEntityReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) {
+    public List<PersistedEntityReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) throws Exception{
         final List<PersistedEntityReceipt> receipts = new ArrayList<> ();
         
-        try{
-            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-                @Override
-                public Void execute() throws Exception {
-                    for (SampleDTO sample: samplesToUpdate) {
-                        UserEntity user = userDAO.getUserByID(sample.getUser().getId());
-                        receipts.add(persistOrUpdateSingleSample(sample,false,user));
-                    }
-                    
-                    return null;
+        TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+            @Override
+            public Void execute() throws Exception {
+                for (SampleDTO sample : samplesToUpdate) {
+                    UserEntity user = userDAO.getUserByID(sample.getUser().getId());
+                    receipts.add(persistOrUpdateSingleSample(sample, false, user));
                 }
-            });
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        
+
+                return null;
+            }
+        });
+
         return receipts;
     }
     

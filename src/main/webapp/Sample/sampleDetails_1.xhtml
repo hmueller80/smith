@@ -23,33 +23,7 @@
             </h:form>
         </p:confirmDialog>
 
-        <p:dialog widgetVar="addLibraryDialog" modal="true" appendTo="@(body)"
-                  resizable="false">
-            <h:form id="newLibraryForm">
-                <f:facet name="header">
-                    <h:outputText value="Add sample to a new library" />
-                </f:facet>
-                <h:outputLabel for="newLibName" value="LibraryName:  " />
-                <p:inputText id="newLibName"
-                             value="#{singleSampleBean.newLibraryName}"
-                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                </p:inputText>
-                <br />
-                <br />
-                <div style="width: 100%; text-align: center;">
-                    <p:commandButton value="OK" styleClass="ui-confirmdialog-yes"
-                                     icon="ui-icon-check"
-                                     rendered="#{singleSampleBean.modifyPermission and singleSampleBean.editable}"
-                                     process="newLibName"
-                                     update=":tabMenu:libraryForm"
-                                     oncomplete="PF('addLibraryDialog').hide()" />
-                    <p:commandButton value="Cancel" styleClass="ui-confirmdialog-no"
-                                     icon="ui-icon-close" onclick="PF('addLibraryDialog').hide()" />
-                </div>
-            </h:form>
-        </p:dialog>
-
-        <p:panel id="sampleDetailPanel" header="#{singleSampleBean.sampleName} #{bundle['samples.details']}" style="height:98%">
+        <p:panel id="sampleDetailPanel" header="#{singleSampleBean.currentSample.name} #{bundle['samples.details']}" style="height:98%">
             <h:form id="generalSampleForm">
 
                 <div class="ui-g" style="width: 100%">
@@ -80,7 +54,7 @@
                     <div class="ui-g-4">
                         <p:commandButton 
                             action="#{singleSampleBean.delete}"
-                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable or singleSampleBean.isNewForm}"
+                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
                             id="SampleDeletionButton" 
                             value="#{bundle['button.text.delete']}"
                             icon="ui-icon-trash" 
@@ -92,7 +66,6 @@
                         </p:commandButton>
                         <p:button outcome="sampleDetails_1" 
                                   value="Reset"
-                                  disabled="#{singleSampleBean.isNewForm}"
                                   style="float:right;margin:1px" icon="ui-icon-arrowrefresh-1-e">
                             <f:param name="sid" value="#{singleSampleBean.currentSample.id}" />
                         </p:button>
@@ -102,29 +75,23 @@
             </h:form>
 
             <p:tabView id="tabMenu" dynamic="true" style="height:calc(100% - 100px);overflow:hidden">
-                <p:ajax event="tabChange" listener="#{singleSampleBean.refresh}" update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :generalSampleForm" />
                 <p:tab title="Requestor">
-                    <h:panelGrid columns="3"> 
+                    <h:panelGrid columns="2"> 
 
                         <h:outputLabel for="userLogin" value="#{bundle['user.login']}:  " />
                         <h:outputText  style="width:300px;" id="userLogin" value="#{singleSampleBean.currentSample.user.login}"/>
-                        <div />
 
                         <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
                         <h:outputText  style="width:300px;" id="userName" value="#{singleSampleBean.currentSample.user.userName}"/>
-                        <div />
 
                         <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
                         <h:outputText  style="width:300px;" id="userEmail" value="#{singleSampleBean.currentSample.user.mailAddress}"/>
-                        <div />
 
                         <h:outputLabel for="userTel" value="#{bundle['user.tel']}:  " />
                         <h:outputText  style="width:300px;" id="userTel" value="#{singleSampleBean.currentSample.user.phone}"/>
-                        <div />
 
                         <h:outputLabel for="pi" value="#{bundle['user.pi']}:  " /> 
                         <h:outputText  style="width:300px;" id="pi" value="#{singleSampleBean.principalInvestigator.login}"/>
-                        <div />
 
                         <h:outputLabel for="costCenter" value="#{bundle['samples.cost.center']}:  " />
                         <h:outputText  style="width:300px;" id="costCenter" value="#{singleSampleBean.currentSample.costcenter}"/>
@@ -133,152 +100,74 @@
                 </p:tab>
                 <p:tab title="Sample Details">
                     <h:form id="SampleDetailsForm" style="height: 100%" >
-                        <div class="ui-g" style="width: 100%">
-                            <div class="ui-g-12">
-                                <p:commandButton
-                                    actionListener="#{singleSampleBean.saveSampleChanges}"
-                                    disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
-                                    id="SampleModbutton" 
-                                    value="#{bundle['button.text.save']} Sample"
-                                    validateClient="true"
-                                    icon="ui-icon-disk" 
-                                    update=":tabMenu :tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
-                                    style="float:right;margin:1px">
-                                    <p:confirm header="Confirmation"
-                                               message="Are you sure to modify sample #{singleSampleBean.currentSample.id}?"
-                                               icon="ui-icon-alert" />
-                                </p:commandButton>
-
-                            </div>
-                        </div>
                         <div style="height:calc(100% - 44px);overflow-y: scroll ">
-                            <h:panelGrid columns="3" cellpadding="4" >
+                            <h:panelGrid columns="2" cellpadding="4" >
 
                                 <h:outputLabel for="sampleName"
                                                value="#{bundle['samples.sample.name']}:  " />
-                                <p:inputText id="sampleName" style="width:300px;" required="true"
-                                             requiredMessage="Sample Name is required"
-                                             value="#{singleSampleBean.sampleName}"
-                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                    <p:ajax update="@this :tabMenu:libraryForm sampleMessage" />
-                                </p:inputText>
-                                <p:message id="sampleMessage" for="sampleName" />
+                                <h:outputText  style="width:300px;" id="sampleName" value="#{singleSampleBean.currentSample.name}"/>
 
 
                                 <h:outputLabel for="organism"
                                                value="#{bundle['samples.organism']}:  " />
-                                <p:inputText id="organism" style="width:300px;" required="true"
-                                             requiredMessage="Organism is required"
-                                             value="#{singleSampleBean.currentSample.organism}"
-                                             disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                    <p:ajax update="@this organismMessage" />
-                                </p:inputText>
-                                <p:message id="organismMessage" for="organism" />
+                                <h:outputText  style="width:300px;" id="organism" value="#{singleSampleBea.currentSample.organism}"/>
+
 
                                 <h:outputLabel for="sampleConcentration"
                                                value="#{bundle['samples.concentration']}:  " />
-                                <p:inputNumber id="sampleConcentration"
-                                               value="#{singleSampleBean.currentSample.concentration}"
-                                               decimalSeparator="." required="true"
-                                               requiredMessage="Sample Concentration is required"
-                                               validatorMessage="Sample Concentration must be a positive number"
-                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                    <p:ajax update="@this concentrationMessage" />
-                                    <f:validateDoubleRange minimum="0.0" />
-                                </p:inputNumber>
-                                <p:message id="concentrationMessage" for="sampleConcentration" />
+                                <h:outputText  style="width:300px;" id="sampleConcentration" value="#{singleSampleBean.currentSample.concentration}"/>
 
 
                                 <h:outputLabel for="totalAmount"
                                                value="#{bundle['samples.total.amount']}:  " />
-                                <p:inputNumber id="totalAmount"
-                                               value="#{singleSampleBean.currentSample.totalAmount}"
-                                               decimalSeparator="." required="true"
-                                               requiredMessage="Total Amount is required"
-                                               validatorMessage="Total Amount must be a positive number"
-                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                    <p:ajax update="@this totalAmountMessage" />
-                                    <f:validateDoubleRange minimum="0.0" />
-                                </p:inputNumber>
-                                <p:message for="totalAmount" id="totalAmountMessage" />
+                                <h:outputText  style="width:300px;" id="totalAmount" value="#{singleSampleBean.currentSample.totalAmount}"/>
+
 
                                 <h:outputLabel for="bulkFragmentSize"
                                                value="#{bundle['samples.bulk.fragment.size']}:  " />
-                                <p:inputNumber id="bulkFragmentSize"
-                                               value="#{singleSampleBean.currentSample.bulkFragmentSize}"
-                                               decimalSeparator="." required="true"
-                                               requiredMessage="Fragment size is required"
-                                               validatorMessage="Fragment size ust be a positive number"
-                                               disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}">
-                                    <p:ajax update="@this fragmentSizeMessage" />
-                                    <f:validateDoubleRange minimum="0.0" />
-                                </p:inputNumber>
-                                <p:message for="bulkFragmentSize" id="fragmentSizeMessage" />
+                                <h:outputText  style="width:300px;" id="bulkFragmentSize" value="#{singleSampleBean.currentSample.bulkFragmentSize}"/>
+
 
                                 <h:outputLabel for="sampleDescription"
                                                value="#{bundle['samples.description']}: " />
-                                <p:inputTextarea id="sampleDescription"
-                                                 style="width:300px;height:100px;"
-                                                 value="#{singleSampleBean.currentSample.description}"
-                                                 disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
-                                <p:message for="sampleDescription" />
+                                <h:outputText  style="width:300px;" id="sampleDescription" value="#{singleSampleBean.currentSample.description}"/>
+
 
                                 <h:outputLabel for="comments"
                                                value="#{bundle['samples.comments']}: " />
-                                <p:inputTextarea id="comments" style="width:300px;height:100px;"
-                                                 value="#{singleSampleBean.currentSample.comment}"
-                                                 disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
-                                <p:message for="comments" />
+                                <h:outputText  style="width:300px;" id="comments" value="#{singleSampleBean.currentSample.comment}"/>
+
 
                             </h:panelGrid>
                         </div>
                     </h:form>
                 </p:tab>
-                <p:tab title="Application Details" rendered="#{!singleSampleBean.isNewForm}">
+                <p:tab title="Library Details">
                     <h:form id="libraryForm" style="height:100%">
                         <div class="ui-g" style="width: 100%">
                             <div class="ui-g-12">
                                 <p:commandButton
-                                    actionListener="#{singleSampleBean.saveLibraryChanges}"
-                                    disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable or singleSampleBean.isNewForm}"
+                                    actionListener="#{singleSampleBean.persistLibrary()}"
+                                    disabled="#{!singleSampleBean.modifyPermission}"
                                     id="LibraryModbutton" 
-                                    value="#{bundle['button.text.save']} Application"
+                                    value="#{bundle['button.text.save']} Indexes"
                                     icon="ui-icon-disk" 
-                                    update=":tabMenu:SampleDetailsForm :tabMenu:libraryForm :menuForm:messages :generalSampleForm"
+                                    update=":tabMenu:libraryForm"
                                     style="float:right;margin:1px">
                                     <p:confirm header="Confirmation"
-                                               message="Are you sure to modify sample #{singleSampleBean.currentSample.id}?"
+                                               message="Are you sure to modify library #{singleSampleBean.currentLibrary.name}?"
                                                icon="ui-icon-alert" />
                                 </p:commandButton>
                             </div>
                         </div>
-                        <h:panelGrid columns="4" cellpadding="4">
+                        <h:panelGrid columns="3" cellpadding="4">
 
                             <h:outputLabel for="libraryName"
                                            value="#{bundle['samples.library.name']}:  " />
-
-                            <p:selectOneMenu id="librarySelector"
-                                             converter="#{genericConverter}"
-                                             value="#{singleSampleBean.currentLibrary}" filter="true"
-                                             filterMatchMode="contains"
-                                             rendered="#{singleSampleBean.modifyPermission and singleSampleBean.editable}">
-                                <f:selectItems id="librarySelect"
-                                               value="#{singleSampleBean.editableLibraries}"
-                                               itemLabel="#{library.name}" itemValue="#{library}"
-                                               var="library" />
-                                <p:ajax update=":tabMenu:libraryForm libraryTable @this" />
-                            </p:selectOneMenu>
-
-                            <p:commandButton onclick="PF('addLibraryDialog').show()"
-                                             icon="ui-icon-plus" title="Add a new library"
-                                             rendered="#{singleSampleBean.modifyPermission and singleSampleBean.editable}" />
-
-                            <h:outputText id="libraryName"
-                                          value="#{singleSampleBean.currentLibrary.name}"
-                                          rendered="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}" />
+                            <h:outputText  style="width:300px;" id="libraryName" value="#{singleSampleBean.currentLibrary.name}"/>
 
                             <p:messages for="libraryName" id="libraryPermissionsMessages"
-                                        showDetail="true" autoUpdate="true" />
+                                        showDetail="true" autoUpdate="false" />
 
                         </h:panelGrid>
 
@@ -291,37 +180,37 @@
                                      emptyMessage="#{bundle['sample.emptymessage']}"
                                      sortBy="#{sample.submissionId}" 
                                      sortOrder="descending"
-                                     editable="#{singleSampleBean.modifyPermission and singleSampleBean.editable and singleSampleBean.libraryEditable}"
+                                     editable="#{singleSampleBean.modifyPermission}"
                                      editMode="cell" 
+                                     selectionMode="single" 
+                                     selection="#{singleSampleBean.selectedSampleInLibrary}" 
+                                     rowKey="#{sample.id}"
                                      rowStyleClass="#{singleSampleBean.getLibraryRowClass(sample)}">
-
+                            <p:ajax event="rowSelect" update="@this" />
+        
                             <p:column id="editColumn" style="width:15px;">
-                                <h:outputText styleClass="ui-icon ui-icon-pencil" rendered="#{sample.id==singleSampleBean.currentSample.id}"/>
+                                <h:outputText styleClass="ui-icon ui-icon-pencil" rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id}"/>
                             </p:column>
                             
                             <p:column id="idSamColumn" headerText="#{bundle['samples.sample.id']}">                 
-                                <h:outputText value="#{sample.id}" rendered="#{sample.id!=singleSampleBean.currentSample.id }"/>
-                                <h:outputText value="#{singleSampleBean.currentSample.id }" rendered="#{sample.id==singleSampleBean.currentSample.id }"/>
+                                <h:outputText value="#{sample.id }"/>
                             </p:column>
 
                             <p:column id="nameColumn"  headerText="#{bundle['samples.sample.name']}">
-                                <h:outputText id = "sampleNameValue" value="#{sample.name}" rendered="#{sample.id!=singleSampleBean.currentSample.id }"/>
-                                <h:outputText id = "sampleNameValue2" value="#{singleSampleBean.sampleName}" rendered="#{sample.id==singleSampleBean.currentSample.id }"/>
+                                <h:outputText id = "sampleNameValue" value="#{sample.name}"/>
                                 <p:tooltip id="toolTipName" value="#{ sample.name}" 
                                            for = "sampleNameValue" position="top"/>
-                                <p:tooltip id="toolTipName2" value="#{singleSampleBean.sampleName}" 
-                                           for = "sampleNameValue2" position="top"/>
                             </p:column>
 
                             <p:column id="indexColumn" 
                                       headerText="#{bundle['samples.sequencing.index']}">
-                                <p:cellEditor rendered="#{sample.id==singleSampleBean.currentSample.id }">
+                                <p:cellEditor rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id }">
                                     <f:facet name="output">
-                                        <h:outputText value="#{singleSampleBean.sequencingIndex}" />
+                                        <h:outputText value="#{sample.index.index}" />
                                     </f:facet>
                                     <f:facet name="input" >
                                         <p:selectOneMenu  
-                                            value ="#{singleSampleBean.sequencingIndex}"
+                                            value ="#{sample.index.index}"
                                             filter="true" 
                                             filterMatchMode="contains" 
                                             style="width:80%">
@@ -330,99 +219,31 @@
                                                 value="#{singleSampleBean.possibleIndexes}"
                                                 itemLabel="#{index}" itemValue="#{index}"
                                                 var="index" />
-                                            <p:ajax event="change" update=":tabMenu:libraryForm"/>
+                                            <p:ajax listener="#{singleSampleBean.validateLibrary()}" 
+                                                    update=":tabMenu:libraryForm"/>
                                         </p:selectOneMenu>     
                                     </f:facet>               
                                 </p:cellEditor>
-                                <h:outputText value="#{sample.index.index}" rendered="#{sample.id!=singleSampleBean.currentSample.id }"/>
+                                <h:outputText value="#{sample.index.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
                             </p:column>
 
-                            <p:column id="applicationColumn" headerText="#{bundle['samples.application']}">
-                                <p:cellEditor rendered="#{sample.id==singleSampleBean.currentSample.id }">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{singleSampleBean.currentApplication.applicationName}" />
-                                    </f:facet>
-                                    <f:facet name="input" >
-                                        <p:inputText value="#{singleSampleBean.currentApplication.applicationName}"
-                                                     id="applicationValue"
-                                                     required="true" 
-                                                     requiredMessage="Application Name is required"/>
-                                        <p:message for="applicationValue" />
-
-                                    </f:facet>               
-                                </p:cellEditor>
-                                <h:outputText value="#{sample.experimentName}" rendered="#{sample.id!=singleSampleBean.currentSample.id}"/>
+                            <p:column id="applicationColumn" headerText="#{bundle['samples.application']}">                              
+                                <h:outputText value="#{sample.experimentName}"/>
                             </p:column>
 
 
                             <p:column id="readModeColumn" headerText="#{bundle['samples.read.mode']}">
-                                <p:cellEditor rendered="#{sample.id==singleSampleBean.currentSample.id}">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{singleSampleBean.currentApplication.readMode}" />
-                                    </f:facet>
-                                    <f:facet name="input" >
-                                        <p:selectOneMenu  value ="#{singleSampleBean.currentApplication.readMode}" style="width:80%">>
-                                            <f:selectItems 
-                                                id="readModeSelect" 
-                                                value="#{preferences.readmode}"
-                                                itemLabel="#{readMode}" itemValue="#{readMode}"
-                                                var="readMode" /> 
-                                        </p:selectOneMenu>     
-                                    </f:facet>               
-                                </p:cellEditor>
-                                <h:outputText value="#{sample.application.readMode}" rendered="#{sample.id!=singleSampleBean.currentSample.id}"/>
+                                <h:outputText value="#{sample.application.readMode}"/>
                             </p:column>
 
-                            <p:column id="readLengthColumn" headerText="#{bundle['samples.read.length']}">
-                                <p:cellEditor rendered="#{sample.id==singleSampleBean.currentSample.id}">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{singleSampleBean.currentApplication.readLength}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputText id="readLength" 
-                                                     value="#{singleSampleBean.currentApplication.readLength}" 
-                                                     validatorMessage="Read Length must be an integer between 5 and 200"
-                                                     converterMessage="Read Length must be an integer between 5 and 200"
-                                                     required="true" 
-                                                     requiredMessage="Read Length is required" >
-                                            <f:validateDoubleRange minimum="5" maximum="200" />
-                                        </p:inputText>
-                                        <p:message for="readLength" />
-                                    </f:facet>
-                                </p:cellEditor>                             
-                                <h:outputText value="#{sample.application.readLength}" rendered="#{sample.id!=singleSampleBean.currentSample.id}" />
+                            <p:column id="readLengthColumn" headerText="#{bundle['samples.read.length']}">                                           
+                                <h:outputText value="#{sample.application.readLength}" />
                             </p:column>
-
-                            <p:column id="depthColumn" headerText="#{bundle['samples.depth']}">
-                                <p:cellEditor rendered="#{sample.id==singleSampleBean.currentSample.id}">
-                                    <f:facet name="output">
-                                        <h:outputText value="#{singleSampleBean.currentApplication.depth}" />
-                                    </f:facet>
-                                    <f:facet name="input">
-                                        <p:inputText id="depth" 
-                                                     value="#{singleSampleBean.currentApplication.depth}" 
-                                                     required="true" 
-                                                     requiredMessage="Depth is required" 
-                                                     converterMessage="Depth must be an integer between 1 and 500"
-                                                     validatorMessage="Depth must be an integer between 1 and 500">
-                                            <f:validateDoubleRange minimum="1" maximum="500" />
-                                        </p:inputText>
-                                        <p:message for="depth" />
-                                    </f:facet>
-                                </p:cellEditor>                             
-                                <h:outputText value="#{sample.application.depth}" rendered="#{sample.id!=singleSampleBean.currentSample.id}" />
-
-                            </p:column>
-
+                            
                             <p:column id="statusColumn" headerText="#{bundle['samples.status']}">
-                                <h:outputText value="#{sample.status}" rendered="#{sample.id!=singleSampleBean.currentSample.id}"/>
-                                <h:outputText value="#{singleSampleBean.currentSample.status}" rendered="#{sample.id==singleSampleBean.currentSample.id}"/>
+                                <h:outputText value="#{singleSampleBean.currentSample.status}" />
                             </p:column>       
-                            <f:facet name="footer">
-                                <p:messages for="indexCollisionMsg" id="indexCollisionMessages" showDetail="true" autoUpdate="true"/>
-                            </f:facet>
                         </p:dataTable>
-
                     </h:form>
                 </p:tab>
             </p:tabView>
