@@ -15,6 +15,7 @@ import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import at.ac.oeaw.cemm.lims.util.Levenshtein;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.Serializable;
@@ -40,6 +41,9 @@ public class SingleSampleBean implements Serializable {
     public static final Integer minimumDistanceThreshold = 3;
     
     @Inject private ServiceFactory services;
+    
+    @ManagedProperty(value = "#{sampleLock}")
+     private SampleLock sampleLock;
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -117,6 +121,16 @@ public class SingleSampleBean implements Serializable {
     public void setRoleManager(NewRoleManager roleManager) {
         this.roleManager = roleManager;
     }  
+
+    public SampleLock getSampleLock() {
+        return sampleLock;
+    }
+
+    public void setSampleLock(SampleLock sampleLock) {
+        this.sampleLock = sampleLock;
+    }
+    
+    
 
     //GETTERS FOR MAIN DTOs
     public SampleDTO getCurrentSample() {
@@ -216,6 +230,7 @@ public class SingleSampleBean implements Serializable {
 
         if (isDeleatable()) {
             try {
+                sampleLock.lock();
                 services.getSampleService().deleteSample(currentSample);
             } catch (Exception ex) {
                 NgsLimsUtility.setFailMessage(null, null,
@@ -223,6 +238,8 @@ public class SingleSampleBean implements Serializable {
                 System.out.println("Error in DB " + ex.getMessage());
 
                 return null;
+            }finally{
+                sampleLock.unlock();
             }
         } else {
             NgsLimsUtility.setFailMessage(null, null,

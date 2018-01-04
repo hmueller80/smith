@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.inject.Inject;
 
 /**
@@ -17,30 +18,42 @@ import javax.inject.Inject;
  */
 @ManagedBean(eager=true)
 @ApplicationScoped
-public class RequestIdBean {
+public class SampleLock {
     @Inject ServiceFactory services;
+    
+    @ManagedProperty(value="#{requestIdBean}")
+    RequestIdBean requestIdLock;
     
     private ReentrantLock lock = new ReentrantLock();
 
-    public void getLock(){
-        lock.lock();
-    }
     
-    public Integer getNextId() {
+    public void lock() {
         lock.lock();
-        Integer maxIdinDB = services.getRequestFormService().getMaxRequestId();    
-        System.out.println("Max Id " +maxIdinDB);
-        unlock();
-        return maxIdinDB+1;
+        requestIdLock.getLock();
     }
     
     
-    public void unlock(){
+    public void unlock() {
         try{
-            if (lock.isHeldByCurrentThread()){
+            if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
-        }catch(Exception e) {}
-    } 
+        }catch(Exception e){
+        }finally{
+            try{
+                requestIdLock.unlock();
+            }catch(Exception e){}
+        }
+    }
+
+    public RequestIdBean getRequestIdLock() {
+        return requestIdLock;
+    }
+
+    public void setRequestIdLock(RequestIdBean requestIdLock) {
+        this.requestIdLock = requestIdLock;
+    }
+    
+    
     
 }

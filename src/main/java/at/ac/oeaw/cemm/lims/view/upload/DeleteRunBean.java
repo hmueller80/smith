@@ -13,6 +13,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
+import at.ac.oeaw.cemm.lims.util.RunIdBean;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import javax.annotation.PostConstruct;
 
@@ -25,6 +26,9 @@ import javax.annotation.PostConstruct;
 public class DeleteRunBean {
     @Inject ServiceFactory services;
     
+    @ManagedProperty(value = "#{runIdBean}")
+    private RunIdBean runIdBean;
+
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
@@ -43,6 +47,14 @@ public class DeleteRunBean {
         this.roleManager = roleManager;
     }
 
+    public RunIdBean getRunIdBean() {
+        return runIdBean;
+    }
+
+    public void setRunIdBean(RunIdBean runIdBean) {
+        this.runIdBean = runIdBean;
+    }
+
     public List<RunDTO> getRunsAvailable() {
         return services.getRunService().getAllRunsMinimalInfo();
     }
@@ -58,11 +70,14 @@ public class DeleteRunBean {
     
     public void deleteRun() {
         try{
+            runIdBean.getLock();
             services.getRunService().bulkDeleteRun(selectedRun.getId());
             NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted run for flowcell "+selectedRun.getFlowCell()+"("+selectedRun.getId()+")");
             init();
         }catch(Exception e){
             NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
+        }finally{
+            runIdBean.unlock();
         }
     }
             

@@ -34,8 +34,6 @@ public interface RequestService {
 
     public LibraryDTO getLibraryByName(String libraryName);
 
-    public void deleteLibraryIfEmpty(String oldLibraryName);
-
     public RequestDTO getMinimalRequestByIdAndRequestor(Integer rid, String requestor);
 
     public  List<RequestDTO> getAllRequests();

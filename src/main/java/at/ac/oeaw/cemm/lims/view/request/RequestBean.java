@@ -327,7 +327,7 @@ public class RequestBean {
         
         for (ValidatorMessage message : billingValidation.getValidationMessages()) {
             if (ValidatorSeverity.WARNING.equals(message.getType())) {
-                NgsLimsUtility.setFailMessage("legalMessage", "", message.getSummary(), message.getDescription());
+                NgsLimsUtility.setWarningMessage("legalMessage", "", message.getSummary(), message.getDescription());
             }
         }
         
@@ -459,6 +459,8 @@ public class RequestBean {
         if (!areSamplesFailed && !areLibrariesFailed && isLegalValid()) {
             if (isEditable()) {
                 try {
+                    requestIdBean.getLock();
+
                     File targetPath = sampleAnnotationPath;
                     
                     if (newRequest) {
@@ -521,7 +523,12 @@ public class RequestBean {
     
     public String deleteRequest() {
         if (!newRequest){
-            return DeleteRequestFormBean.deleteRequestInternal(request, roleManager, services, "validationMessages", "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId());
+            try{
+                requestIdBean.getLock();
+                return DeleteRequestFormBean.deleteRequestInternal(request, roleManager, services, "validationMessages", "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId());
+            }finally{
+                requestIdBean.unlock();
+            }
         }
         
         return null;

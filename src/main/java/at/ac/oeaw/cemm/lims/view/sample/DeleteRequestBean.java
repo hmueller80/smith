@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.util.LinkedList;
@@ -36,6 +37,9 @@ public class DeleteRequestBean {
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
+    @ManagedProperty(value="#{sampleLock}")
+    private SampleLock sampleLock;
+        
     private RequestDTO selectedRequest = null;
     private LibraryDTO selectedLibrary = null;    
     
@@ -51,6 +55,14 @@ public class DeleteRequestBean {
 
     public void setRoleManager(NewRoleManager roleManager) {
         this.roleManager = roleManager;
+    }
+
+    public SampleLock getSampleLock() {
+        return sampleLock;
+    }
+
+    public void setSampleLock(SampleLock sampleLock) {
+        this.sampleLock = sampleLock;
     }
     
     public List<RequestDTO> getRequestsAvailable() {
@@ -68,6 +80,7 @@ public class DeleteRequestBean {
     
     public void deleteRequest() {
         try{
+            sampleLock.lock();
             if (selectedLibrary == null){
                 services.getRequestService().deleteAllLibrariesInRequest(selectedRequest);
             }else{
@@ -78,6 +91,8 @@ public class DeleteRequestBean {
         }catch(Exception e){
             e.printStackTrace();
             NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
+        }finally{
+            sampleLock.unlock();
         }
     }
     

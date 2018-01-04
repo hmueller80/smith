@@ -48,7 +48,8 @@ public class RunAssemblerBean {
     @Inject
     private DTOFactory myDTOFactory;
     
-    @Inject private RunIdBean runIdBean;
+    @ManagedProperty(value = "#{runIdBean}")
+    private RunIdBean runIdBean;
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -78,7 +79,11 @@ public class RunAssemblerBean {
         runFolders = new ArrayList<>();
         for (File folder: new File(Preferences.getRunfolderroot()).listFiles()){
             if (folder.isDirectory() && Arrays.asList(folder.list()).contains("RunInfo.xml")){
-                runFolders.add(new RunFolder(folder.getName()));
+                RunFolder runFolder = new RunFolder(folder.getName());
+                List<SampleRunDTO> existingRuns = services.getRunService().getRunsByFlowCell(runFolder.getFlowCell());
+                if (existingRuns == null || existingRuns.isEmpty()){
+                    runFolders.add(runFolder);
+                }
             }
         }
         
@@ -130,6 +135,15 @@ public class RunAssemblerBean {
         this.roleManager = roleManager;
     }
 
+    public RunIdBean getRunIdBean() {
+        return runIdBean;
+    }
+
+    public void setRunIdBean(RunIdBean runIdBean) {
+        this.runIdBean = runIdBean;
+    }
+   
+
     public List<LibraryToRunDTO> getSelectedLibraries() {
         return selectedLibraries;
     }
@@ -168,93 +182,105 @@ public class RunAssemblerBean {
     
     public void prepareSubmission() {
         samplesToRun = new LinkedList<>();
-        
+
         boolean failed = false;
+        
+        
+        List<SampleRunDTO> existingRuns = null;
+        if (selectedFolder!=null){
+            existingRuns = services.getRunService().getRunsByFlowCell(selectedFolder.getFlowCell());
+        }
         
         if (selectedFolder == null) {
             NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Flowcell", "No run folder selected");
-            failed =true;
+            failed = true;
         } else if (selectedLibraries == null || selectedLibraries.isEmpty()) {
             NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Library", "No library selected");
             failed = true;
+        } else if (existingRuns != null && !existingRuns.isEmpty()) {
+            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Flowcell", "A run for flowcell " + selectedFolder.getFlowCell() + "already exists");
+            failed = true;
         } else {
             Map<String, Set<String>> indexesInLanes = new HashMap<>();
-            for (LibraryToRunDTO library: selectedLibraries){
-                if (library.getLanesSet()==null || library.getLanesSet().isEmpty() ){
-                    NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Lanes", "No lanes associated to selected library "+library.getLibrary().getName());
+            for (LibraryToRunDTO library : selectedLibraries) {
+                if (library.getLanesSet() == null || library.getLanesSet().isEmpty()) {
+                    NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Lanes", "No lanes associated to selected library " + library.getLibrary().getName());
                     failed = true;
                     break;
                 }
                 Set<String> lanes = library.getLanesSet();
-                for (SampleDTO sample : library.getLibrary().getSamples()){
+                for (SampleDTO sample : library.getLibrary().getSamples()) {
 
-                    for (String lane: lanes){
+                    for (String lane : lanes) {
                         Set<String> indexes = indexesInLanes.get(lane);
                         if (indexes == null) {
                             indexes = new HashSet<>();
                             indexesInLanes.put(lane, indexes);
                         }
-                        if (indexes.contains(sample.getCompoundIndex())){
-                            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Index", "Index collision in lane "+lane+" for index "+sample.getCompoundIndex());
+                        if (indexes.contains(sample.getCompoundIndex())) {
+                            NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Index", "Index collision in lane " + lane + " for index " + sample.getCompoundIndex());
                             failed = true;
                             break;
-                        }else{
+                        } else {
                             indexes.add(sample.getCompoundIndex());
                         }
                     }
-                    
-                    if (failed) break;
+
+                    if (failed) {
+                        break;
+                    }
 
                     SampleRunDTO newSampleRun = myDTOFactory.getSampleRunDTO(
-                                null, 
-                                sample, 
-                                roleManager.getCurrentUser(), 
-                                selectedFolder.getFlowCell(),
-                                lanes, 
-                                selectedFolder.getRunFolderName(),
-                                false);
+                            null,
+                            sample,
+                            roleManager.getCurrentUser(),
+                            selectedFolder.getFlowCell(),
+                            lanes,
+                            selectedFolder.getRunFolderName(),
+                            false);
 
-                    for (String lane: newSampleRun.getLanes()){
-                        samplesToRun.add(new LaneSampleRow(newSampleRun,lane));
+                    for (String lane : newSampleRun.getLanes()) {
+                        samplesToRun.add(new LaneSampleRow(newSampleRun, lane));
                     }
                 }
             }
         }
-        
+
         if (failed) {
             samplesToRun = new LinkedList<>();
         }
-        
+
     }
-    
-    public String submitRequest(){
-        if (roleManager.getHasRunAddPermission()){
-            if (!samplesToRun.isEmpty()){
+
+    public String submitRequest() {
+        if (roleManager.getHasRunAddPermission()) {
+            if (!samplesToRun.isEmpty()) {
                 try {
+                    runIdBean.getLock();
                     Integer runId = runIdBean.getNextId();
                     if (runId == null) {
                         throw new Exception("Could not get the next run Id");
                     }
-                    
+
                     Set<SampleRunDTO> sampleRuns = new HashSet<>();
                     for (LaneSampleRow lane : samplesToRun) {
                         sampleRuns.add(lane.getSample());
                     }
-                    for (SampleRunDTO sampleRun: sampleRuns){
+                    for (SampleRunDTO sampleRun : sampleRuns) {
                         sampleRun.setRunId(runId);
                     }
-                    
+
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns, true);
                     return "runDetails.jsg?faces-redirect=true&rid=" + receipts.iterator().next().getId();
                 } catch (Exception ex) {
                     NgsLimsUtility.setFailMessage(null, null, "Server Error", ex.getMessage());
-                } finally{
+                } finally {
                     runIdBean.unlock();
                 }
-            }else{
+            } else {
                 NgsLimsUtility.setFailMessage(null, null, "Samples", "No Samples to upload");
             }
-        }else{
+        } else {
             NgsLimsUtility.setFailMessage(null, null, "User permission", "You do not have permission to upload runs");
         }
         return null;

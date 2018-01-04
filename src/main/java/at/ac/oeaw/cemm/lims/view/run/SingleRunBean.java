@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.RunIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.util.Collections;
@@ -38,6 +39,9 @@ public class SingleRunBean {
     
     @Inject
     AnalysisManager analysisManager;
+    
+    @ManagedProperty(value = "#{runIdBean}")
+    private RunIdBean runIdBean;
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -98,6 +102,14 @@ public class SingleRunBean {
         return roleManager;
     }
 
+    public RunIdBean getRunIdBean() {
+        return runIdBean;
+    }
+
+    public void setRunIdBean(RunIdBean runIdBean) {
+        this.runIdBean = runIdBean;
+    }
+
     public Integer getRunId() {
         return runId;
     }
@@ -124,11 +136,14 @@ public class SingleRunBean {
 
     public String deleteRun() {
         try {
+            runIdBean.getLock();
             services.getRunService().bulkDeleteRun(runId);
             return "runDeleted_1?rid=" + runId + "&faces-redirect=true";
         } catch (Exception e) {
             NgsLimsUtility.setFailMessage("delete", null, "Error in deleting ", e.getMessage());
             return null;
+        }finally{
+            runIdBean.unlock();
         }
     }
     

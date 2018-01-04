@@ -299,26 +299,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void deleteLibraryIfEmpty(final String oldLibraryName) {
-        try {
-            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-                @Override
-                public Void execute() throws Exception {
-                    LibraryEntity library = libraryDAO.getLibraryByName(oldLibraryName);
-                    
-                    if (library.getSamples().isEmpty()) {
-                        libraryDAO.deleteLibrary(library);
-                    }
-                    
-                    return null;
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }    
-    }
-
-    @Override
     public RequestDTO getMinimalRequestByIdAndRequestor(final Integer rid, final String requestor) {
         try {
             return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RequestDTO >() {

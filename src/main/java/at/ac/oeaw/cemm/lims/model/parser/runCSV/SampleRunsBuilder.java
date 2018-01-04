@@ -102,6 +102,11 @@ public class SampleRunsBuilder {
                 String flowCell= getStringFromField(record,RunFormCSVHeader.Flowcell);
                 if (previousFlowcell==null){
                     previousFlowcell = flowCell;
+                    List<SampleRunDTO> existingRuns = services.getRunService().getRunsByFlowCell(flowCell);
+                    if (existingRuns!= null && !existingRuns.isEmpty()){
+                        validationStatus.addFailMessage("Flowcell", "A run for flowcell " +flowCell+"already exists");
+                        break;
+                    }
                 }else if (!previousFlowcell.equals(flowCell)){
                     validationStatus.addFailMessage("Flowcell", "Multiple flowcells found in the same request:" +previousFlowcell+","+flowCell);
                     break;

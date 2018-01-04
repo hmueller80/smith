@@ -11,7 +11,7 @@ import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import at.ac.oeaw.cemm.lims.util.Preferences;
-import at.ac.oeaw.cemm.lims.util.RequestIdBean;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -51,8 +51,8 @@ public class UploadSampleRequestNewBean implements Serializable {
     @ManagedProperty("#{newRoleManager}")
     protected NewRoleManager roleManager;
 
-    @ManagedProperty(value = "#{requestIdBean}")
-    private RequestIdBean requestIdBean;
+    @ManagedProperty(value = "#{sampleLock}")
+    private SampleLock sampleLock;
     
     @Inject private MailBean mailBean;
     @Inject private ServiceFactory services;
@@ -86,7 +86,7 @@ public class UploadSampleRequestNewBean implements Serializable {
                 return;
             }
 
-            parsedCSV = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename),requestIdBean);
+            parsedCSV = sampleRequestBuilder.buildRequestFromCSV(new File(destination + filename));
             //--------------LOG PARSING STATUS ------------------------------------
             System.out.println("---------Parsed file " + filename + "----------");
             System.out.println("Is Valid: " + !parsedCSV.getValidationStatus().isFailed());
@@ -123,7 +123,8 @@ public class UploadSampleRequestNewBean implements Serializable {
                 RequestDTO requestObj = parsedCSV.getRequestObj();
                 
                 try {
-                    if (requestObj.getRequestId() >= requestIdBean.getNextId()){
+                    sampleLock.lock();
+                    if (requestObj.getRequestId() >= sampleLock.getRequestIdLock().getNextId()){
                         Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestObj);
                         sendMailWithReceipts(requestObj.getRequestorUser(), receipts);
                         NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Samples uploaded correctly");
@@ -134,8 +135,8 @@ public class UploadSampleRequestNewBean implements Serializable {
                     NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());
                     System.out.println("Failed upload to DB");
                     e.printStackTrace();
-                }finally {
-                    requestIdBean.unlock();
+                }finally {                  
+                    sampleLock.unlock();
                 }
             } else {
                 NgsLimsUtility.setFailMessage(null, null, "Error while parsing the request", "Malformed CSV");
@@ -206,14 +207,13 @@ public class UploadSampleRequestNewBean implements Serializable {
         this.mailBean = mailBean;
     }
 
-    public RequestIdBean getRequestIdBean() {
-        return requestIdBean;
+    public SampleLock getSampleLock() {
+        return sampleLock;
     }
 
-    public void setRequestIdBean(RequestIdBean requestIdBean) {
-        this.requestIdBean = requestIdBean;
+    public void setSampleLock(SampleLock sampleLock) {
+        this.sampleLock = sampleLock;
     }
-    
     
 
     public ValidatedCSV<RequestDTO> getParsedCSV() {

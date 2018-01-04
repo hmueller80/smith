@@ -232,7 +232,7 @@ public class UserServiceImpl implements UserService {
             });
     }
     
-    protected UserEntity persistOrUpdateUserOnly(UserDTO user, boolean isNew) throws Exception {
+    private UserEntity persistOrUpdateUserOnly(UserDTO user, boolean isNew) throws Exception {
         UserEntity userEntity;
         if (!isNew) {
             userEntity = userDAO.getUserByLogin(user.getLogin());

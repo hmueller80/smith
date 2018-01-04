@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.view.request;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.File;
@@ -29,6 +30,9 @@ public class DeleteRequestFormBean {
     
     @Inject ServiceFactory services;
     
+    @ManagedProperty(value="#{requestIdBean}")
+    private RequestIdBean requestIdBean;
+   
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
@@ -50,6 +54,14 @@ public class DeleteRequestFormBean {
         this.roleManager = roleManager;
     }
 
+    public RequestIdBean getRequestIdBean() {
+        return requestIdBean;
+    }
+
+    public void setRequestIdBean(RequestIdBean requestIdBean) {
+        this.requestIdBean = requestIdBean;
+    }
+
     public List<RequestFormDTO> getDeleatableRequests() {
         return services.getRequestFormService().getDeleatableRequests();
     }
@@ -64,7 +76,12 @@ public class DeleteRequestFormBean {
     }
     
      public void deleteRequest(){
-        deleteRequestInternal(selectedRequest,roleManager,services,null,null);
+         try{
+            requestIdBean.getLock();
+            deleteRequestInternal(selectedRequest,roleManager,services,null,null);
+         }finally{
+             requestIdBean.unlock();
+         }
         init();
      }
     
