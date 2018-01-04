@@ -43,5 +43,5 @@ public interface SampleService {
     List<ApplicationDTO> getAllApplications();
         
     List<SampleDTO> getAllPooledSamples(SampleDTO sample);
-
+    
 }

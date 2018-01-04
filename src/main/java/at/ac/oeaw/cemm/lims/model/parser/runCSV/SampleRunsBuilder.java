@@ -41,7 +41,9 @@ public class SampleRunsBuilder {
         //This objects maps sample Id -> sampleRuns)
         Map<Integer,SampleRunDTO> samples = new HashMap<>();
         Map<String,Set<String>> lanesCheck = new HashMap<>();
-                
+        Map<String,Set<Integer>> libraryToSampleInCSV = new HashMap<>(); 
+        Map<String,Set<Integer>> libraryToSampleInDB = new HashMap<>(); 
+
         String runFolder = csvFile.getName().replace(".csv","");
                 
         CSVValidationStatus validationStatus = new CSVValidationStatus();
@@ -119,6 +121,31 @@ public class SampleRunsBuilder {
                     
                 SampleRunDTO currentSampleRun = samples.get(sampleId);
                 currentSampleRun.addLane(laneName);  
+                
+                String libraryId = sample.getLibraryName();
+                Set<Integer> samplesInLibrary = libraryToSampleInCSV.get(libraryId);
+                Set<Integer> samplesInDB = libraryToSampleInDB.get(libraryId);
+                if (samplesInLibrary == null){
+                    samplesInLibrary = new HashSet<>();
+                    libraryToSampleInCSV.put(libraryId, samplesInLibrary);     
+                }
+                samplesInLibrary.add(sample.getId());
+
+                if (samplesInDB == null){
+                    samplesInDB = new HashSet<>();
+                    libraryToSampleInDB.put(libraryId, samplesInDB);
+                    for (SampleDTO pooledSample: services.getSampleService().getAllPooledSamples(sample)){
+                        samplesInDB.add(pooledSample.getId());
+                    }
+                }
+            }
+            
+            for (String library: libraryToSampleInCSV.keySet()){
+                Set<Integer> samplesInCSV = libraryToSampleInCSV.get(library);
+                Set<Integer> samplesInDB = libraryToSampleInDB.get(library);
+                if (samplesInDB == null || !samplesInCSV.equals(samplesInDB)){
+                    validationStatus.addFailMessage("Library Consistency", "Not all of the samples of library "+library+" are in run form");
+                }
             }
   
         } catch (IOException e){

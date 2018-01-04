@@ -13,9 +13,8 @@ import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.LibraryDTOValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.lims.RequestFormUploadValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.util.Preferences;
@@ -27,7 +26,6 @@ import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 
@@ -86,7 +84,7 @@ public class UploadLIMSRequestBean {
             if (roleManager.hasSampleLoadPermission()) {
                 RequestFormDTO requestForm = requestBean.getRequest();
                 RequestDTO requestToLims = myDTOFactory.getRequestDTO(requestForm);
-                RequestFormUploadValidator validator = new RequestFormUploadValidator(new LibraryValidator(new SampleDTOValidator()), services);
+                RequestFormUploadValidator validator = new RequestFormUploadValidator(new LibraryDTOValidator(true), services);
                 ValidationStatus validation = validator.isValid(requestToLims);
 
                 if (validation.isValid()) {
