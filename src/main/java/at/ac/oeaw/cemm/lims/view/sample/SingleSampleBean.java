@@ -89,6 +89,7 @@ public class SingleSampleBean implements Serializable {
         this.selectedSampleInLibrary = currentSample;
         this.currentLibrary = services.getRequestService().getLibraryByName(currentSample.getLibraryName());
         this.principalInvestigator = services.getUserService().getUserByID(currentSample.getUser().getPi());
+        validateLibrary();
     }
     
     //PERMISSIONS
@@ -104,8 +105,8 @@ public class SingleSampleBean implements Serializable {
         return returnValue;
     }
     
-    public boolean isEditable() {
-        return currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued);
+    public boolean isDeleatable() {
+        return currentSample.getStatus().equals(SampleDTO.status_requested);
     }
 
     //FOR WELDING...
@@ -171,6 +172,24 @@ public class SingleSampleBean implements Serializable {
         return distance;
     }
     
+    public void resetLibraryStatus(){
+        for (SampleDTO sample: currentLibrary.getSamples()){
+            if (SampleDTO.status_running.equals(sample.getStatus())){
+                sample.setStatus(SampleDTO.status_rerun);
+            }
+        }
+    }
+    
+    public boolean isLibraryRunning(){
+        for (SampleDTO sample: currentLibrary.getSamples()){
+            if (SampleDTO.status_running.equals(sample.getStatus())){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public boolean validateLibrary() {
         SampleDTOValidator sampleValidator = new SampleDTOValidator();
         LibraryValidator libValidator = new LibraryValidator(sampleValidator, false);
@@ -184,7 +203,6 @@ public class SingleSampleBean implements Serializable {
             }
         }
         
-        System.out.println("HERE!");
         return validation.isValid();
     }
 
@@ -196,7 +214,7 @@ public class SingleSampleBean implements Serializable {
             return null;
         }
 
-        if (isEditable()) {
+        if (isDeleatable()) {
             try {
                 services.getSampleService().deleteSample(currentSample);
             } catch (Exception ex) {

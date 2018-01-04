@@ -23,6 +23,14 @@
                 </div>
                 <div class="ui-g-4">
                     <h:form>
+                         <p:commandButton 
+                             style="float:right;margin:1px"
+                             value="Reset Demux"
+                             icon="ui-icon-trash"
+                             rendered="#{singleRunBean.roleManager.hasRunAddPermission and singleRunBean.demuxStarted()}"
+                             actionListener="#{singleRunBean.resetDemux()}">
+                            <p:confirm header="Confirmation" message="Are you sure to reset demux for run #{singleRunBean.runId}?" icon="ui-icon-alert" />
+                        </p:commandButton>
                         <p:commandButton style="float:right;margin:1px" value="Delete Run"
                                          icon="ui-icon-trash"
                                          rendered="#{singleRunBean.roleManager.hasRunAddPermission}"
@@ -49,6 +57,9 @@
 
                 <h:outputLabel for="operator" value="Operator: "/>
                 <h:outputText id="operator" value="#{singleRunBean.operator.login}" />
+
+                <h:outputLabel for="demux" value="Demux has started: "/>
+                <h:outputText id="demux" value="#{singleRunBean.demuxStarted()}" />
             </h:panelGrid>
 
             <p:separator />

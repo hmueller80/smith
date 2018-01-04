@@ -278,7 +278,13 @@ public class LazySampleService implements SampleService {
         if (user == null) {
             throw new Exception("Cannot create a sample with null user");
         }
-        SampleEntity sampleEntity = new SampleEntity();
+        SampleEntity sampleEntity;
+        if (isNew){
+            sampleEntity = new SampleEntity();
+        }else{
+           if (sample.getId()==null) throw new Exception("Cannot update sample with null ID");
+           sampleEntity = sampleDAO.getSampleById(sample.getId());
+        }
 
         sampleEntity.setUser(user);
         
@@ -320,11 +326,11 @@ public class LazySampleService implements SampleService {
             if (isNew) {
                 sampleDAO.persistSample(sampleEntity);
             } else {
-                sampleEntity.setId(sample.getId());
                 sampleDAO.updateSample(sampleEntity);
             }
             return new PersistedEntityReceipt(sampleEntity.getId(), sampleEntity.getName());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Error while persisting sample " + sample.getName(),e);
         }
     }

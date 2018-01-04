@@ -112,15 +112,25 @@ public class LibraryDAO {
         return query.list();
      }
 */
+     public List<MinimalLibraryEntity> getDeleatableLibraries(){
+         return getEditableLibraries(false);
+     }
+     
+     public List<MinimalLibraryEntity> getRunnableLibraries(){
+         return getEditableLibraries(true);
+     }
     
-    public List<MinimalLibraryEntity> getDeleatableLibraries() {
+    private List<MinimalLibraryEntity> getEditableLibraries(boolean runnable) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         
-        Criteria crit1 = session.createCriteria(SampleEntity.class);        
-        crit1.add(Restrictions.disjunction(
-                Restrictions.eq("status",SampleDTO.status_queued),
-                Restrictions.eq("status",SampleDTO.status_requested))
-                ).setProjection(Projections.distinct(Projections.property("library.id")));
+        Criteria crit1 = session.createCriteria(SampleEntity.class);
+        if (runnable){
+            crit1.add(Restrictions.disjunction(Restrictions.eq("status",SampleDTO.status_requested),
+                    Restrictions.eq("status",SampleDTO.status_rerun)));
+        }else{
+            crit1.add(Restrictions.eq("status",SampleDTO.status_requested));
+        }
+        crit1.setProjection(Projections.distinct(Projections.property("library.id")));
         
         Criteria crit2 = session.createCriteria(SampleEntity.class);        
         crit2.add(Restrictions.disjunction(
@@ -168,8 +178,7 @@ public class LibraryDAO {
                 .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.conjunction(
                     Restrictions.eq("submissionId", requestId),
-                    Restrictions.ne("status",SampleDTO.status_requested),
-                    Restrictions.ne("status",SampleDTO.status_queued)))
+                    Restrictions.ne("status",SampleDTO.status_requested)))
                 .setProjection(Projections.distinct(Projections.property("library.id")));
                
         Criteria query = session.createCriteria(LibraryEntity.class)

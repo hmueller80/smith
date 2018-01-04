@@ -165,11 +165,10 @@ public class RequestServiceImpl implements RequestService {
                        System.out.println("Considering sample "+sample.getName()+" with id "+sample.getId()+" and submission ID "+sample.getSubmissionId());
 
                         if (Objects.equals(sample.getSubmissionId(), request.getRequestId())) {
-                            if (SampleDTO.status_requested.equals(sample.getStatus())
-                                    || SampleDTO.status_queued.equals(sample.getStatus())) {
+                            if (SampleDTO.status_requested.equals(sample.getStatus())) {
                                 sampleDAO.deleteSample(sample);
                             } else {
-                                throw new Exception("Library with Id " + library.getId() + " contains samples in status different than " + SampleDTO.status_requested + " or " + SampleDTO.status_queued);
+                                throw new Exception("Library with Id " + library.getId() + " contains samples in status different than " + SampleDTO.status_requested);
                             }
                         }
                     }
@@ -205,11 +204,10 @@ public class RequestServiceImpl implements RequestService {
 
                 for (SampleEntity sample : library.getSamples()) {
                     if (Objects.equals(sample.getSubmissionId(), requestId)) {
-                        if (SampleDTO.status_requested.equals(sample.getStatus())
-                                || SampleDTO.status_queued.equals(sample.getStatus())) {
+                        if (SampleDTO.status_requested.equals(sample.getStatus())) {
                             sampleDAO.deleteSample(sample);
                         } else {
-                            throw new Exception("Library with Id " + libraryId + " contains samples in status different than " + SampleDTO.status_requested + " or " + SampleDTO.status_queued);
+                            throw new Exception("Library with Id " + libraryId + " contains samples in status different than " + SampleDTO.status_requested );
                         }
                     }
                 }
@@ -381,7 +379,7 @@ public class RequestServiceImpl implements RequestService {
                 @Override
                 public Void execute() throws Exception {
 
-                    List<MinimalLibraryEntity> deleatableLibraries = libraryDAO.getDeleatableLibraries();
+                    List<MinimalLibraryEntity> deleatableLibraries = libraryDAO.getRunnableLibraries();
                     
                     if (deleatableLibraries != null) {
                         for (MinimalLibraryEntity entity : deleatableLibraries) {

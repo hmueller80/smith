@@ -14,9 +14,8 @@ import java.util.Date;
  */
 public interface SampleDTO extends Sample {
     public static final String status_requested = "requested";
-    public static final String status_queued = "queued";
-    public static final String status_confirmed = "confirmed";
     public static final String status_running = "running";
+    public static final String status_rerun = "re-run";
     public static final String status_analyzed = "analyzed";
     
     

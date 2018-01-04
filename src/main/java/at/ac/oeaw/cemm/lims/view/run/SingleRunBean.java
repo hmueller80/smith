@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.run;
 
+import at.ac.oeaw.cemm.lims.api.analysis.AnalysisManager;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,9 @@ public class SingleRunBean {
 
     @Inject
     ServiceFactory services;
+    
+    @Inject
+    AnalysisManager analysisManager;
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
@@ -126,5 +130,18 @@ public class SingleRunBean {
             NgsLimsUtility.setFailMessage("delete", null, "Error in deleting ", e.getMessage());
             return null;
         }
+    }
+    
+    public void resetDemux(){
+         try {
+            analysisManager.resetDemux(runFolder);
+        } catch (Exception e) {
+            NgsLimsUtility.setFailMessage("delete", null, "Error in resetting Demux ", e.getMessage());
+        }
+    }
+    
+    public boolean demuxStarted(){
+        String newsBody = "Fastq analysis for " + runFolder + " has started.";
+        return services.getNewsService().newsExists(newsBody);
     }
 }

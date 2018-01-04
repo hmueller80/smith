@@ -54,7 +54,7 @@
                     <div class="ui-g-4">
                         <p:commandButton 
                             action="#{singleSampleBean.delete}"
-                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.editable}"
+                            disabled="#{!singleSampleBean.modifyPermission or !singleSampleBean.deleatable}"
                             id="SampleDeletionButton" 
                             value="#{bundle['button.text.delete']}"
                             icon="ui-icon-trash" 
@@ -150,7 +150,7 @@
                                     actionListener="#{singleSampleBean.persistLibrary()}"
                                     disabled="#{!singleSampleBean.modifyPermission}"
                                     id="LibraryModbutton" 
-                                    value="#{bundle['button.text.save']} Indexes"
+                                    value="#{bundle['button.text.save']} Library"
                                     icon="ui-icon-disk" 
                                     update=":tabMenu:libraryForm"
                                     style="float:right;margin:1px">
@@ -188,6 +188,22 @@
                                      rowStyleClass="#{singleSampleBean.getLibraryRowClass(sample)}">
                             <p:ajax event="rowSelect" update="@this" />
         
+
+                            <f:facet name="header">
+                                <div class="ui-g">
+                                    <div class="ui-g-8" />                         
+                                    <div class="ui-g-4">
+                                        <p:commandButton
+                                            style="float:right;margin:1px"
+                                            value="Allow library re-run" 
+                                            icon="ui-icon-arrowrefresh-1-e"
+                                            rendered="#{singleSampleBean.libraryRunning}"
+                                            actionListener="#{singleSampleBean.resetLibraryStatus}"
+                                            update=":tabMenu:libraryForm"/>                            
+                                    </div>
+                                </div>
+                            </f:facet>                        
+
                             <p:column id="editColumn" style="width:15px;">
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id}"/>
                             </p:column>
@@ -241,7 +257,7 @@
                             </p:column>
                             
                             <p:column id="statusColumn" headerText="#{bundle['samples.status']}">
-                                <h:outputText value="#{singleSampleBean.currentSample.status}" />
+                                <h:outputText value="#{sample.status}" />
                             </p:column>       
                         </p:dataTable>
                     </h:form>
