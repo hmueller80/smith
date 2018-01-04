@@ -119,6 +119,11 @@
                             <p:commandButton style="float:right;margin:1px" value="Delete" icon="ui-icon-trash"
                                              rendered="#{deleteRunBean.roleManager.hasRunAddPermission}"
                                              onclick="PF('deleteDialog').show()" />
+                            <p:commandButton 
+                                style="float:right;margin:1px" value="Insert run" 
+                                icon="ui-icon-plus"
+                                rendered="#{runsSearchBeanLazy.roleManager.hasRunAddPermission}"
+                                action="assembleRunForm.jsf" />
                             <p:fileUpload style="float:right;margin:1px"
                                           fileUploadListener="#{uploadRunFormNewBean.handleFileUpload}"
                                           label="Upload" multiple="false" mode="advanced" auto="true"

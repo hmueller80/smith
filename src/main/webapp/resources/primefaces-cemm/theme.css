@@ -690,3 +690,7 @@ a.ui-button:active,
 #rundetailsForm\3AsampleRunTable .ui-datatable-scrollable-body{
     height:calc(100% - 25px);
 }
+
+#librariesToRunForm\3AtheWiz_content {
+    height:98%;
+}

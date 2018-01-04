@@ -53,4 +53,6 @@ public interface DTOFactory {
 
     public AffiliationDTO getAffiliationDTO();
     
+    public LibraryToRunDTO getLibraryToRun(LibraryDTO library, UserDTO requestor, Integer requestId, String readMode, Integer readLength);
+    
 }

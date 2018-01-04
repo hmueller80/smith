@@ -21,6 +21,8 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  *
@@ -62,6 +64,22 @@ public class SingleRunBean {
                     allSamples.add(new SingleRunTableRow(lane, sampleRun.getSample().getLibraryName(), sampleRun.getSample()));
                 }
             }
+            Collections.sort(allSamples, new Comparator<SingleRunTableRow>() {
+                @Override
+                public int compare(SingleRunTableRow o1, SingleRunTableRow o2) {
+                    Integer laneComparison = o1.getLane().compareTo(o2.getLane());
+                    if (laneComparison==0){
+                        Integer libraryComparison = o1.getSample().getLibraryName().compareTo(o2.getSample().getLibraryName());
+                        if (libraryComparison == 0){
+                            return o1.getSample().getId().compareTo(o2.getSample().getId());
+                        }else{
+                            return libraryComparison;
+                        }
+                    }else{
+                        return laneComparison;
+                    }
+                }
+            });
         }
     }
     

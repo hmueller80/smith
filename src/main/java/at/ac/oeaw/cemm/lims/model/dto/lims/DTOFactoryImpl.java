@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
@@ -210,5 +211,10 @@ public class DTOFactoryImpl implements DTOFactory {
     @Override
     public AffiliationDTO getAffiliationDTO() {
         return new AffiliationDTOImpl(new OrganizationDTOImpl(),new DepartmentDTOImpl());
+    }
+    
+    @Override
+    public LibraryToRunDTO getLibraryToRun(LibraryDTO library, UserDTO requestor, Integer requestId, String readMode, Integer readLength ){
+        return new LibraryToRunDTOImpl(library, requestor, requestId, readMode, readLength);
     }
 }

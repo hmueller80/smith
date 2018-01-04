@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
@@ -25,6 +26,7 @@ import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
 import at.ac.oeaw.cemm.lims.persistence.dao.RequestDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestFormDAO;
+import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestLibraryDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.LinkedHashMap;
@@ -40,6 +42,7 @@ public class RequestServiceImpl implements RequestService {
     
     @Inject RequestDAO requestDAO;
     @Inject RequestFormDAO requestFormDAO;
+    @Inject RequestLibraryDAO requestLibraryDAO;
     @Inject LibraryDAO libraryDAO;
     @Inject SampleDAO sampleDAO;
     @Inject UserDAO userDAO;
@@ -364,6 +367,39 @@ public class RequestServiceImpl implements RequestService {
             e.printStackTrace();
         }
         
+        return result;
+    }
+    
+    @Override
+    public List<LibraryToRunDTO> getRunnableLibraries(){
+        
+        final List<LibraryToRunDTO> result = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<MinimalLibraryEntity> deleatableLibraries = libraryDAO.getDeleatableLibraries();
+                    
+                    if (deleatableLibraries != null) {
+                        for (MinimalLibraryEntity entity : deleatableLibraries) {
+                            LibraryEntity fullLibrary = libraryDAO.getLibraryById(entity.getLibraryId());
+                            result.add(myDTOMapper.getLibraryToRunDTOFromMinimalEntity(entity, fullLibrary));
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Runnable libraries retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }       
+
         return result;
     }
 }

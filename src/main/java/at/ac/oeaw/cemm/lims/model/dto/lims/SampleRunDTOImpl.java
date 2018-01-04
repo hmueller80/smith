@@ -16,7 +16,7 @@ import java.util.Set;
  * @author dbarreca
  */
 public class SampleRunDTOImpl implements SampleRunDTO {
-    private final Integer id;
+    private Integer id;
     private final SampleDTO sample;
     private final UserDTO operator;
     private String flowCell;
@@ -123,6 +123,10 @@ public class SampleRunDTOImpl implements SampleRunDTO {
             this.lanes = lanes;
         }
     }
-    
+
+    @Override
+    public void setRunId(Integer id) {
+        this.id = id;
+    }
     
 }

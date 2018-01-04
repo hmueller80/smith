@@ -26,6 +26,7 @@ public interface SampleRunDTO {
     public void setFlowcell(String flowCell);
     public void addLane(String lane);
     public void setIsControl(boolean isControl);
+    public void setRunId(Integer id);
     public void setRunFolder(String runFolder);
     public void setLanes(Set<String> lanes);      
 }

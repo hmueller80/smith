@@ -97,9 +97,12 @@ public class LibraryDAO {
         projList.add(Projections.property("sample.user").as("requestor"));
         projList.add(Projections.property("id").as("libraryId"));
         projList.add(Projections.property("libraryName").as("libraryName"));
+        projList.add(Projections.property("application.readMode").as("readMode"));
+        projList.add(Projections.property("application.readLength").as("readLength"));
         
         Criteria query = session.createCriteria(LibraryEntity.class)
                 .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sample.application", "application",JoinType.LEFT_OUTER_JOIN)
                 .add(Subqueries.propertyNotIn("id", subquery))
                 .addOrder(Order.desc("sample.submissionId"))
                 .addOrder(Order.desc("id"))
@@ -142,9 +145,12 @@ public class LibraryDAO {
         projList.add(Projections.property("sample.user").as("requestor"));
         projList.add(Projections.property("id").as("libraryId"));
         projList.add(Projections.property("libraryName").as("libraryName"));
+        projList.add(Projections.property("application.readMode").as("readMode"));
+        projList.add(Projections.property("application.readLength").as("readLength"));
         
         Criteria query = session.createCriteria(LibraryEntity.class)
-            .createAlias("samples", "sample",JoinType.INNER_JOIN)                
+            .createAlias("samples", "sample",JoinType.INNER_JOIN)
+            .createAlias("sample.application", "application",JoinType.LEFT_OUTER_JOIN)                
             .add(Restrictions.in("id",deletableLibIds))
             .addOrder(Order.desc("id"))
             .setProjection(Projections.distinct(projList))

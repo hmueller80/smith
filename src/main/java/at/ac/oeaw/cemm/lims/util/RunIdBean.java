@@ -17,14 +17,14 @@ import javax.inject.Inject;
  */
 @ManagedBean(eager=true)
 @ApplicationScoped
-public class RequestIdBean {
+public class RunIdBean {
     @Inject ServiceFactory services;
     
     private ReentrantLock lock = new ReentrantLock();
 
     public Integer getNextId() {
         lock.lock();
-        Integer maxIdinDB = services.getRequestFormService().getMaxRequestId();   
+        Integer maxIdinDB = services.getRunService().getMaxRunIdInDB();
         System.out.println("Max Id " +maxIdinDB);
         return maxIdinDB+1;
     }
