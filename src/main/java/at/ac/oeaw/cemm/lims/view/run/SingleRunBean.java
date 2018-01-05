@@ -45,6 +45,9 @@ public class SingleRunBean {
 
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
+    
+    @ManagedProperty(value = "#{runFileManagerBean}")
+    private RunFileManagerBean fileManager;
 
     private Integer runId;
     private List<SingleRunTableRow> allSamples = new LinkedList<>();
@@ -88,6 +91,7 @@ public class SingleRunBean {
                     }
                 }
             });
+            fileManager.init(runId, runFolder);
         }
     }
     
@@ -101,6 +105,16 @@ public class SingleRunBean {
     public NewRoleManager getRoleManager() {
         return roleManager;
     }
+
+    public RunFileManagerBean getFileManager() {
+        return fileManager;
+    }
+
+    public void setFileManager(RunFileManagerBean fileManager) {
+        this.fileManager = fileManager;
+    }
+    
+    
 
     public RunIdBean getRunIdBean() {
         return runIdBean;

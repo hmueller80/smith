@@ -46,6 +46,14 @@
         <param-name>remotesampleannotationfolder</param-name>
         <param-value>aaa</param-value>
     </context-param>
+     <context-param>
+        <param-name>remotesamplerequestfolder</param-name>
+        <param-value>aaa</param-value>
+    </context-param>
+     <context-param>
+        <param-name>remotesamplerunfolder</param-name>
+        <param-value>aaa</param-value>
+    </context-param>
     <context-param>
         <param-name>remoterunfolderscaninterval</param-name>
         <param-value>5</param-value>
@@ -72,6 +80,14 @@
       <context-param>
         <param-name>localsampleannotationfolder</param-name>
         <param-value>/Users/dbarreca/Dev/temp/sample_annotation/</param-value>
+    </context-param>
+          <context-param>
+        <param-name>localsamplerequestfolder</param-name>
+        <param-value>/Users/dbarreca/Dev/temp/sample_request/</param-value>
+    </context-param>
+          <context-param>
+        <param-name>localsamplerunfolder</param-name>
+        <param-value>/Users/dbarreca/Dev/temp/sample_run/</param-value>
     </context-param>
     <context-param>
         <param-name>localmonitoringcutoffdate</param-name>

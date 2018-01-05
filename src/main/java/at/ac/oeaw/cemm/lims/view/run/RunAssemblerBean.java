@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.parser.runCSV.RunsCSVManager;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import at.ac.oeaw.cemm.lims.util.RunIdBean;
@@ -269,7 +270,7 @@ public class RunAssemblerBean {
                     for (SampleRunDTO sampleRun : sampleRuns) {
                         sampleRun.setRunId(runId);
                     }
-
+                    RunsCSVManager.writeToFile(sampleRuns, selectedFolder.getRunFolderName(), runId);
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns, true);
                     return "runDetails.jsg?faces-redirect=true&rid=" + receipts.iterator().next().getId();
                 } catch (Exception ex) {

@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.SamplesCSVManager;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -91,6 +92,8 @@ public class UploadLIMSRequestBean {
                 if (validation.isValid()) {
                     try {
                         sampleLock.lock();
+                        SamplesCSVManager.writeToFile(requestToLims);
+
                         Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestToLims);
                         sendMailWithReceipts(requestToLims.getRequestorUser(), receipts);
                         NgsLimsUtility.setSuccessMessage("validationMessages", null, "Success!", "Samples uploaded correctly");

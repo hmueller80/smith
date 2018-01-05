@@ -7,6 +7,7 @@ import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.RequestBuilder;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.SamplesCSVManager;
 import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -125,6 +126,7 @@ public class UploadSampleRequestNewBean implements Serializable {
                 try {
                     sampleLock.lock();
                     if (requestObj.getRequestId() >= sampleLock.getRequestIdLock().getNextId()){
+                        SamplesCSVManager.writeToFile(requestObj);
                         Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestObj);
                         sendMailWithReceipts(requestObj.getRequestorUser(), receipts);
                         NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Samples uploaded correctly");

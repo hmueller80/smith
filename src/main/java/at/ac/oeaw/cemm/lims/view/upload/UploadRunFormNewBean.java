@@ -4,6 +4,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
+import at.ac.oeaw.cemm.lims.model.parser.runCSV.RunsCSVManager;
 import at.ac.oeaw.cemm.lims.model.parser.runCSV.SampleRunsBuilder;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.util.RunIdBean;
@@ -21,6 +22,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.io.FilenameUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -147,6 +149,7 @@ public class UploadRunFormNewBean implements Serializable {
                             throw new Exception ("Run with id "+sampleRun.getRunId()+"already exists");
                         }
                     }
+                    RunsCSVManager.writeToFile(sampleRuns, FilenameUtils.getBaseName(filename), sampleRuns.iterator().next().getRunId());
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns,true);
 
                     NgsLimsUtility.setSuccessMessage(null, null, "Success", "Run form uploaded correctly");

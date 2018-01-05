@@ -52,7 +52,7 @@ public class RequestBuilder {
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord().withIgnoreEmptyLines());
+            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(SampleRequestCSVHeader.getSeparator()).withSkipHeaderRecord().withIgnoreEmptyLines());
             List<CSVRecord> records = parser.getRecords();
             UserDTO requestor = getUserFromCSVRecords(records);
             Integer requestId = getSubmissionIdFromCSVRecords(records);
@@ -61,7 +61,8 @@ public class RequestBuilder {
 
             for (CSVRecord record : records) {
                 SampleDTO sample = getObject(new SampleCSVParser(record, myDTOFactory,requestId), validationStatus);
-
+                sample.setUser(requestor);
+                
                 IndexDTO index = getObject(new IndexCSVParser(record, services, myDTOFactory), validationStatus);
                 sample.setIndex(index);
 

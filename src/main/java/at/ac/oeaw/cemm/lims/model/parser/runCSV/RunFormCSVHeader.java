@@ -16,5 +16,22 @@ public enum RunFormCSVHeader {
     /*03*/ Flowcell,
     /*04*/ Cluster,
     /*05*/ Sequencing,
-    /*06*/ Date
+    /*06*/ Date;
+    
+    public static char getSeparator(){
+        return ',';
+    }
+    
+    public static String getHeaderLine(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(Lane).append(getSeparator());
+        sb.append(Sample).append(getSeparator());
+        sb.append(BSFID).append(getSeparator());
+        sb.append(Flowcell).append(getSeparator());
+        sb.append(Cluster).append(getSeparator());
+        sb.append(Sequencing).append(getSeparator());
+        sb.append(Date);
+ 
+        return sb.toString();
+    }
 }

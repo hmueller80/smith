@@ -33,5 +33,40 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
     /*21*/ library,
     /*22*/ submissionId,
     /*23*/ date,
-    /*24*/ volume
+    /*24*/ volume;
+    
+    public static char getSeparator(){
+        return ',';
+    }
+    
+    public static String getHeaderLine(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(UserName).append(getSeparator());
+        sb.append(UserLogin).append(getSeparator());
+        sb.append(UserTel).append(getSeparator());
+        sb.append(Institute).append(getSeparator());
+        sb.append(PI).append(getSeparator());
+        sb.append(SampleName).append(getSeparator());
+        sb.append(BarcodeByName).append(getSeparator());
+        sb.append(Application).append(getSeparator());
+        sb.append(ReadLength).append(getSeparator());
+        sb.append(Receipe).append(getSeparator());
+        sb.append(SampleType).append(getSeparator());
+        sb.append(LibrarySynthesis).append(getSeparator());
+        sb.append(Organism).append(getSeparator());
+        sb.append(Antibody).append(getSeparator());
+        sb.append(SampleDescription).append(getSeparator());
+        sb.append(BioAnalyzerDate).append(getSeparator());
+        sb.append(BioAnalyzerNanomolarity).append(getSeparator());
+        sb.append(SampleConcentration).append(getSeparator());
+        sb.append(TotalAmount).append(getSeparator());
+        sb.append(BulkFragmentSize).append(getSeparator());
+        sb.append(Comments).append(getSeparator());
+        sb.append(library).append(getSeparator());
+        sb.append(submissionId).append(getSeparator());
+        sb.append(date).append(getSeparator());
+        sb.append(volume);
+ 
+        return sb.toString();
+    }
 }
