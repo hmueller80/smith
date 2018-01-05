@@ -38,10 +38,6 @@ public class RequestLibraryEntity implements Serializable {
     @Column(name = "lib_name")
     private String libName;
     
-    @Size(max = 1000)
-    @Column(name = "lib_type")
-    private String libType;
-    
     @Size(max = 2)
     @Column(name = "read_mode")
     private String readMode;
@@ -52,11 +48,20 @@ public class RequestLibraryEntity implements Serializable {
     @Column(name = "lanes")
     private Short lanes;
     
-    @Column(name = "volume")
-    private Double volume;
+    @Column(name = "volume_bulk")
+    private Double volumeBulk;
     
-    @Column(name = "dna_concentration")
-    private Double dnaConcentration;
+    @Column(name = "dna_concentration_bulk")
+    private Double dnaConcentrationBulk;
+    
+    @Column(name = "volume_dilution")
+    private Double volumeDilution;
+    
+    @Column(name = "dna_concentration_dilution")
+    private Double dnaConcentrationDilution;
+    
+    @Column(name = "library_kit")
+    private String libraryKit;
     
     @Column(name = "total_size")
     private Double totalSize;
@@ -91,14 +96,6 @@ public class RequestLibraryEntity implements Serializable {
         this.libName = libName;
     }
 
-    public String getLibType() {
-        return libType;
-    }
-
-    public void setLibType(String libType) {
-        this.libType = libType;
-    }
-
     public String getReadMode() {
         return readMode;
     }
@@ -123,21 +120,46 @@ public class RequestLibraryEntity implements Serializable {
         this.lanes = lanes;
     }
 
-    public Double getVolume() {
-        return volume;
+    public Double getVolumeBulk() {
+        return volumeBulk;
     }
 
-    public void setVolume(Double volume) {
-        this.volume = volume;
+    public void setVolumeBulk(Double volumeBulk) {
+        this.volumeBulk = volumeBulk;
     }
 
-    public Double getDnaConcentration() {
-        return dnaConcentration;
+    public Double getDnaConcentrationBulk() {
+        return dnaConcentrationBulk;
     }
 
-    public void setDnaConcentration(Double dnaConcentration) {
-        this.dnaConcentration = dnaConcentration;
+    public void setDnaConcentrationBulk(Double dnaConcentrationBulk) {
+        this.dnaConcentrationBulk = dnaConcentrationBulk;
     }
+
+    public Double getVolumeDilution() {
+        return volumeDilution;
+    }
+
+    public void setVolumeDilution(Double volumeDilution) {
+        this.volumeDilution = volumeDilution;
+    }
+
+    public Double getDnaConcentrationDilution() {
+        return dnaConcentrationDilution;
+    }
+
+    public void setDnaConcentrationDilution(Double dnaConcentrationDilution) {
+        this.dnaConcentrationDilution = dnaConcentrationDilution;
+    }
+
+    public String getLibraryKit() {
+        return libraryKit;
+    }
+
+    public void setLibraryKit(String libraryKit) {
+        this.libraryKit = libraryKit;
+    }
+
 
     public Double getTotalSize() {
         return totalSize;

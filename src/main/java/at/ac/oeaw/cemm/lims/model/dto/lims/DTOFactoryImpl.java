@@ -146,13 +146,16 @@ public class DTOFactoryImpl implements DTOFactory {
     public RequestDTO getRequestDTO(RequestFormDTO requestForm) {
         RequestDTO requestToLims = getRequestDTO(requestForm.getRequestor().getUser(), requestForm.getRequestId());
         for (RequestLibraryDTO requestLibrary : requestForm.getLibraries()) {
-            LibraryDTO library = getLibraryDTO(requestLibrary.getName(), null);
-            ApplicationDTO application = getApplicationDTO(
-                    requestLibrary.getReadLength(), 
-                    requestLibrary.getReadMode(), 
-                    "HiSeq2000", 
-                    requestLibrary.getApplicationName(),30);
+            LibraryDTO library = getLibraryDTO(requestLibrary.getName(), null);         
             for (RequestSampleDTO requestSample : requestLibrary.getSamples()) {
+                
+                ApplicationDTO application = getApplicationDTO(
+                        requestLibrary.getReadLength(),
+                        requestLibrary.getReadMode(),
+                        "HiSeq2000",
+                        requestSample.getApplicationName(), 30);
+
+                
                 SampleDTO sample =   getSampleDTO(null);
                 sample.setSubmissionId(requestForm.getRequestId());
                 sample.setLibraryName(library.getName());

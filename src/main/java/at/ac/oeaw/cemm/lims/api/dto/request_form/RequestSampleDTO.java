@@ -20,6 +20,9 @@ public interface RequestSampleDTO extends Sample {
         
     @Override
     String getCompoundIndex();
+    
+    @Override
+    String getApplicationName();
             
     String getI5Adapter();
 
@@ -64,5 +67,7 @@ public interface RequestSampleDTO extends Sample {
     void setSampleDescription(String sampleDescription);
 
     void setName(String sampleName);
+    
+    void setApplicationName(String applicationName);
     
 }

@@ -32,6 +32,8 @@ public class SampleValidator<T extends Sample> extends AbstractValidator<T> {
         isValid = isValid && 
                 stringMatchesPattern(objectToValidate.getName(),"[A-Za-z0-9_]+",ValidatorSeverity.FAIL,"Sample Name: "+objectToValidate.getName(),messages);
         
+        isValid = isValid && stringNotEmpty(objectToValidate.getApplicationName(), false, ValidatorSeverity.FAIL, "Application name",messages);
+
         if (isValid){
             if (objectToValidate.getName().contains("__")){
                 isValid = false;

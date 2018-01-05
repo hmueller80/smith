@@ -444,6 +444,10 @@
 
                                     },
                                     {
+                                        data: 'applicationName',
+                                        type: 'text'
+                                    },
+                                    {
                                         data: 'i7Index',
                                         type: 'text'
                                     },
@@ -475,7 +479,7 @@
                                 ],
                                 height: tableHeight,
                                 rowHeaders: true,
-                                colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
+                                colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Application','Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
                                 contextMenu: editable,
                                 manualRowResize: true,
                                 minSpareRows: editable ? 1:0,
@@ -548,10 +552,6 @@
                                         type: 'text'
                                     },
                                     {
-                                        data: 'applicationName',
-                                        type: 'text'
-                                    },
-                                    {
                                         data: 'readMode',
                                         type: 'dropdown',
                                         source: ['PE', 'SR']
@@ -583,7 +583,7 @@
                                         type: 'numeric'
                                     }],
                                 rowHeaders: true,
-                                colHeaders: ['Library Name', 'Application', 'Read Mode', 'Read Length', 'Lanes', 'Volume [μL]', 'DNA Concentration [nM]', 'Total size [bp]'],
+                                colHeaders: ['Library Name', 'Read Mode', 'Read Length', 'Lanes', 'Volume [μL]', 'DNA Concentration [nM]', 'Total size [bp]'],
                                 manualRowResize: true,
                                 height:tableHeight,
                                 minSpareRows: 0,

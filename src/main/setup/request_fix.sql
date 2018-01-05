@@ -41,13 +41,15 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 	id int auto_increment,
     request_id int not null,
     lib_name varchar(1000),
-    lib_type varchar(1000),
     read_mode varchar(2),
     read_length smallint,
     lanes smallint,
-    volume double,
-    dna_concentration double,
+    volume_bulk double,
+    dna_concentration_bulk double,
+    volume_dilution double,
+    dna_concentration_dilution double,
     total_size double,
+    library_kit varchar(1000),
     primary key(id),
     foreign key (request_id) references request(id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
@@ -65,6 +67,7 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 	primer_index varchar(100),
     primer_name varchar(1000),
     primer_type varchar(1000),
+    application varchar(1000),
     primary key(id),
     foreign key (library_id) references request_library(id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;  

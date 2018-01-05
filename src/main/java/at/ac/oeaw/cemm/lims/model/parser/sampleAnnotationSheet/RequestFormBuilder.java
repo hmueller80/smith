@@ -126,21 +126,9 @@ public class RequestFormBuilder {
     }
 
     private void enrichLibrary(RequestLibraryDTO library, LibrarySubmission libRequest) throws ParsingException {
-        String reqAppName = libRequest.getLibraryType();
         Double reqVolume = getDouble(libRequest.getLibraryVolume(), ExcelParserConstants.LibraryVolume + " for sample " + libRequest.getSampleName(),0.0);
         Double reqDnaConcentration = getDouble(libRequest.getLibraryDNAConcentration(), ExcelParserConstants.LibraryDNAConcentration + " for sample " + libRequest.getSampleName(),0.0);
         Double reqSize = getDouble(libRequest.getLibraryTotalSize(), ExcelParserConstants.LibraryTotalSize + " for sample " + libRequest.getSampleName(),0.0);
-
-        if (library.getApplicationName() == null) {
-            library.setApplicationName(reqAppName);
-        } else if (!library.getApplicationName().equals(reqAppName)) {
-            throw new ParsingException(
-                    "Library Type",
-                    "Inconsistent Library Type for library " + library.getName()
-                    + ". At least two values found: "
-                    + library.getApplicationName()
-                    + " and " + reqAppName);
-        }
 
         if (reqVolume != null) {
             if (library.getVolume() == null) {
@@ -182,7 +170,7 @@ public class RequestFormBuilder {
         }
     }
     
-    private RequestSampleDTO getSample(LibrarySubmission libSubmission){
+    private RequestSampleDTO getSample(LibrarySubmission libSubmission) throws ParsingException{
         RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO(false);
         sampleDTO.setName(libSubmission.getSampleName());
         
@@ -199,6 +187,12 @@ public class RequestFormBuilder {
         sampleDTO.setPrimerType(libSubmission.getSequencingPrimerType());
         sampleDTO.setPrimerSequence(libSubmission.getCustomSequencingPrimerSequence());
         sampleDTO.setPrimerName(libSubmission.getCustomSequencingPrimerName());
+        
+        if (libSubmission.getLibraryType()== null || libSubmission.getLibraryType().isEmpty()) {
+            throw new ParsingException( "Library Type", "Empty Library Type for sample "+libSubmission.getSampleName());
+        } else {
+            sampleDTO.setApplicationName(libSubmission.getLibraryType().trim());
+        }
         
         return sampleDTO;
     }

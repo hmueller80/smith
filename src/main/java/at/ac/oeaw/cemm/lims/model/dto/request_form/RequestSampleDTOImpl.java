@@ -29,6 +29,7 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     private String primerType;
     private String primerName;
     private String primerSequence;
+    private String applicationName;
     private final Boolean nameEditable;
     
     protected RequestSampleDTOImpl(Integer id, boolean nameEditable) {
@@ -183,5 +184,14 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     public Boolean isNameEditable() {
         return nameEditable;
     }
-    
+
+    @Override
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    @Override
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 }

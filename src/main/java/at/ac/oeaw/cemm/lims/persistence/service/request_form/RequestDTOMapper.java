@@ -57,10 +57,9 @@ public class RequestDTOMapper {
         library.setName(libraryEntity.getLibName());
         library.setReadMode(libraryEntity.getReadMode());
         library.setReadLength(libraryEntity.getReadLength().intValue());
-        library.setApplicationName(libraryEntity.getLibType());
         library.setLanes(libraryEntity.getLanes().intValue());
-        library.setVolume(libraryEntity.getVolume());
-        library.setDnaConcentration(libraryEntity.getDnaConcentration());
+        library.setVolume(libraryEntity.getVolumeBulk());
+        library.setDnaConcentration(libraryEntity.getDnaConcentrationBulk());
         library.setTotalSize(libraryEntity.getTotalSize());
         for (RequestSampleEntity sampleEntity: libraryEntity.getRequestSampleSet()){
             RequestSampleDTO sample = getRequestSampleDTOFromEntity(sampleEntity);
@@ -74,6 +73,7 @@ public class RequestDTOMapper {
     private RequestSampleDTO getRequestSampleDTOFromEntity(RequestSampleEntity sampleEntity) {
         RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId(),false);
         sample.setName(sampleEntity.getName());
+        sample.setApplicationName(sampleEntity.getApplicationType());
         sample.setSampleDescription(sampleEntity.getDescription());
         sample.setOrganism(sampleEntity.getOrganism());
         sample.setI7Index(sampleEntity.getIndexI7());

@@ -414,7 +414,7 @@ public class SampleAnnotationWriter extends ExcelParser {
         row.set(header.get(getColumnName(ExcelParserConstants.SequencingPrimerType)), sample.getPrimerType());
         row.set(header.get(getColumnName(ExcelParserConstants.CustomSequencingPrimerName)), sample.getPrimerName());
         row.set(header.get(getColumnName(ExcelParserConstants.CustomSequencingPrimerSequence)), sample.getPrimerSequence());
-        row.set(header.get(getColumnName(ExcelParserConstants.LibraryType)), library.getApplicationName());
+        row.set(header.get(getColumnName(ExcelParserConstants.LibraryType)), sample.getApplicationName());
         row.set(header.get(getColumnName(ExcelParserConstants.LibraryVolume)), String.valueOf(library.getVolume()));
         row.set(header.get(getColumnName(ExcelParserConstants.LibraryDNAConcentration)),String.valueOf(library.getDnaConcentration()));
         row.set(header.get(getColumnName(ExcelParserConstants.LibraryTotalSize)), String.valueOf(library.getTotalSize()));

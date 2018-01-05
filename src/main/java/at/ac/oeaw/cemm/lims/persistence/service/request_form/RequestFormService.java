@@ -89,12 +89,11 @@ public class RequestFormService {
                     }
                     libraryEntity.setRequestId(requestEntity);
                     libraryEntity.setLibName(library.getName());
-                    libraryEntity.setLibType(library.getApplicationName());
                     libraryEntity.setReadMode(library.getReadMode());
                     libraryEntity.setReadLength(library.getReadLength().shortValue());
                     libraryEntity.setLanes(library.getLanes().shortValue());
-                    libraryEntity.setVolume(library.getVolume());
-                    libraryEntity.setDnaConcentration(library.getDnaConcentration());
+                    libraryEntity.setVolumeBulk(library.getVolume());
+                    libraryEntity.setDnaConcentrationBulk(library.getDnaConcentration());
                     libraryEntity.setTotalSize(library.getTotalSize());
                     requestLibraryDAO.saveOrUpdate(libraryEntity);
                     
@@ -113,6 +112,7 @@ public class RequestFormService {
                             samplesToDelete.remove(sampleEntity);
                         }
                         sampleEntity.setLibraryId(libraryEntity);
+                        sampleEntity.setApplicationType(sample.getApplicationName());
                         sampleEntity.setName(sample.getName());
                         sampleEntity.setDescription(sample.getSampleDescription());
                         sampleEntity.setOrganism(sample.getOrganism());

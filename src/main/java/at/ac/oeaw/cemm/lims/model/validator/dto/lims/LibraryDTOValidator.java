@@ -40,12 +40,6 @@ public class LibraryDTOValidator extends LibraryValidator<LibraryDTO> {
             if (application == null) {
                 application = sample.getApplication();
             } else {
-                if (!application.getApplicationName().equals(sample.getApplication().getApplicationName())) {
-                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,
-                            "Application name",
-                            "Inconsistent application name accross samples in library " + library.getName()));
-                    return false;
-                }
                 if (!application.getReadLength().equals(sample.getApplication().getReadLength())) {
                     messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,
                             "Application name",

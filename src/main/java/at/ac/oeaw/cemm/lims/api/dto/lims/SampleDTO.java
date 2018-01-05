@@ -25,6 +25,9 @@ public interface SampleDTO extends Sample {
     @Override
     String getCompoundIndex();
     
+    @Override
+    String getApplicationName();
+    
     String getAntibody();
 
     ApplicationDTO getApplication();

@@ -5,18 +5,18 @@
  */
 package at.ac.oeaw.cemm.lims.model.validator.dto.generic;
 
-import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import java.util.Set;
+import at.ac.oeaw.cemm.lims.api.dto.generic.RunRequest;
 
 /**
  *
  * @author dbarreca
  * @param <T>
  */
-public class ApplicationValidator<T extends Application> extends AbstractValidator<T> {
+public class RunRequestValidator<T extends RunRequest> extends AbstractValidator<T> {
 
 
     @Override
@@ -29,7 +29,6 @@ public class ApplicationValidator<T extends Application> extends AbstractValidat
         
         boolean isValid = true;
         
-        isValid = isValid && stringNotEmpty(objectToValidate.getApplicationName(), false, ValidatorSeverity.FAIL, "Application name",messages);
         isValid = isValid && validPositiveNumber(objectToValidate.getReadLength(), ValidatorSeverity.FAIL, "Read Length",messages);
         
          if (stringNotEmpty(objectToValidate.getReadMode(), false, ValidatorSeverity.FAIL, "Read Mode",messages)) {

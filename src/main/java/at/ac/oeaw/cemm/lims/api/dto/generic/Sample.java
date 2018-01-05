@@ -13,5 +13,6 @@ public interface Sample {
     
     public String getName();
     public String getCompoundIndex();
-    
+    public String getApplicationName();
+
 }

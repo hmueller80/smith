@@ -71,6 +71,10 @@ public class RequestSampleEntity implements Serializable {
     @Column(name = "primer_type")
     private String primerType;
     
+    @Size(max = 1000)
+    @Column(name = "application")
+    private String applicationType;
+    
     @JoinColumn(name = "library_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private RequestLibraryEntity libraryId;
@@ -197,5 +201,15 @@ public class RequestSampleEntity implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getApplicationType() {
+        return applicationType;
+    }
+
+    public void setApplicationType(String libType) {
+        this.applicationType = libType;
+    }
+    
+    
     
 }

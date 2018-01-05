@@ -313,5 +313,10 @@ class SampleDTOImpl implements SampleDTO, Serializable {
     public String getCompoundIndex() {
         return index.getIndex();
     }
+
+    @Override
+    public String getApplicationName() {
+        return application.getApplicationName();
+    }
     
 }

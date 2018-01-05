@@ -108,7 +108,7 @@ public class SampleDAO {
                 query.addOrder(Order.desc(sortField));
             }
         }
-
+        query.addOrder(Order.desc("id"));
         resultList = (List<SampleEntity>) query.list();
 
         return resultList;
