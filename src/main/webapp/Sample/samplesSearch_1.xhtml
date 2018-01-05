@@ -204,9 +204,9 @@
                     <h:outputText value="#{sample.costcenter}" />
                 </p:column>
 
-                <p:column id="descriptionColumn" filterBy="#{sample.description}"                   
-                          headerText="#{bundle['samples.description']}">
-                    <h:outputText value="#{sample.description}" id="sampleDescriptionValue"/>
+                <p:column id="indexColumn" filterBy="#{sample.index.index}"                   
+                          headerText="Index">
+                    <h:outputText value="#{sample.index.index}" />
                 </p:column>
 
             </p:dataTable>

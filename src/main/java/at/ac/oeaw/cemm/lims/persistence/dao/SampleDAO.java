@@ -48,6 +48,7 @@ public class SampleDAO {
             add("submissionId");
             add("costCenter");
             add("description");
+            add("index.index");
         }
     };
 
@@ -144,6 +145,7 @@ public class SampleDAO {
 
         Criteria query = session.createCriteria(SampleEntity.class).createAlias("library", "library", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("user", "user", JoinType.LEFT_OUTER_JOIN)
+                 .createAlias("sequencingIndexes", "index", JoinType.LEFT_OUTER_JOIN)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if (filters != null) {
@@ -168,6 +170,9 @@ public class SampleDAO {
                             } else {
                                 singleFiltersCriterion.add(Restrictions.like(filteredField, (String) filterValue, MatchMode.ANYWHERE));
                             }
+                            break;
+                        case "index.index":
+                            singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.START));
                             break;
                         default:
                             singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
