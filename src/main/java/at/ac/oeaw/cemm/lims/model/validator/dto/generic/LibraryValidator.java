@@ -115,7 +115,7 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
             messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index collision", failMessage));
             return false;
             
-        } else {
+        } else if(!RequestFormDTO.NO_DEMUX_INDEX.equals(thisIndex) && !RequestFormDTO.NO_DEMUX_INDEX.equals(otherIndex)) {
             if (thisIndex.length() != otherIndex.length()) {
                 String failMessage
                         = "Indexes in samples " + thisSample.getName()

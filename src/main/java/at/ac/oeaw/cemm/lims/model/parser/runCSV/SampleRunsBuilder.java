@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.model.parser.CSVValidationStatus;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
@@ -109,17 +110,17 @@ public class SampleRunsBuilder {
                 String sampleIndex = sample.getIndex().getIndex();
                 if (indexesInLane==null){
                     indexesInLane = new HashSet<>();
-                    indexesInLane.add(sampleIndex);
                     lanesCheck.put(laneName, indexesInLane);
                 }else{
                     if (indexesInLane.contains(sampleIndex)){
                         validationStatus.addFailMessage("Index consistency", "Sample with id "+sample.getId()+" and Index "+sampleIndex+ " conflicts with another sample");
                         break;
-                    }else{
-                        indexesInLane.add(sampleIndex);
                     }
                 }
-                
+                if (!sampleIndex.equals(RequestFormDTO.NO_DEMUX_INDEX)){
+                    indexesInLane.add(sampleIndex);
+                }
+
                 String flowCell= getStringFromField(record,RunFormCSVHeader.Flowcell);
                 if (previousFlowcell==null){
                     previousFlowcell = flowCell;

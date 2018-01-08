@@ -76,3 +76,4 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 insert into organization values ("CeMM","Lazarettgasse 14, AKH BT 25.3, 1090 Vienna, Austria","www.cemm.at");
 insert into department values ("BSF","CeMM","","http://cemm.at/research/groups/biomedical-sequencing-facility-bsf/");
 insert into department values ("NONE","CeMM","","");
+INSERT INTO sequencingindexes (`index`) VALUES ('NO_DEMUX');

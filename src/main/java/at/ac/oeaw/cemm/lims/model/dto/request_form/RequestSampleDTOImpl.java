@@ -165,7 +165,9 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     @JsonIgnore
     @Override
     public String getCompoundIndex() {
-        if (i7Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
+        if (i7Index.equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX) || i5Index.equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX)){
+            return RequestFormDTO.NO_DEMUX_INDEX;
+        } else if (i7Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
             if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
                 return RequestFormDTO.DEFAULT_INDEX;
             }else{

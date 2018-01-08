@@ -34,7 +34,8 @@ public class SampleSheetRow implements java.io.Serializable {
         this.librarySize = String.valueOf(sample.getBulkFragmentSize().intValue());
         this.sampleComment = sample.getComment();
         
-        String idx = ("none".equals(sample.getIndex().getIndex()) ? "": sample.getIndex().getIndex());
+        String idx = 
+                ("none".equalsIgnoreCase(sample.getIndex().getIndex()) ? "": sample.getIndex().getIndex());
         this.i7 = this.getBarcodeSequence1(idx);
         this.i7Comment = IlluminaAdapterSequences.getDetailedIndexInfo(i7);
 

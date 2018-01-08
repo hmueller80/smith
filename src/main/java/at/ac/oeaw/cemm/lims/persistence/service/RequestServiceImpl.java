@@ -68,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
                         libraryDAO.persistLibrary(libraryEntity);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        throw new Exception("Error while persisting library " + libraryEntity.getLibraryName());
+                        throw new Exception("Error while persisting library " + libraryEntity.getLibraryName()+": "+e.getMessage());
                     }
                     HibernateUtil.getSessionFactory().getCurrentSession().flush();
                     for (SampleDTO sample : library.getSamples()) {
@@ -78,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
                             receipts.add(receipt);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            throw new Exception("Error while persisting sample " + sample.getName());
+                            throw new Exception("Error while persisting sample " + sample.getName()+": "+e.getMessage());
                         }
                     }
                 }

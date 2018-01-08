@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.parser.runCSV.RunsCSVManager;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
@@ -218,12 +219,13 @@ public class RunAssemblerBean {
                             indexes = new HashSet<>();
                             indexesInLanes.put(lane, indexes);
                         }
+
                         if (indexes.contains(sample.getCompoundIndex())) {
                             NgsLimsUtility.setFailMessage("uploadDialogMsg", null, "Index", "Index collision in lane " + lane + " for index " + sample.getCompoundIndex());
                             failed = true;
                             break;
-                        } else {
-                            indexes.add(sample.getCompoundIndex());
+                        } else if (!sample.getCompoundIndex().equals(RequestFormDTO.NO_DEMUX_INDEX)) {
+                                indexes.add(sample.getCompoundIndex());
                         }
                     }
 

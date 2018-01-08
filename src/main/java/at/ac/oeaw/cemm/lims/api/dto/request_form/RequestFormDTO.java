@@ -20,10 +20,11 @@ public interface RequestFormDTO  extends Request {
     public final static String STATUS_ACCEPTED = "accepted";
     
     String DEFAULT_INDEX = "NONE";
+    String NO_DEMUX_INDEX = "NO_DEMUX";
     String DEFAULT_LIBRARY = "DEFAULT_LIB";
     String DEFAULT_NAME = "DEFAULT_NAME";
     String DEFAULT_SUFFIX = "_LIMS";
-    String INDEX_REGEXP = "[ATGCN]+|" + DEFAULT_INDEX;
+    String INDEX_REGEXP = "[ATGCN]+|" + DEFAULT_INDEX+"|"+NO_DEMUX_INDEX;
     Pattern NAME_PATTERN = Pattern.compile("(.*)" + DEFAULT_SUFFIX + "[0-9]+");
 
     void addLibrary(RequestLibraryDTO library);

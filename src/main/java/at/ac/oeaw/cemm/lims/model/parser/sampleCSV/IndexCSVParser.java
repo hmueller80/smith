@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
 import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
@@ -51,7 +52,9 @@ public class IndexCSVParser extends DTOCSVParser<IndexDTO> {
     
       
     private String parseIndex(String input) {
-        if(!input.contains("_")){
+        if (RequestFormDTO.DEFAULT_INDEX.equals(input) || RequestFormDTO.NO_DEMUX_INDEX.equals(input)){
+            return input;
+        } else if(!input.contains("_")){
             return input;
         }else{
             String[] temp = input.split("_");
