@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -43,5 +42,7 @@ public interface SampleService {
     List<ApplicationDTO> getAllApplications();
         
     List<SampleDTO> getAllPooledSamples(SampleDTO sample);
+
+    public SampleDTO getFullSampleByRequestLibraryName(Integer submissionId, String libraryName, String sampleName);
     
 }

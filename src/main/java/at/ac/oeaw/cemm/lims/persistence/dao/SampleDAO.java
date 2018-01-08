@@ -64,6 +64,20 @@ public class SampleDAO {
 
         return sample;
     }
+    
+    
+    public SampleEntity getSampleByRequestLibraryName(Integer submissionId, String libraryName, String sampleName) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        Criteria query = session.createCriteria(SampleEntity.class)
+                .createAlias("library", "library", JoinType.LEFT_OUTER_JOIN);
+        
+        query.add(Restrictions.eq("submissionId", submissionId));
+        query.add(Restrictions.like("library.libraryName", libraryName, MatchMode.START));
+        query.add(Restrictions.like("name", sampleName, MatchMode.START));
+        return (SampleEntity) query.uniqueResult();
+
+    }
 
     public int getSamplesCount(Map<String, Object> filters)
             throws HibernateException {
@@ -265,4 +279,5 @@ public class SampleDAO {
         }
         return id;
     }
+
 }

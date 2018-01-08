@@ -71,6 +71,32 @@ public class LazySampleService implements SampleService {
     }
      
     @Override
+    public SampleDTO getFullSampleByRequestLibraryName(final Integer submissionId,final String libraryName,final String sampleName) {
+         SampleDTO sample = null;
+
+        try {
+            sample = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<SampleDTO>() {
+                @Override
+                public SampleDTO execute() throws Exception {
+                    SampleEntity sample = sampleDAO.getSampleByRequestLibraryName(submissionId,libraryName, sampleName);
+                    if (sample==null){
+                        return null;
+                    }
+                    Hibernate.initialize(sample.getApplication());
+                    Hibernate.initialize(sample.getSequencingIndexes());
+                    return myDTOMapper.getSampleDTOfromEntity(sample);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sample;
+    }
+
+     
+    @Override
     public int getSamplesCount(final Map<String, Object> filters) {
         Integer samples = null;
 
@@ -450,6 +476,7 @@ public class LazySampleService implements SampleService {
         
         return samples;
     }
+
 
  
   

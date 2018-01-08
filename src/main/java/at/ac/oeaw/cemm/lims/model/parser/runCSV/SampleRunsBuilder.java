@@ -54,7 +54,13 @@ public class SampleRunsBuilder {
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(RunFormCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord().withIgnoreEmptyLines());
+            CSVParser parser = new CSVParser(reader, 
+                    CSVFormat.RFC4180
+                            .withHeader(RunFormCSVHeader.class)
+                            .withRecordSeparator(',')
+                            .withSkipHeaderRecord()
+                            .withIgnoreEmptyLines()
+                            .withAllowMissingColumnNames());
             List<CSVRecord> records = parser.getRecords();            
             
             for (CSVRecord record: records){             
@@ -70,15 +76,30 @@ public class SampleRunsBuilder {
                     validationStatus.addFailMessage("Run ID", "A run with the id "+runId+" already exists");
                     break;
                 }
-                              
-                int sampleId = getIdFromField(record,RunFormCSVHeader.Sample);
-                SampleDTO sample = services.getSampleService().getFullSampleById(sampleId);
+                             
+                Integer submissionId = getSubmissionId(record);
+    
+                SampleDTO sample;
+                String sampleIdentifier;
+                if (submissionId == null) {
+                    int sampleId = getIdFromField(record, RunFormCSVHeader.Sample);
+                    sampleIdentifier = "id="+String.valueOf(sampleId);
+                    sample = services.getSampleService().getFullSampleById(sampleId);
+                } else{
+                    String sampleName = getStringFromField(record, RunFormCSVHeader.SampleName).replaceAll("_S[0-9]+", "");
+                    String libraryName = getStringFromField(record, RunFormCSVHeader.LibraryName).replaceAll("_L[0-9]+", "");
+                    sampleIdentifier = "request= "+submissionId +",library ="+libraryName+", name="+sampleName;
+                    
+                    sample = services.getSampleService().getFullSampleByRequestLibraryName(submissionId, libraryName, sampleName);
+                }
+                    
+            
                 if (sample==null){
-                    validationStatus.addFailMessage("Sample ID", "Sample with id "+sampleId+" not found");
+                    validationStatus.addFailMessage("Sample ID", "Sample with "+sampleIdentifier+" not found");
                     break;
                 }
                 if (sample.getUser()==null){
-                    validationStatus.addFailMessage("User ID", "Sample with id "+sampleId+" has no user asigned");
+                    validationStatus.addFailMessage("User ID", "Sample with "+sampleIdentifier+" has no user asigned");
                     break;
                 }
            
@@ -92,7 +113,7 @@ public class SampleRunsBuilder {
                     lanesCheck.put(laneName, indexesInLane);
                 }else{
                     if (indexesInLane.contains(sampleIndex)){
-                        validationStatus.addFailMessage("Index consistency", "Sample with id "+sampleId+" and Index "+sampleIndex+ " conflicts with another sample");
+                        validationStatus.addFailMessage("Index consistency", "Sample with id "+sample.getId()+" and Index "+sampleIndex+ " conflicts with another sample");
                         break;
                     }else{
                         indexesInLane.add(sampleIndex);
@@ -112,7 +133,7 @@ public class SampleRunsBuilder {
                     break;
                 }
                 
-                if (!samples.containsKey(sampleId)){
+                if (!samples.containsKey(sample.getId())){
                     SampleRunDTO newSampleRun = myDTOFactory.getSampleRunDTO(
                             runId, 
                             sample, 
@@ -121,10 +142,10 @@ public class SampleRunsBuilder {
                             null, 
                             runFolder,
                             false);
-                    samples.put(sampleId,newSampleRun);
+                    samples.put(sample.getId(),newSampleRun);
                 }
                     
-                SampleRunDTO currentSampleRun = samples.get(sampleId);
+                SampleRunDTO currentSampleRun = samples.get(sample.getId());
                 currentSampleRun.addLane(laneName);  
                 
                 String libraryId = sample.getLibraryName();
@@ -176,6 +197,14 @@ public class SampleRunsBuilder {
          }catch(NumberFormatException e){
             throw new ParsingException("ID in field "+field.name(),"The id is not an integer");
          } 
+    }
+    
+    private static Integer getSubmissionId(CSVRecord record) throws ParsingException {
+        if (record.isSet(RunFormCSVHeader.SubmissionID.toString())){
+            return getIdFromField(record, RunFormCSVHeader.SubmissionID);
+        }
+        
+        return null;
     }
     
     private static String getStringFromField(CSVRecord record, RunFormCSVHeader field) throws ParsingException{

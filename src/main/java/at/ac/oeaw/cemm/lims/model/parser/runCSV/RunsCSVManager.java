@@ -88,7 +88,11 @@ public class RunsCSVManager {
             /*03 Flowcell*/ sb.append(sampleRun.getFlowcell()).append(sep);
             /*04 Cluster*/ sb.append("").append(sep);
             /*05 Sequencing*/ sb.append("").append(sep);
-            /*06 Date*/ sb.append("");
+            /*06 Date*/ sb.append("").append(sep);
+            /*07 SubmissionID */ sb.append(sampleRun.getSample().getSubmissionId()).append(sep);
+            /*08 Library */ sb.append(sampleRun.getSample().getLibraryName()).append(sep);
+            /*09 Sample Name */ sb.append(sampleRun.getSample().getName());
+            
             sb.append(NEW_LINE);
         }
 
