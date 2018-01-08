@@ -2,6 +2,8 @@ package at.ac.oeaw.cemm.lims.util;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @(#)SampleNameFilter.java 20 JUN 2014 Copyright 2014 Computational Research
@@ -238,6 +240,26 @@ public class NameFilter {
             temp = temp.replaceAll("__", "_");
         }
         return temp;
+    }
+    
+    public static String getSampleNameWithoutSuffix(String nameWithSuffix){
+        Pattern suffixPattern = Pattern.compile("(.*)(_S[0-9]+)$");
+        Matcher matcher = suffixPattern.matcher(nameWithSuffix);
+        if (matcher.matches()){
+            return matcher.group(1);
+        }else{
+            return nameWithSuffix;
+        }
+    }
+    
+    public static String getLibraryNameWithoutSuffix(String nameWithSuffix){
+        Pattern suffixPattern = Pattern.compile("(.*)(_L[0-9]+)$");
+        Matcher matcher = suffixPattern.matcher(nameWithSuffix);
+        if (matcher.matches()){
+            return matcher.group(1);
+        }else{
+            return nameWithSuffix;
+        }
     }
     
 }

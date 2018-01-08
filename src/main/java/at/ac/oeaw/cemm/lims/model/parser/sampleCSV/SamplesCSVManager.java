@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
 import at.ac.oeaw.cemm.lims.util.Preferences;
 import java.io.File;
 import java.io.FileWriter;
@@ -37,7 +38,7 @@ public class SamplesCSVManager {
             fileWriter.append(SampleRequestCSVHeader.getHeaderLine());
             fileWriter.append("\n");
             for (Library library: request.getLibraries()){
-                String libraryName = getLibraryName(library);
+                String libraryName = NameFilter.getLibraryNameWithoutSuffix(library.getName());
                 for (SampleDTO sample: ((LibraryDTO) library).getSamples()){
                     fileWriter.append(getLine(sample,libraryName));
                     fileWriter.append("\n");
@@ -96,7 +97,7 @@ public class SamplesCSVManager {
         /*02 UserTel*/ sb.append(sample.getUser().getPhone().replace(",", " ")).append(sep);
         /*03 Institute*/ sb.append(sample.getUser().getAffiliation().getOrganizationName().replace(",", " ")).append(sep);
         /*04 PI*/ sb.append(sample.getCostcenter().replace(",", " ")).append(sep);
-        /*05 SampleName*/ sb.append(getSampleName(sample)).append(sep);
+        /*05 SampleName*/ sb.append(NameFilter.getSampleNameWithoutSuffix(sample.getName())).append(sep);
         /*06 BarcodeByName*/ sb.append(sample.getIndex().getIndex()).append(sep);
         /*07 Application*/ sb.append(sample.getApplication().getApplicationName().replace(",", " ")).append(sep);
         /*08 ReadLength*/ sb.append(sample.getApplication().getReadLength()).append(sep);
@@ -129,12 +130,5 @@ public class SamplesCSVManager {
         recipeBuilder.append(application.getReadLength());
         return recipeBuilder.toString();
     }
-    
-    private static String getSampleName(SampleDTO sample){
-        return sample.getName().replaceFirst("_S[0-9]+", "");
-    }
-    
-    private static String getLibraryName(Library library){
-        return library.getName().replaceFirst("_L[0-9]+", "");
-    }
+  
 }

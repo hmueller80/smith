@@ -14,6 +14,7 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.model.parser.CSVValidationStatus;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
+import at.ac.oeaw.cemm.lims.util.NameFilter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -87,8 +88,9 @@ public class SampleRunsBuilder {
                     sampleIdentifier = "id="+String.valueOf(sampleId);
                     sample = services.getSampleService().getFullSampleById(sampleId);
                 } else{
-                    String sampleName = getStringFromField(record, RunFormCSVHeader.SampleName).replaceAll("_S[0-9]+", "");
-                    String libraryName = getStringFromField(record, RunFormCSVHeader.LibraryName).replaceAll("_L[0-9]+", "");
+                    String sampleName = NameFilter.getSampleNameWithoutSuffix(getStringFromField(record, RunFormCSVHeader.SampleName));
+                    String libraryName = NameFilter.getLibraryNameWithoutSuffix(getStringFromField(record, RunFormCSVHeader.LibraryName));
+                            
                     sampleIdentifier = "request= "+submissionId +",library ="+libraryName+", name="+sampleName;
                     
                     sample = services.getSampleService().getFullSampleByRequestLibraryName(submissionId, libraryName, sampleName);
