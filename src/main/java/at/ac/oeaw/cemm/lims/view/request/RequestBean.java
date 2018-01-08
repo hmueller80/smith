@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -51,6 +52,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 
@@ -470,6 +472,20 @@ public class RequestBean {
                             targetPath.mkdir();
                         }
                     }
+                    
+                    Integer counter = 0;
+                    String baseName = FilenameUtils.getBaseName(excelFile.getName()).replace("_V[0-9]+","" );
+                    String extension = FilenameUtils.getExtension(excelFile.getName());
+                    String backupFileName = baseName + "_V" + counter + FilenameUtils.EXTENSION_SEPARATOR_STR+extension;
+                    
+                    File backupFile = new File(targetPath, backupFileName);
+                    while (backupFile.exists()) {
+                        counter += 1;
+                        backupFileName = baseName + "_V" + counter + FilenameUtils.EXTENSION_SEPARATOR_STR+extension;
+                        backupFile = new File(targetPath, backupFileName);
+                    }
+                    Files.copy(excelFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    
                     
                     SampleAnnotationWriter excelWriter = new SampleAnnotationWriter(excelFile,request);
                     excelWriter.writeToFile();
