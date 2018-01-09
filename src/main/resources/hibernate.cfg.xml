@@ -50,10 +50,14 @@ Contributor(s):
     <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
     <property name="hibernate.connection.username">hmueller</property>
     <property name="hibernate.connection.password"></property>
+    
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">root</property>
+    <property name="hibernate.connection.password">mzsqlroot</property>
     -->
-    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">hmueller</property>
-    <property name="hibernate.connection.password"></property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">root</property>
+    <property name="hibernate.connection.password">mzsqlroot</property>
     
     <property name="hibernate.show_sql">false</property>
     <property name="hibernate.current_session_context_class">thread</property>
