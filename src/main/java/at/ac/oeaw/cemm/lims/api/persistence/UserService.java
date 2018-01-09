@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
@@ -37,5 +38,9 @@ public interface UserService {
     public OrganizationDTO getOrganizationByName(String name);
 
     public List<OrganizationDTO> getAllOrganizations();
+
+    public void saveOrganization(OrganizationDTO orga) throws Exception;
+
+    public void deleteOrgaByName(String name) throws Exception;
 
 }

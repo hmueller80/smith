@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans;
 
+import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ColumnNames;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserConstants;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.ExcelParserUtils;
 import java.io.Serializable;
@@ -45,7 +46,7 @@ public class LibrarySubmission implements Serializable {
     private String libraryDNAAmount = "";
     private Integer librarySubmissionId;
 
-    public LibrarySubmission(ArrayList<String> row, Map<String, Integer> header) {
+    public LibrarySubmission(ArrayList<String> row, Map<ColumnNames, Integer> header) {
 
         libraryName = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryName,row,header);
         libraryLabel = ExcelParserUtils.extractFieldAsString(ExcelParserConstants.LibraryLabel,row,header);

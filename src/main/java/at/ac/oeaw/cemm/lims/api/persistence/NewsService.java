@@ -19,5 +19,7 @@ public interface NewsService {
     public void submitNews(NewsDTO newNews) throws Exception;
     
     public boolean newsExists(String body);
+
+    public void removeNewsWithBody(String newsBody);
     
 }

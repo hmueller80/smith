@@ -93,4 +93,24 @@ public class NewsServiceImpl implements NewsService {
         return result;
     }
 
+    @Override
+    public void removeNewsWithBody(final String newsBody) {
+        try {
+            TransactionManager.doInTransaction(
+                    new TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    NewsEntity toDelete = newsDAO.getNewsWithBody(newsBody);
+                    newsDAO.delete(toDelete);
+
+                    return null;
+                }
+            }
+            );
+        } catch (Exception ex) {
+            Logger.getLogger(NewsServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

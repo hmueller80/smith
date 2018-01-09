@@ -29,13 +29,22 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     private String primerType;
     private String primerName;
     private String primerSequence;
+    private String applicationName;
+    private final Boolean nameEditable;
     
-    protected RequestSampleDTOImpl(Integer id) {
+    protected RequestSampleDTOImpl(Integer id, boolean nameEditable) {
         this.id = id;
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestSampleDTOImpl() {
+    protected RequestSampleDTOImpl(boolean nameEditable) {
         id = null;
+        this.nameEditable = nameEditable;
+    }
+    
+     protected RequestSampleDTOImpl() {
+        id = null;
+        this.nameEditable = true;
     }
 
     @Override
@@ -156,7 +165,9 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
     @JsonIgnore
     @Override
     public String getCompoundIndex() {
-        if (i7Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
+        if (i7Index.equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX) || i5Index.equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX)){
+            return RequestFormDTO.NO_DEMUX_INDEX;
+        } else if (i7Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
             if (i5Index.equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)){
                 return RequestFormDTO.DEFAULT_INDEX;
             }else{
@@ -170,5 +181,19 @@ public class RequestSampleDTOImpl implements RequestSampleDTO, Sample{
             }
         }
     }
-    
+
+    @Override
+    public Boolean isNameEditable() {
+        return nameEditable;
+    }
+
+    @Override
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    @Override
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 }

@@ -46,6 +46,21 @@ public class RequestEntity implements Serializable, EntityWithSettableId {
     @Column(name = "status")
     private String status;
     
+    @Column(name = "billing_contact")
+    private String billingContact;
+      
+    @Column(name = "billing_address")
+    private String billingAddress;
+        
+    @Column(name = "billing_code")
+    private String billingCode;
+          
+    @Column(name = "auth_form_name")
+    private String authFormName;
+
+    @Column(name = "annotation_sheet_name")
+    private String annotationSheetName;
+    
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
     private UserEntity userId;
@@ -99,6 +114,46 @@ public class RequestEntity implements Serializable, EntityWithSettableId {
     public void setStatus(String status) {
         this.status = status;
     } 
+
+    public String getBillingContact() {
+        return billingContact;
+    }
+
+    public void setBillingContact(String billingContact) {
+        this.billingContact = billingContact;
+    }
+
+    public String getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(String billingAddress) {
+        this.billingAddress = billingAddress;
+    }
+
+    public String getBillingCode() {
+        return billingCode;
+    }
+
+    public void setBillingCode(String billingCode) {
+        this.billingCode = billingCode;
+    }
+
+    public String getAuthFormName() {
+        return authFormName;
+    }
+
+    public void setAuthFormName(String authFormName) {
+        this.authFormName = authFormName;
+    }
+
+    public String getAnnotationSheetName() {
+        return annotationSheetName;
+    }
+
+    public void setAnnotationSheetName(String annotationSheetName) {
+        this.annotationSheetName = annotationSheetName;
+    }   
 
     @Override
     public int hashCode() {

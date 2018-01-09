@@ -43,22 +43,38 @@ public class RequestFormService {
         return TransactionManager.doInTransaction(
                 new TransactionManager.TransactionCallable<Integer>() {
             @Override
-            public Integer execute() throws Exception {                                
+            public Integer execute() throws Exception {       
                 //1. Take care of requestor
                 RequestorDTO requestor = requestForm.getRequestor();
                 UserEntity user = userDAO.getUserByID(requestor.getUser().getId());
                 if (user == null) throw new Exception("User "+requestor.getUser().getLogin()+" not found in DB");
                 
                 //2. Save the request
-                RequestEntity requestEntity = new RequestEntity();
-                requestEntity.setId(requestForm.getRequestId());
-                requestEntity.setReqDate(requestForm.getDate());
+                RequestEntity requestEntity;
+                if (isNew) {
+                    requestEntity = new RequestEntity();    
+                    requestEntity.setId(requestForm.getRequestId());
+                    requestEntity.setReqDate(requestForm.getDate());
+                    requestEntity.setUserId(user);
+                }else {
+                    requestEntity = requestFormDAO.getRequestById(requestForm.getRequestId());
+                    if (requestEntity == null){
+                        throw new Exception ("Request with id "+requestForm.getRequestId()+" not found in DB");
+                    }
+                }
                 requestEntity.setStatus(requestForm.getStatus());
-                requestEntity.setUserId(user);
+                requestEntity.setAuthFormName(requestForm.getAuthorizationFileName());
+                requestEntity.setAnnotationSheetName(requestForm.getSampleAnnotationFileName());
+                requestEntity.setBillingContact(requestForm.getBillingInfo().getContact());
+                requestEntity.setBillingAddress(requestForm.getBillingInfo().getAddress());
+                requestEntity.setBillingCode(requestForm.getBillingInfo().getBillingCode());
+               
                 requestFormDAO.saveOrUpdate(requestEntity,isNew);
                 
                 //2. Take care of libraries
                 Set<RequestLibraryEntity> librariesToDelete = new HashSet<>(requestLibraryDAO.getLibrariesByReqId(requestEntity.getId()));
+                Set<RequestSampleEntity> samplesToDelete = new HashSet<>();
+                
                 List<RequestLibraryDTO> requestLibraries = requestForm.getLibraries();
                 for (RequestLibraryDTO library: requestLibraries) {
                     RequestLibraryEntity libraryEntity;
@@ -66,21 +82,23 @@ public class RequestFormService {
                         libraryEntity = new RequestLibraryEntity();
                     }else{
                         libraryEntity = requestLibraryDAO.getLibraryById(library.getId());
+                        if (libraryEntity == null){
+                            throw new Exception ("Library with id "+library.getId()+" not found in DB");
+                        }
                         librariesToDelete.remove(libraryEntity);
                     }
                     libraryEntity.setRequestId(requestEntity);
                     libraryEntity.setLibName(library.getName());
-                    libraryEntity.setLibType(library.getApplicationName());
                     libraryEntity.setReadMode(library.getReadMode());
                     libraryEntity.setReadLength(library.getReadLength().shortValue());
                     libraryEntity.setLanes(library.getLanes().shortValue());
-                    libraryEntity.setVolume(library.getVolume());
-                    libraryEntity.setDnaConcentration(library.getDnaConcentration());
+                    libraryEntity.setVolumeBulk(library.getVolume());
+                    libraryEntity.setDnaConcentrationBulk(library.getDnaConcentration());
                     libraryEntity.setTotalSize(library.getTotalSize());
                     requestLibraryDAO.saveOrUpdate(libraryEntity);
                     
                     //3. take care of samples
-                    Set<RequestSampleEntity> samplesToDelete = new HashSet<>(requestSampleDAO.getSamplesByLibId(libraryEntity.getId()));
+                    samplesToDelete.addAll(requestSampleDAO.getSamplesByLibId(libraryEntity.getId()));
                     List<RequestSampleDTO> requestSamples = library.getSamples();
                     for (RequestSampleDTO sample: requestSamples){
                         RequestSampleEntity sampleEntity;
@@ -88,9 +106,13 @@ public class RequestFormService {
                             sampleEntity= new RequestSampleEntity();
                         }else {
                             sampleEntity = requestSampleDAO.getSampleById(sample.getId());
+                            if (sampleEntity == null){
+                                throw new Exception ("Sample with id "+sample.getId()+" not found in DB");
+                            }
                             samplesToDelete.remove(sampleEntity);
                         }
                         sampleEntity.setLibraryId(libraryEntity);
+                        sampleEntity.setApplicationType(sample.getApplicationName());
                         sampleEntity.setName(sample.getName());
                         sampleEntity.setDescription(sample.getSampleDescription());
                         sampleEntity.setOrganism(sample.getOrganism());
@@ -103,12 +125,11 @@ public class RequestFormService {
                         sampleEntity.setPrimerType(sample.getPrimerType());
                         requestSampleDAO.saveOrUpdate(sampleEntity);
                     }
-                    
-                    //4. Delete unused samples
-                    for (RequestSampleEntity sampleToDelete: samplesToDelete){
-                        requestSampleDAO.delete(sampleToDelete);
-                    }
-                    
+                }
+                
+                //4. Delete unused samples
+                for (RequestSampleEntity sampleToDelete : samplesToDelete) {
+                    requestSampleDAO.delete(sampleToDelete);
                 }
                 
                 //5. Delete unused libraries

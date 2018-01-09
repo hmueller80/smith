@@ -21,11 +21,10 @@ import at.ac.oeaw.cemm.lims.model.parser.ParsedObject;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RequestValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.LibraryDTOValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.lims.RequestCSVUploadValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
-import at.ac.oeaw.cemm.lims.util.RequestIdBean;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -46,14 +45,14 @@ public class RequestBuilder {
     @Inject private DTOFactory myDTOFactory;
     @Inject private ServiceFactory services;
     
-    public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile, RequestIdBean requestIdBean) {
+    public ValidatedCSV<RequestDTO> buildRequestFromCSV(File csvFile) {
         RequestDTO requestObj = null;
         CSVValidationStatus validationStatus = new CSVValidationStatus();
         
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(',').withSkipHeaderRecord().withIgnoreEmptyLines());
+            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(SampleRequestCSVHeader.getSeparator()).withSkipHeaderRecord().withIgnoreEmptyLines());
             List<CSVRecord> records = parser.getRecords();
             UserDTO requestor = getUserFromCSVRecords(records);
             Integer requestId = getSubmissionIdFromCSVRecords(records);
@@ -62,7 +61,8 @@ public class RequestBuilder {
 
             for (CSVRecord record : records) {
                 SampleDTO sample = getObject(new SampleCSVParser(record, myDTOFactory,requestId), validationStatus);
-
+                sample.setUser(requestor);
+                
                 IndexDTO index = getObject(new IndexCSVParser(record, services, myDTOFactory), validationStatus);
                 sample.setIndex(index);
 
@@ -76,7 +76,7 @@ public class RequestBuilder {
             }
             
             //Validate Business Logic!
-            RequestValidator requestValidator = new RequestCSVUploadValidator(new LibraryValidator(new SampleDTOValidator()),services, requestIdBean);
+            RequestValidator requestValidator = new RequestCSVUploadValidator(new LibraryDTOValidator(true),services);
             ValidationStatus requestValidation = requestValidator.isValid(requestObj);
             if (!requestValidation.isValid()){
                 validationStatus.addFailMessage("Submission Validation", "");

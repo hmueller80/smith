@@ -37,5 +37,7 @@ public interface RunService {
     public List<SampleRunDTO> getRunsByFlowCell(String FCID);
 
     public List<RunDTO> getAllRunsMinimalInfo();
+
+    public Integer getMaxRunIdInDB();
         
 }

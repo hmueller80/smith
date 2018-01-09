@@ -20,7 +20,9 @@
         <h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
 
     </h:head>
-
+    
+    <ui:insert name="metadata" />
+    
     <h:body >
 
         <p:layout  fullPage="true">
@@ -39,7 +41,6 @@
                         <h:outputText rendered="#{navigationBean.isLoggedIn}" value="#{bundle['user.login.message']} " />                    
                         <h:outputLink rendered="#{navigationBean.isLoggedIn}" value="#{request.contextPath}/User/userDetails.jsf" > 
                             <f:param name="uid" value="#{newRoleManager.currentUser.id}" />
-                            <f:param name="activeMenu" value="3" />
                             #{newRoleManager.currentUser.login}
                         </h:outputLink>
                     </p:column>
@@ -50,49 +51,7 @@
             </p:layoutUnit>
 
             <p:layoutUnit  position="center" id="ui-layout-center" >
-                <ui:insert name="home"></ui:insert>
-                <ui:insert name="sampleSearch"></ui:insert>
-                <ui:insert name="samplesSearchIndexes"></ui:insert>
-                <ui:insert name="editSampleIndex"></ui:insert>
-                <ui:insert name="reagentsSearch"></ui:insert>
-                <ui:insert name="usersSearch"></ui:insert>    
-                <ui:insert name="usersAdd"></ui:insert>    
-                <ui:insert name="loggedUserInfo"></ui:insert>
-                <ui:insert name="newSampleForm"></ui:insert>
-                <ui:insert name="sampleDetails"></ui:insert>
-                <ui:insert name="runsSearch"></ui:insert>
-                <ui:insert name="samplerunDetails"></ui:insert>
-                <ui:insert name="newSampleRunForm"></ui:insert>
-                <ui:insert name="newProjectForm"></ui:insert>
-                <ui:insert name="selectSample"></ui:insert>
-                <ui:insert name="selectSample2"></ui:insert>
-                <ui:insert name="selectSampleForProject"></ui:insert>
-                <ui:insert name="runDetails"></ui:insert>
-                <ui:insert name="reagentDetails"></ui:insert>
-                <ui:insert name="newReagentForm"></ui:insert>
-                <ui:insert name="projectsSearch"></ui:insert>
-                <ui:insert name="flowcellSearch"></ui:insert>
-                <ui:insert name="selectSamplesForProject"></ui:insert>
-                <ui:insert name="projectDetails"></ui:insert>
-                <ui:insert name="modProjectText"></ui:insert>
-                <ui:insert name="samplesSheet"></ui:insert>
-                <ui:insert name="rawDataSearch"></ui:insert>
-                <ui:insert name="alignedDataSearch"></ui:insert>
-                <ui:insert name="annotatedDataSearch"></ui:insert>
-                <ui:insert name="sampleAttributes"></ui:insert>
-                <ui:insert name="editAttribute"></ui:insert>
-                <ui:insert name="testPage"></ui:insert>
-                <ui:insert name="confirmFlowcell"></ui:insert>
-                <ui:insert name="delProjConf"></ui:insert>
-                <ui:insert name="addCollaborator"></ui:insert>
-                <ui:insert name="samplesCreated"></ui:insert>
-                <ui:insert name="sampleDeleted"></ui:insert>
-                <ui:insert name="newDraggableRunForm"></ui:insert>
-                <ui:insert name="newsWriter"></ui:insert>
-                <ui:insert name="userDetails"></ui:insert>
-                <ui:insert name="sampleRequest"></ui:insert>
-                <ui:insert name="requestSearch"></ui:insert>
-
+                 <ui:insert name="content"></ui:insert>
             </p:layoutUnit>
         </p:layout>
     </h:body>

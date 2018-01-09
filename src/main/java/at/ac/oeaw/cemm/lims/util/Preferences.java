@@ -62,7 +62,10 @@ public class Preferences implements Serializable {
     private static String  workdir; // = "/Users/yvaskin/Documents/project/sandbox/smith_run_tests/deploy_tests/Temp/"; //TODO
     private static int cutoff = 140716;
     private static String      executerPath;
-    
+    private static String annotationSheetFolder;
+    private static String sampleRequestFolder;
+    private static String sampleRunFolder;
+
     private static String sentByMailAddress = "service-ings@ieo.eu"; 
     private static String sentByUnitName = "IIT Genomic Unit"; 
     private static String smtpServer = "smtp.ieo.eu";
@@ -102,6 +105,9 @@ public class Preferences implements Serializable {
             cutoff = Integer.parseInt(context.getExternalContext().getInitParameter("remotemonitoringcutoffdate"));
             executerPath = context.getExternalContext().getInitParameter("remoteexecuterpath");
             runfolderscaninterval = context.getExternalContext().getInitParameter("remoterunfolderscaninterval");
+            annotationSheetFolder = context.getExternalContext().getInitParameter("remotesampleannotationfolder");
+            sampleRequestFolder = context.getExternalContext().getInitParameter("remotesamplerequestfolder");
+            sampleRunFolder = context.getExternalContext().getInitParameter("remotesamplerunfolder");
         }else if(installation.equals("local")){
             runfolderroot = context.getExternalContext().getInitParameter("localrunfolder");  
             samplesheetfolder = context.getExternalContext().getInitParameter("localsamplesheetfolder"); 
@@ -109,6 +115,9 @@ public class Preferences implements Serializable {
             cutoff = Integer.parseInt(context.getExternalContext().getInitParameter("localmonitoringcutoffdate"));
             executerPath = context.getExternalContext().getInitParameter("localexecuterpath");
             runfolderscaninterval = context.getExternalContext().getInitParameter("localrunfolderscaninterval");
+            annotationSheetFolder = context.getExternalContext().getInitParameter("localsampleannotationfolder");
+            sampleRequestFolder = context.getExternalContext().getInitParameter("localsamplerequestfolder");
+            sampleRunFolder = context.getExternalContext().getInitParameter("localsamplerunfolder");
         }
         
         sentByMailAddress = context.getExternalContext().getInitParameter("sentByMailAddress");
@@ -306,6 +315,20 @@ public class Preferences implements Serializable {
         return executerPath;
     }
 
+    public static String getAnnotationSheetFolder() {
+        return annotationSheetFolder;
+    }
+
+    public static String getSampleRequestFolder() {
+        return sampleRequestFolder;
+    }
+
+    public static String getSampleRunFolder() {
+        return sampleRunFolder;
+    }
+    
+    
+    
     
     /**
      * Getter for runfolderscaninterval. Default = 1 hour.
@@ -332,15 +355,24 @@ public class Preferences implements Serializable {
      * @since 1.0
      */
     private void testOpeningSlashPresence(){
-        if(!runfolderroot.startsWith("/")){
+        if (!runfolderroot.startsWith("/")) {
             runfolderroot = "/" + runfolderroot;
-        }       
-        if(!samplesheetfolder.startsWith("/")){
+        }
+        if (!samplesheetfolder.startsWith("/")) {
             samplesheetfolder = "/" + samplesheetfolder;
         }
-        if(!workdir.startsWith("/")){
+        if (!workdir.startsWith("/")) {
             workdir = "/" + workdir;
-        }      
+        }
+        if (!annotationSheetFolder.startsWith("/")) {
+            annotationSheetFolder = "/" + annotationSheetFolder;
+        }
+         if (!sampleRunFolder.startsWith("/")) {
+            sampleRunFolder = "/" + sampleRunFolder;
+        }
+          if (!sampleRequestFolder.startsWith("/")) {
+            sampleRequestFolder = "/" + sampleRequestFolder;
+        }
     }
     
     /**
@@ -358,7 +390,16 @@ public class Preferences implements Serializable {
         }
         if(!workdir.endsWith("/")){
             workdir = workdir + "/";
-        }      
+        }     
+        if (!annotationSheetFolder.endsWith("/")) {
+            annotationSheetFolder = annotationSheetFolder +"/";
+        }
+        if (!sampleRunFolder.endsWith("/")) {
+            sampleRunFolder = sampleRunFolder +"/";
+        }
+        if (!sampleRequestFolder.endsWith("/")) {
+            sampleRequestFolder = sampleRequestFolder +"/";
+        }
     
     }
     

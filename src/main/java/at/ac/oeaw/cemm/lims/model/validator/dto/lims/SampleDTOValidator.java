@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.model.validator.dto.lims;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
-import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;

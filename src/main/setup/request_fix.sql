@@ -27,6 +27,11 @@ add constraint fk_affiliation  foreign key (organization_department,organization
     id int auto_increment,
     user_id int(11) not null,
     req_date date,
+    billing_contact VARCHAR(100),
+    billing_address VARCHAR(200),
+    billing_code VARCHAR(200),
+    auth_form_name VARCHAR(100),
+    annotation_sheet_name VARCHAR(100),
     status varchar(100),
     primary key(id),
     foreign key (user_id) references user(user_id)
@@ -36,13 +41,15 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 	id int auto_increment,
     request_id int not null,
     lib_name varchar(1000),
-    lib_type varchar(1000),
     read_mode varchar(2),
     read_length smallint,
     lanes smallint,
-    volume double,
-    dna_concentration double,
+    volume_bulk double,
+    dna_concentration_bulk double,
+    volume_dilution double,
+    dna_concentration_dilution double,
     total_size double,
+    library_kit varchar(1000),
     primary key(id),
     foreign key (request_id) references request(id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
@@ -60,6 +67,7 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 	primer_index varchar(100),
     primer_name varchar(1000),
     primer_type varchar(1000),
+    application varchar(1000),
     primary key(id),
     foreign key (library_id) references request_library(id)
  )ENGINE=InnoDB DEFAULT CHARSET=UTF8;  
@@ -68,3 +76,4 @@ add constraint fk_affiliation  foreign key (organization_department,organization
 insert into organization values ("CeMM","Lazarettgasse 14, AKH BT 25.3, 1090 Vienna, Austria","www.cemm.at");
 insert into department values ("BSF","CeMM","","http://cemm.at/research/groups/biomedical-sequencing-facility-bsf/");
 insert into department values ("NONE","CeMM","","");
+INSERT INTO sequencingindexes (`index`) VALUES ('NO_DEMUX');

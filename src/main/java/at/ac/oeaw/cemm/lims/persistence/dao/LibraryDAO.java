@@ -12,6 +12,7 @@ import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -82,7 +83,7 @@ public class LibraryDAO {
     }   
 
     /*
-    public List<MinimalLibraryEntity> getDeletableLibraries() {
+    public List<MinimalLibraryEntity> getDeleatableLibraries() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         
         DetachedCriteria subquery = DetachedCriteria.forClass(SampleEntity.class)
@@ -99,9 +100,12 @@ public class LibraryDAO {
         projList.add(Projections.property("sample.user").as("requestor"));
         projList.add(Projections.property("id").as("libraryId"));
         projList.add(Projections.property("libraryName").as("libraryName"));
+        projList.add(Projections.property("application.readMode").as("readMode"));
+        projList.add(Projections.property("application.readLength").as("readLength"));
         
         Criteria query = session.createCriteria(LibraryEntity.class)
                 .createAlias("samples", "sample",JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sample.application", "application",JoinType.LEFT_OUTER_JOIN)
                 .add(Subqueries.propertyNotIn("id", subquery))
                 //.addOrder(Order.desc("sample.submissionId"))
                 .addOrder(Order.desc("sample.submissionId"))
@@ -112,7 +116,66 @@ public class LibraryDAO {
         return query.list();
      }
 */
+     public List<MinimalLibraryEntity> getDeleatableLibraries(){
+         return getEditableLibraries(false);
+     }
+     
+     public List<MinimalLibraryEntity> getRunnableLibraries(){
+         return getEditableLibraries(true);
+     }
     
+    private List<MinimalLibraryEntity> getEditableLibraries(boolean runnable) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        
+        Criteria crit1 = session.createCriteria(SampleEntity.class);
+        if (runnable){
+            crit1.add(Restrictions.disjunction(Restrictions.eq("status",SampleDTO.status_requested),
+                    Restrictions.eq("status",SampleDTO.status_rerun)));
+        }else{
+            crit1.add(Restrictions.eq("status",SampleDTO.status_requested));
+        }
+        crit1.setProjection(Projections.distinct(Projections.property("library.id")));
+        
+        Criteria crit2 = session.createCriteria(SampleEntity.class);        
+        crit2.add(Restrictions.disjunction(
+                Restrictions.eq("status",SampleDTO.status_running),
+                Restrictions.eq("status",SampleDTO.status_analyzed))
+                ).setProjection(Projections.distinct(Projections.property("library.id")));
+        
+        List<Integer> rq = crit1.list();
+        List<Integer> ar = crit2.list();
+        List<Integer> deletableLibIds = new ArrayList<Integer>();
+        for(Integer i : rq){
+            if(!ar.contains(i)){
+                deletableLibIds.add(i);
+            }
+        }
+        //for(Integer i : deletableLibIds){
+        //    System.out.println("deletable library id " + i);
+        //}
+                
+        ProjectionList projList = Projections.projectionList();
+        projList.add(Projections.property("sample.submissionId").as("requestId"));
+        projList.add(Projections.property("sample.user").as("requestor"));
+        projList.add(Projections.property("id").as("libraryId"));
+        projList.add(Projections.property("libraryName").as("libraryName"));
+        projList.add(Projections.property("application.readMode").as("readMode"));
+        projList.add(Projections.property("application.readLength").as("readLength"));
+        
+        Criteria query = session.createCriteria(LibraryEntity.class)
+            .createAlias("samples", "sample",JoinType.INNER_JOIN)
+            .createAlias("sample.application", "application",JoinType.LEFT_OUTER_JOIN)                
+            .add(Restrictions.in("id",deletableLibIds))
+            .addOrder(Order.desc("id"))
+            .setProjection(Projections.distinct(projList))
+            .setResultTransformer(Transformers.aliasToBean(MinimalLibraryEntity.class));
+        
+        
+        
+        return query.list();
+     }
+    
+    /*
     public List<MinimalLibraryEntity> getDeleatableLibraries() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         
@@ -157,7 +220,7 @@ public class LibraryDAO {
         
         return query.list();
      }
-
+*/
 
     public List<LibraryEntity> getDeleatableLibrariesInRequest(Integer requestId) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -166,8 +229,7 @@ public class LibraryDAO {
                 .createAlias("library", "library",JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.conjunction(
                     Restrictions.eq("submissionId", requestId),
-                    Restrictions.ne("status",SampleDTO.status_requested),
-                    Restrictions.ne("status",SampleDTO.status_queued)))
+                    Restrictions.ne("status",SampleDTO.status_requested)))
                 .setProjection(Projections.distinct(Projections.property("library.id")));
                
         Criteria query = session.createCriteria(LibraryEntity.class)

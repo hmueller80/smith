@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.entity;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -43,10 +44,11 @@ public class OrganizationEntity implements Serializable {
     @Column(name = "url")
     private String url;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "organization")
-    private Set<DepartmentEntity> departmentSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "organization", orphanRemoval = true)
+    private Set<DepartmentEntity> departmentSet = new HashSet<>();;
 
     public OrganizationEntity() {
+        
     }
 
     public OrganizationEntity(String organizationName) {

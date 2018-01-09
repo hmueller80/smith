@@ -4,8 +4,63 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui" template="/template.xhtml">
 
-    <ui:define name="runDetails">
-
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{singleRunBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(3)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
+        
+      <p:dialog widgetVar="fileDialog" draggable="true" closable="true" resizable="false" modal="true" appendTo="@(body)" >
+            <h:form id="filesDialog">
+                <p:messages id="filesMessage" for="filesMessage" showDetail="true" closable="true"/>
+                <p:tree value="#{runFileManagerBean.rootFolder}" 
+                        id = "files"
+                        var="selectedFile"
+                        selectionMode="single"
+                        selection="#{runFileManagerBean.selectedNode}">
+                    <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                        <h:outputText value="#{selectedFile.name}"/>
+                    </p:treeNode>
+                    <p:treeNode type="document" icon="ui-icon-document">
+                        <h:outputText value="#{selectedFile.name}" />
+                    </p:treeNode>
+                    <p:ajax event="select" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                    <p:ajax event="contextMenu" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                </p:tree>
+                <p:fileUpload 
+                    id="fileUpload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    fileUploadListener="#{runFileManagerBean.handleFileUpload}"
+                    label="Upload" multiple="false" mode="advanced" auto="true"
+                    sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt|xls|xlsx|pdf|img|doc|docx)$/"
+                    disabled="#{runFileManagerBean.isSelectedDirectory()== null or !runFileManagerBean.isSelectedDirectory()}"
+                    update="@this :filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDelete"
+                     style="float:right;margin:1px;font-size:x-small;"
+                    value="Delete"
+                    icon="ui-icon-trash" 
+                    rendered ="#{runFileManagerBean.roleManager.hasRunAddPermission}"
+                    actionListener ="#{runFileManagerBean.deleteFile()}"
+                    disabled="#{runFileManagerBean.isSelectedDirectory()== null or runFileManagerBean.isSelectedDirectory()}"
+                    update=":filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDownload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    value="Download" 
+                    ajax="false" 
+                    onclick="PrimeFaces.monitorDownload(start, stop);"
+                    disabled="#{runFileManagerBean.isSelectedDirectory()== null or runFileManagerBean.isSelectedDirectory()}"
+                    icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{runFileManagerBean.file}" />
+                </p:commandButton>
+                
+            </h:form>
+        </p:dialog>
+        
         <h:form id="rundetailsForm">
 
             <div class="ui-g">
@@ -16,6 +71,20 @@
                 </div>
                 <div class="ui-g-4">
                     <h:form>
+                        <p:commandButton style="float:right;margin:1px;" 
+                                         value="View Files" 
+                                         icon="ui-icon-folder-collapsed"
+                                         rendered="#{runFileManagerBean.rootFolder != null}"
+                                         onclick ="PF('fileDialog').show()">
+                        </p:commandButton>
+                        <p:commandButton 
+                            style="float:right;margin:1px"
+                            value="Reset Demux"
+                            icon="ui-icon-trash"
+                            rendered="#{singleRunBean.roleManager.hasRunAddPermission and singleRunBean.demuxStarted()}"
+                            actionListener="#{singleRunBean.resetDemux()}">
+                            <p:confirm header="Confirmation" message="Are you sure to reset demux for run #{singleRunBean.runId}?" icon="ui-icon-alert" />
+                        </p:commandButton>
                         <p:commandButton style="float:right;margin:1px" value="Delete Run"
                                          icon="ui-icon-trash"
                                          rendered="#{singleRunBean.roleManager.hasRunAddPermission}"
@@ -42,13 +111,22 @@
 
                 <h:outputLabel for="operator" value="Operator: "/>
                 <h:outputText id="operator" value="#{singleRunBean.operator.login}" />
+
+                <h:outputLabel for="demux" value="Demux has started: "/>
+                <h:outputText id="demux" value="#{singleRunBean.demuxStarted()}" />
             </h:panelGrid>
 
             <p:separator />
 
 
-            <p:dataTable var="sampleRun" value="#{singleRunBean.allSamples}"
-                         sortBy="#{sampleRun.lane}" expandableRowGroups="true">
+            <p:dataTable 
+                id="sampleRunTable"
+                var="sampleRun" 
+                value="#{singleRunBean.allSamples}"
+                sortBy="#{sampleRun.lane}" 
+                expandableRowGroups="true"
+                style="font-size: x-small;height:calc(100% - 165px)"
+                scrollable="true">
                 <p:headerRow>
                     <p:column colspan="6">
                         <h:outputText value="Lane #{sampleRun.lane}" />
@@ -63,7 +141,6 @@
                 <p:column headerText="Sample Id">
                     <h:link id="sampleId" outcome="/Sample/sampleDetails_1.jsf" value="#{sampleRun.sample.id}" >
                         <f:param name="sid" value="#{sampleRun.sample.id}"/>
-                        <f:param name="activeMenu" value="1" />         
                     </h:link>   					
                 </p:column>
                 <p:column headerText="Sample Submission Id">

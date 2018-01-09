@@ -5,7 +5,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="requestSearch">
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{menuBean.setMenuIndex(1)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
         
          <p:dialog widgetVar="deleteDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
@@ -54,14 +60,16 @@
             </h:form>
         </p:dialog>
         
-        <h:form id="requestsTableForm">            
+        <h:form id="requestsTableForm" style="height:100%">            
             
             <p:dataTable id="requestsTable" 
                          var="myRequest" 
                          value="#{requestsSearchBeanLazy.requestDataModel}" 
                          widgetVar="requestsTable"
                          paginator="true" 
-                         rows="20"
+                         rows="50"
+                         scrollable="true"
+                         scrollHeight="100%"
                          style="font-size: x-small;" 
                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {RowsPerPageDropdown}
                          {CurrentPageReport} {NextPageLink} {LastPageLink}"
@@ -84,9 +92,7 @@
                                 value="Add Request" 
                                 icon="ui-icon-plus"
                                 id="addRequestButton"
-                                outcome="/Request/sampleRequest.jsf">
-                                <f:param name="activeMenu" value="4" />                           
-                            </p:button>
+                                outcome="/Request/sampleRequest.jsf"/>
                             <p:commandButton style="float:right;margin:1px" value="Download" ajax="false"
                                              icon="ui-icon-arrowthick-1-s">
                                 <p:dataExporter type="csv" target="requestsTable" fileName="Requests"
@@ -102,7 +108,6 @@
                           sortBy="#{myRequest.id}">
                         <h:link  outcome="sampleRequest.jsf" value="#{myRequest.requestId}">
                             <f:param name="rid" value="#{myRequest.requestId}"/>
-                            <f:param name="activeMenu" value="4" />                           
                         </h:link>
                 </p:column>
 

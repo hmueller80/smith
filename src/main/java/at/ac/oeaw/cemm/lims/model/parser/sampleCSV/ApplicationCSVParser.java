@@ -21,7 +21,7 @@ import org.apache.commons.csv.CSVRecord;
  * @author dbarreca
  */
 public class ApplicationCSVParser extends DTOCSVParser<ApplicationDTO> {
-    private static final String RECIPE_DELIMITER = ":";
+    public static final String RECIPE_DELIMITER = ":";
     private static final String RECIPE_PAIR_END = "Paired end";
 
     

@@ -32,6 +32,11 @@ public class NewsDAO {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         session.save(newsEntity);
     }
+    
+    public void delete(NewsEntity newsEntity) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.delete(newsEntity);
+    }
 
     public boolean newsExists(String body) {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -45,6 +50,13 @@ public class NewsDAO {
         } else {
             return false;
         }
+    }
+    
+    public NewsEntity getNewsWithBody(String body) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(NewsEntity.class)
+                .add(Restrictions.eq("body", body));
+        return (NewsEntity) query.uniqueResult();
     }
 
     public int getMaxId() {

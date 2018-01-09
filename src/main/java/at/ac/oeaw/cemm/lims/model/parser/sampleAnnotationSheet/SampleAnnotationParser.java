@@ -9,8 +9,9 @@ import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet.beans.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.collections4.BidiMap;
 
 /**
  *
@@ -55,7 +56,7 @@ public class SampleAnnotationParser extends ExcelParser {
 
         if (headers.size() == 1) {
             int headerrowindex = headers.get(0);
-            Map<String, Integer> header = findColumnIndices(ExcelParserConstants.requestColumnNames, requestsSheet.get(headerrowindex));
+            Map<ColumnNames, Integer> header = findColumnIndices(ExcelParserConstants.requestColumnNames, requestsSheet.get(headerrowindex));
   
             for (int i = headerrowindex + 1; i < requestsSheet.size(); i++) {
                 ArrayList<String> row = requestsSheet.get(i);
@@ -76,7 +77,7 @@ public class SampleAnnotationParser extends ExcelParser {
         if (headers.size() == 1) {
             System.out.println("one library header found");
             int headerrowindex = headers.get(0);
-            Map<String, Integer> header = findColumnIndices(ExcelParserConstants.libraryColumnNames, librariesSheet.get(headerrowindex));
+            Map<ColumnNames, Integer> header = findColumnIndices(ExcelParserConstants.libraryColumnNames, librariesSheet.get(headerrowindex));
 
             for (int i = headerrowindex + 1; i < librariesSheet.size(); i++) {
                 ArrayList<String> row = librariesSheet.get(i);
@@ -99,7 +100,7 @@ public class SampleAnnotationParser extends ExcelParser {
 
         if (headers.size() == 1) {
             int headerrowindex = headers.get(0);
-            Map<String, Integer> header = findColumnIndices(ExcelParserConstants.sampleColumnNames, samplesSheet.get(headerrowindex));
+            Map<ColumnNames, Integer> header = findColumnIndices(ExcelParserConstants.sampleColumnNames, samplesSheet.get(headerrowindex));
 
             for (int i = headerrowindex + 1; i < samplesSheet.size(); i++) {
                 ArrayList<String> row = samplesSheet.get(i);
@@ -127,12 +128,12 @@ public class SampleAnnotationParser extends ExcelParser {
     }
 
 
-    private Map<String, Integer> findColumnIndices(ArrayList<ColumnNames> headerColumns, ArrayList<String> headerRow) {
-        Map<String, Integer> result = new HashMap<>();
+    protected static BidiMap<ColumnNames, Integer> findColumnIndices(ArrayList<ColumnNames> headerColumns, ArrayList<String> headerRow) {
+        BidiMap<ColumnNames, Integer> result = new DualHashBidiMap<>();
         for (ColumnNames column : headerColumns) {
             for (int i = 0; i < headerRow.size(); i++) {
                 if (column.matches(headerRow.get(i))) {
-                    result.put(column.getOutputColumnName(), i);
+                    result.put(column, i);
                 }
             }
         }
@@ -140,8 +141,8 @@ public class SampleAnnotationParser extends ExcelParser {
         return result;
     }
 
-    private ArrayList<Integer> findHeaderRows(ArrayList<ColumnNames> headerColumns, ArrayList<ArrayList<String>> rows) {
-        ArrayList<Integer> headers = new ArrayList<Integer>();
+    protected static ArrayList<Integer> findHeaderRows(ArrayList<ColumnNames> headerColumns, ArrayList<ArrayList<String>> rows) {
+        ArrayList<Integer> headers = new ArrayList<>();
         for (int i = 0; i < rows.size(); i++) {
             ArrayList<String> row = rows.get(i);
             boolean isHeader = true;

@@ -10,11 +10,11 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 /**
@@ -37,6 +37,13 @@ public class SingleNewsBean {
     @PostConstruct
     public void init(){
         newNews = myDTOFactory.createEmptyNews();
+    }
+    
+    public void hasViewPermission(){
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!roleManager.hasNewsPermission()) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+        }
     }
 
     public NewRoleManager getRoleManager() {

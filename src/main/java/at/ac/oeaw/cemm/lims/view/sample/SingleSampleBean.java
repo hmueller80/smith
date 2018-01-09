@@ -5,30 +5,24 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
-import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
-import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
 import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
-import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import at.ac.oeaw.cemm.lims.util.Levenshtein;
-import at.ac.oeaw.cemm.lims.util.NameFilter;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -47,22 +41,24 @@ public class SingleSampleBean implements Serializable {
     public static final Integer minimumDistanceThreshold = 3;
     
     @Inject private ServiceFactory services;
-    @Inject private DTOFactory myDTOFactory;
+    
+    @ManagedProperty(value = "#{sampleLock}")
+     private SampleLock sampleLock;
     
     @ManagedProperty(value = "#{newRoleManager}")
     private NewRoleManager roleManager;
     
 
     private SampleDTO currentSample = null;
-    private ApplicationDTO currentApplication = null;
+    private SampleDTO selectedSampleInLibrary = null;
     private LibraryDTO currentLibrary = null;
     
     private UserDTO principalInvestigator = null;
     
-    private List<String> possibleIndexes = new LinkedList<>();
+    private final List<String> possibleIndexes = new LinkedList<>();
     
-    private boolean isNewForm = false;
     
+    //SETUP AND INITIALIZATION
     @PostConstruct
     public void init() {
         for (String index : services.getSampleService().getAllIndexes()) {
@@ -70,39 +66,51 @@ public class SingleSampleBean implements Serializable {
         }
         
         String sid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("sid");
-        
+
         if (sid != null) {
-           Integer sampleId = Integer.parseInt(sid);
-           refreshExisting(sampleId);
-        }else{
-            String rid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rid");
-            if (rid==null || rid.trim().isEmpty()){              
-                    throw new IllegalStateException("Cannot instantiate new sample without request");
-            }
-            String uid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("uid");
-            if (uid == null || uid.trim().isEmpty()) {
-                throw new IllegalStateException("Cannot instantiate new sample without requestor");
+            Integer sampleId = Integer.parseInt(sid);
+            refreshExisting(sampleId);
+
+           if (!getModifyPermission()) {
+                Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("modifyPermission");
+                while (messages.hasNext()) {
+                    messages.next();
+                    messages.remove();
+                }
+                NgsLimsUtility.setSuccessMessage("modifyPermission", null, "Sample not editable", "You do not have permissions to edit this sample");
             }
 
-            refreshNew(Integer.parseInt(rid),uid);
-        }
-        
-        if (!isEditable()) {
-            Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("modifyPermission");
-            while (messages.hasNext()) {
-                messages.next();
-                messages.remove();
-            }
-            NgsLimsUtility.setSuccessMessage("modifyPermission", null, "Sample not editable", "The sample is in status " + currentSample.getStatus());
-        } else if (!getModifyPermission()) {
-            Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("modifyPermission");
-            while (messages.hasNext()) {
-                messages.next();
-                messages.remove();
-            }
-            NgsLimsUtility.setSuccessMessage("modifyPermission", null, "Sample not editable", "You do not have permissions to edit this sample");
+        } else {
+            FacesContext context = FacesContext.getCurrentInstance();
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error404.xhtml");
         }
       
+    }
+    
+    
+    private void refreshExisting(Integer sampleId) {
+        this.currentSample = services.getSampleService().getFullSampleById(sampleId);
+        this.selectedSampleInLibrary = currentSample;
+        this.currentLibrary = services.getRequestService().getLibraryByName(currentSample.getLibraryName());
+        this.principalInvestigator = services.getUserService().getUserByID(currentSample.getUser().getPi());
+        validateLibrary();
+    }
+    
+    //PERMISSIONS
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!roleManager.hasSampleViewPermission(currentSample)) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+        }
+    }
+
+    public boolean getModifyPermission() {
+        boolean returnValue = roleManager.hasSampleModifyPermission(currentSample);
+        return returnValue;
+    }
+    
+    public boolean isDeleatable() {
+        return currentSample.getStatus().equals(SampleDTO.status_requested);
     }
 
     //FOR WELDING...
@@ -114,139 +122,49 @@ public class SingleSampleBean implements Serializable {
         this.roleManager = roleManager;
     }  
 
+    public SampleLock getSampleLock() {
+        return sampleLock;
+    }
+
+    public void setSampleLock(SampleLock sampleLock) {
+        this.sampleLock = sampleLock;
+    }
+    
+    
+
     //GETTERS FOR MAIN DTOs
     public SampleDTO getCurrentSample() {
         return currentSample;
     }
 
-    public ApplicationDTO getCurrentApplication() {
-        return currentApplication;
-    }
-
-    public LibraryDTO getCurrentLibrary() {
-
-        if (!isLibraryEditable()) {
-            Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("libraryName");
-            while (messages.hasNext()) {
-                messages.next();
-                messages.remove();
-            }
-            NgsLimsUtility.setSuccessMessage("libraryName", null, "Library not editable", "The library has some running or run samples");
-        }
-        
+    public LibraryDTO getCurrentLibrary() {  
         return currentLibrary;
-    }
-
-    public void setCurrentLibrary(LibraryDTO currentLibrary) {
-
-        this.currentLibrary = currentLibrary;
-                
-        if (!isLibraryEditable()) {
-            Iterator<FacesMessage> messages = FacesContext.getCurrentInstance().getMessages("libraryName");
-             while (messages.hasNext()) {
-                messages.next();
-                messages.remove();
-            }
-            NgsLimsUtility.setSuccessMessage("libraryName", null, "Library not editable", "The library has some running or run samples");
-        }else{
-            insertSampleInCurrentLibrary(currentSample);
-        }
-    }
-    
-    private void insertSampleInCurrentLibrary(SampleDTO sample){
-        Iterator sampleIterator = currentLibrary.getSamples().iterator();
-
-        while (sampleIterator.hasNext()) {
-            SampleDTO existingSample = (SampleDTO) sampleIterator.next();
-            if (sample.getId() != null) {
-                if (existingSample.getId().equals(sample.getId())) {
-                    sampleIterator.remove();
-                    break;
-                }
-            } else {
-                if (existingSample.getName().equals(sample.getName())) {
-                    sampleIterator.remove();
-                    break;
-                }
-            }
-        }
-
-        this.currentLibrary.addSample(sample);
     }
 
     public UserDTO getPrincipalInvestigator() {
         return principalInvestigator;
     }
-        
+
+           
     
-    //GETTERS FOR OTHER INFO
     public List<String> getPossibleIndexes() {
         return possibleIndexes;
     }
 
-    public boolean getModifyPermission() {
-        boolean returnValue = roleManager.hasSampleModifyPermission(currentSample);
-        return returnValue;
-    }
-       
-    public boolean isIsNewForm() {
-        return isNewForm;
-    }
-    
-    public boolean isLibraryEditable() {
-        for (SampleDTO sample : currentLibrary.getSamples()) {
-            if ((!SampleDTO.status_requested.equals(sample.getStatus())) && (!SampleDTO.status_queued.equals(sample.getStatus()))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    public List<LibraryDTO> getEditableLibraries() {
-        List<LibraryDTO> editableLibraries = services.getRequestService().getEditableLibrariesInRequest(currentSample.getSubmissionId());
-        if (!editableLibraries.contains(currentLibrary)){
-            editableLibraries.add(currentLibrary);
-        }
-        return editableLibraries;
-    }
-    
-    public String getNewLibraryName() {                
-       return "";
+    //LIBRARY TABLE BEHAVIOUR
+    public SampleDTO getSelectedSampleInLibrary() {
+        return selectedSampleInLibrary;
     }
 
-    public void setNewLibraryName(String newLibraryName) {
-                
-         if (newLibraryName!=null && !newLibraryName.trim().isEmpty()){
-            currentLibrary = myDTOFactory.getLibraryDTO(newLibraryName, null);
-            currentLibrary.addSample(currentSample);
-        }
-    }
-     
-
-    //SPECIAL SETTERS AND GETTERS
-    public String getSampleName() {          
-        return currentSample.getName();
-    }
-
-    public void setSampleName(String name) {
-        if (!isNewForm && !Pattern.matches(".*_S[0-9]+", name.toUpperCase())){
-            name = name+"_S"+currentSample.getId();
-        }
-        currentSample.setName(NameFilter.legalizeSampleName(name));
+    public void setSelectedSampleInLibrary(SampleDTO selectedSampleInLibrary) {
+        this.selectedSampleInLibrary = selectedSampleInLibrary;
     }
     
-    public String getSequencingIndex() {
-        return currentSample.getIndex().getIndex();
-    }
-  
-    public void setSequencingIndex(String index) {
-        currentSample.setIndex(myDTOFactory.getIndexDTO(index));      
-    }
     
     public String getLibraryRowClass(SampleDTO sample) {
         Integer editDistance;
-        if (Objects.equals(sample.getId(), currentSample.getId())) {
-            return "highlighted-sample";
+        if (Objects.equals(sample.getId(), selectedSampleInLibrary.getId())) {
+            return null;
         } else if (getEditDistance(sample.getIndex().getIndex()) == 0) {            
             NgsLimsUtility.setFailMessage("indexCollisionMsg", null, "Index Collision", "The index is equal to another index in the library");
             return "index-collision-red";
@@ -257,9 +175,9 @@ public class SingleSampleBean implements Serializable {
         return null;
     }
     
-    public Integer getEditDistance(String otherIndex) {
+    private Integer getEditDistance(String otherIndex) {
         Integer distance;
-        String currentIndex = currentSample.getIndex().getIndex();
+        String currentIndex = selectedSampleInLibrary.getIndex().getIndex();
         if (otherIndex.equals(currentIndex)) {
             distance = 0;
         } else {
@@ -267,35 +185,52 @@ public class SingleSampleBean implements Serializable {
         }        
         return distance;
     }
-
-    //CRUD OPs  
-    public void saveSampleChanges() {
-        if (!getModifyPermission()) {
-            NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
-            return;
+    
+    public void resetLibraryStatus(){
+        for (SampleDTO sample: currentLibrary.getSamples()){
+            if (SampleDTO.status_running.equals(sample.getStatus())){
+                sample.setStatus(SampleDTO.status_rerun);
+            }
         }
-
-        persist(false);
     }
     
-    public void saveLibraryChanges() {
-
-        if (!getModifyPermission()) {
-            NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
-            return;
+    public boolean isLibraryRunning(){
+        for (SampleDTO sample: currentLibrary.getSamples()){
+            if (SampleDTO.status_running.equals(sample.getStatus())){
+                return true;
+            }
         }
+        
+        return false;
+    }
+    
+    public boolean validateLibrary() {
+        SampleDTOValidator sampleValidator = new SampleDTOValidator();
+        LibraryValidator libValidator = new LibraryValidator(sampleValidator, false);
+        ValidationStatus validation = libValidator.isValid(currentLibrary);
 
-        persist(true);        
+        for (ValidatorMessage message : validation.getValidationMessages()) {
+            if (message.getType().equals(ValidatorSeverity.FAIL)) {
+                NgsLimsUtility.setFailMessage("libraryName", null, message.getSummary(), message.getDescription());
+            } else if (message.getType().equals(ValidatorSeverity.WARNING)) {
+                NgsLimsUtility.setWarningMessage("libraryName", null, message.getSummary(), message.getDescription());
+            }
+        }
+        
+        return validation.isValid();
     }
 
+    
+   //SAVE OR DELETE
     public String delete() {
         if (!getModifyPermission()) {
             NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
             return null;
         }
 
-        if (isEditable()) {
+        if (isDeleatable()) {
             try {
+                sampleLock.lock();
                 services.getSampleService().deleteSample(currentSample);
             } catch (Exception ex) {
                 NgsLimsUtility.setFailMessage(null, null,
@@ -303,6 +238,8 @@ public class SingleSampleBean implements Serializable {
                 System.out.println("Error in DB " + ex.getMessage());
 
                 return null;
+            }finally{
+                sampleLock.unlock();
             }
         } else {
             NgsLimsUtility.setFailMessage(null, null,
@@ -314,123 +251,25 @@ public class SingleSampleBean implements Serializable {
 
         System.out.println("Deletion success");
 
-        return "sampleDeleted_1?sid="+currentSample.getId()+"&activeMenu=1&faces-redirect=true";
+        return "sampleDeleted_1?faces-redirect=true&sid="+currentSample.getId();
     }
     
-    public boolean isEditable() {
-        return currentSample.getStatus().equals(SampleDTO.status_requested) || currentSample.getStatus().equals(SampleDTO.status_queued);
-    }
-
-    private boolean persist(boolean library) {
-        try {
-            boolean checkLibrary = false;
-            ValidationStatus validation = new ValidationStatus();
-            String oldLibraryName = null;
-            SampleDTO sampleToPersist;
-            
-            SampleDTOValidator sampleValidator = new SampleDTOValidator();
-            
-            if (library ) {
-                if (isNewForm){
-                    return false;
-                }
-                sampleToPersist = services.getSampleService().getFullSampleById(currentSample.getId());
-                oldLibraryName = sampleToPersist.getLibraryName();
-
-                sampleToPersist.setApplication(currentApplication);
-                sampleToPersist.setIndex(currentSample.getIndex());
-                        
-                if (!oldLibraryName.equals(currentLibrary.getName())) {
-                    checkLibrary = true;
-                    sampleToPersist.setLibraryName(this.currentLibrary.getName());
-                }
-                
-                insertSampleInCurrentLibrary(sampleToPersist);
-                
-                LibraryValidator libValidator = new LibraryValidator(sampleValidator,false );                
-                validation.merge(libValidator.isValid(currentLibrary));
-            } else {
-                sampleToPersist = currentSample;
-            }
-            
-            validation.merge(sampleValidator.isValid(sampleToPersist));
-            
-            for (ValidatorMessage message : validation.getValidationMessages()) {
-                if (message.getType().equals(ValidatorSeverity.FAIL)) {
-                    NgsLimsUtility.setFailMessage(null, null, message.getSummary(), message.getDescription());
-                } else if (message.getType().equals(ValidatorSeverity.WARNING)) {
-                    NgsLimsUtility.setWarningMessage(null, null, message.getSummary(), message.getDescription());
-                }
-            }
-            
-            if (validation.isValid()){
-                PersistedEntityReceipt receipt = services.getSampleService().saveOrUpdateSample(sampleToPersist, isNewForm);
-                if (checkLibrary && oldLibraryName != null) {
-                    services.getRequestService().deleteLibraryIfEmpty(oldLibraryName);
-                }
-
-                //RESTORE STATUS
-                refreshExisting(receipt.getId());
-
-                NgsLimsUtility.setSuccessMessage(null, null,
-                        "Sample with id " + receipt.getId() + " updated successfully",
-                        "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
-                System.out.println("SUCCESS: " + "Updated sample with id " + receipt.getId() + " and name " + receipt.getEntityName());
-                return true;
-            }
-            
-        } catch (Exception e) {
-            NgsLimsUtility.setFailMessage(null, null, "Error while persisting sample", e.getMessage());
-            System.out.println("FATAL: exception " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
-    public void refresh() {
-        if (isNewForm) {
-            refreshNew(currentSample.getSubmissionId(),currentSample.getUser().getLogin());
-        } else {
-            refreshExisting(currentSample.getId());
+    public void persistLibrary() {
+         
+        if (!getModifyPermission()) {
+            NgsLimsUtility.setFailMessage(null, null, "User error", "You do not have permissions to modify this component");
+            return;
         }
         
-    }
-    
-    private void refreshExisting(Integer sampleId) {
-        this.currentSample = services.getSampleService().getFullSampleById(sampleId);
-        this.currentLibrary = services.getRequestService().getLibraryByName(currentSample.getLibraryName());
-        this.currentApplication = currentSample.getApplication();
-        this.principalInvestigator = services.getUserService().getUserByID(currentSample.getUser().getPi());
-        isNewForm = false;
-
-    }
-
-    private void refreshNew(Integer rid,String user) {
-        RequestDTO existingRequest = services.getRequestService().getMinimalRequestByIdAndRequestor(rid,user);
-        if (existingRequest==null){
-            throw new IllegalStateException("Request with id "+rid+" not existing");
+        if (validateLibrary()) {
+            try {
+                services.getSampleService().bulkUpdateSamples(currentLibrary.getSamples());
+                refreshExisting(currentSample.getId());
+                NgsLimsUtility.setSuccessMessage("libraryName", null, "Success", "Library Updated successfully");
+            } catch (Exception ex) {
+                NgsLimsUtility.setFailMessage("libraryName", null, "Server error", ex.getMessage());
+            }
         }
-        
-        UserDTO requestor = existingRequest.getRequestorUser();
-        principalInvestigator = services.getUserService().getUserByID(requestor.getPi());
-
-        currentSample = myDTOFactory.getSampleDTO(null);
-        currentSample.setUser(requestor);
-        currentSample.setCostcenter(principalInvestigator.getUserName());
-        currentSample.setSubmissionId(rid);               
-        currentSample.setStatus(SampleDTO.status_requested);
-        currentSample.setRequestDate(new Date(System.currentTimeMillis()));
-
-        currentLibrary = myDTOFactory.getLibraryDTO("UNDEFINED", null);
-        currentLibrary.addSample(currentSample);
-        currentSample.setLibraryName(currentLibrary.getName());
-        currentSample.setIndex(myDTOFactory.getIndexDTO("none"));
-        currentApplication = myDTOFactory.getApplicationDTO(ApplicationDTO.DNA_SEQ);
-        currentSample.setApplication(currentApplication);
-        currentSample.setExperimentName(currentApplication.getApplicationName());
-        currentSample.setType("");
-        isNewForm = true;
     }
-    
+
 }

@@ -513,7 +513,7 @@ a.ui-button:active,
    font-family: 'sysbold';
    color: #40b9d4;
    text-align: center;
-   font-size: 6vmin;
+   font-size: 3.4vw;
    width: 60%;
 }
 .top-panel-right {
@@ -587,12 +587,16 @@ a.ui-button:active,
    font-family: 'sysbold';
    color: #40b9d4;
    text-align: center;
-   font-size: 4vmin;
+   font-size: 3vmin;
    display: block;
 }
-.highlighted-sample {
+
+#tabMenu\3AlibraryForm\3AlibraryTable_data .ui-state-highlight {
     background-color: #bde7f0;
+    border: 1px solid #40b9d4;
+    color: #333333;
 }
+
 .index-collision-red{
     background-color:#fddfdf;
 }
@@ -600,7 +604,7 @@ a.ui-button:active,
     background-color: #fffa90;
 }
 .ui-datatable-footer {
-         background-color: #ffffff;
+     background-color: #ffffff;
      color: #40b9d4;
      border:none;
 }
@@ -633,4 +637,64 @@ a.ui-button:active,
 #userDetailsForm\3AuserDetailPanel .ui-panel-content{
     height: 90%;
     overflow-y: scroll;
+}
+#requestWizard\3AtheWiz_content {
+    height:100%;
+    overflow-y: scroll;
+}
+
+#sampleDetailPanel_content {
+    height:calc(100% - 40px);
+}
+
+#tabMenu {
+    border: none;
+}
+
+#tabMenu .ui-tabs-nav {
+    background: none;
+    width:100%;
+    border-left-style: none;
+    border-right-style: none;
+    border-bottom: 1px solid;
+    border-color: #1f7285;
+}
+
+#tabMenu .ui-tabs-nav li {
+    margin-bottom: 2px;
+}
+
+#tabMenu .ui-tabs-panels {
+    height:calc(100% - 37px);
+}
+#tabMenu .ui-tabs-panel {
+    height:calc(100% - 18px);
+    padding-bottom: 3px;
+}
+#generalSampleForm\3AsampleModifyPermissionMsg {
+    margin-left: 10px;
+}
+
+#generalSampleForm\3AsampleModifyPermissionMsg .ui-messages-info{
+    padding:6px;
+    margin:0px;
+}
+
+#tabMenu\3AlibraryForm\3AlibraryPermissionsMessages{
+    margin-left: 10px;
+}
+
+#tabMenu\3AlibraryForm\3AlibraryPermissionsMessages .ui-messages-info{
+    padding:6px;
+    margin:0px;
+}
+#tabMenu\3AlibraryForm\3AlibraryTable .ui-datatable-scrollable-body{
+    height:100%;
+}
+#rundetailsForm\3AsampleRunTable .ui-datatable-scrollable-body{
+    height:calc(100% - 25px);
+}
+
+#librariesToRunForm\3AtheWiz_content {
+    height:98%;
 }

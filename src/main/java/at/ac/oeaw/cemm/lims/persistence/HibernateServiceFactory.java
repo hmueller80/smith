@@ -15,6 +15,7 @@ import at.ac.oeaw.cemm.lims.persistence.service.LazySampleService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
+import at.ac.oeaw.cemm.lims.persistence.service.external_users.ExternalUsersService;
 import at.ac.oeaw.cemm.lims.persistence.service.request_form.RequestFormService;
 
 /**
@@ -30,6 +31,7 @@ public class HibernateServiceFactory implements ServiceFactory {
     @Inject RunService runService;
     @Inject NewsService newsService;
     @Inject RequestFormService requestFormService;
+    @Inject ExternalUsersService externalUserService;
 
     @Override
     public SampleService getSampleService() {
@@ -59,6 +61,11 @@ public class HibernateServiceFactory implements ServiceFactory {
     @Override
     public RequestFormService getRequestFormService() {
         return requestFormService;
+    }
+    
+    @Override
+    public ExternalUsersService getExternalUsersService() {
+        return externalUserService;
     }
   
 }

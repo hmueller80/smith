@@ -8,14 +8,14 @@ package at.ac.oeaw.cemm.lims.model.validator.dto.lims;
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.generic.ApplicationValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RunRequestValidator;
 import java.util.Set;
 
 /**
  *
  * @author dbarreca
  */
-public class ApplicationDTOValidator extends ApplicationValidator<ApplicationDTO> {
+public class ApplicationDTOValidator extends RunRequestValidator<ApplicationDTO> {
 
     @Override
     public boolean validateInternal(ApplicationDTO objectToValidate, Set<ValidatorMessage> messages) {

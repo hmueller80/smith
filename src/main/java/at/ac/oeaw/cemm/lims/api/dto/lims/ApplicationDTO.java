@@ -5,21 +5,20 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.lims;
 
-import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
+import at.ac.oeaw.cemm.lims.api.dto.generic.RunRequest;
 
 
 /**
  *
  * @author dbarreca
  */
-public interface ApplicationDTO extends Application{
+public interface ApplicationDTO extends RunRequest{
     public static final String CHIP_SEQ = "ChIP-Seq";
     public static final String DNA_SEQ = "DNA-Seq";
     public static final String EXO_SEQ = "ExomeSeq";
     public static final String MRNA_SEQ = "mRNA-Seq";
     public static final String RNA_SEQ = "RNA-Seq";
     
-    @Override
     String getApplicationName();
 
     Integer getDepth();

@@ -5,12 +5,76 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="sampleRequest">
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{requestBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(1)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
         
-        <p:confirmDialog global="true">
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" appendTo="@(body)">
+            <p:graphicImage name="images/ajaxloadingbar.gif" />
+        </p:dialog>
+        
+        <p:dialog widgetVar="fileDialog" draggable="true" closable="true" resizable="false" modal="true" appendTo="@(body)" >
+            <h:form id="filesDialog">
+                <p:messages id="filesMessage" for="filesMessage" showDetail="true" closable="true"/>
+                <p:tree value="#{requestFileManagerBean.rootFolder}" 
+                        id = "files"
+                        var="selectedFile"
+                        selectionMode="single"
+                        selection="#{requestFileManagerBean.selectedNode}">
+                    <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+                        <h:outputText value="#{selectedFile.name}"/>
+                    </p:treeNode>
+                    <p:treeNode type="document" icon="ui-icon-document">
+                        <h:outputText value="#{selectedFile.name}" />
+                    </p:treeNode>
+                    <p:ajax event="select" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                    <p:ajax event="contextMenu" update=":filesDialog:fileUpload :filesDialog:fileDelete :filesDialog:fileDownload"/>
+                </p:tree>
+                <p:fileUpload 
+                    id="fileUpload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    fileUploadListener="#{requestFileManagerBean.handleFileUpload}"
+                    label="Upload" multiple="false" mode="advanced" auto="true"
+                    sizeLimit="100000000" allowTypes="/(\.|\/)(csv|txt|xls|xlsx|pdf|img|doc|docx)$/"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or !requestFileManagerBean.isSelectedDirectory() or !requestBean.canView()}"
+                    update="@this :filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDelete"
+                     style="float:right;margin:1px;font-size:x-small;"
+                    value="Delete"
+                    icon="ui-icon-trash" 
+                    rendered ="#{requestFileManagerBean.roleManager.hasAnnotationSheetDeletePermission()}"
+                    actionListener ="#{requestFileManagerBean.deleteFile()}"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or requestFileManagerBean.isSelectedDirectory()}"
+                    update=":filesDialog :filesDialog:files :filesDialog:filesMessage"/>
+                <p:commandButton 
+                    id="fileDownload"
+                    style="float:right;margin:1px;font-size:x-small;"
+                    value="Download" 
+                    ajax="false" 
+                    onclick="PrimeFaces.monitorDownload(start, stop);"
+                    disabled="#{requestFileManagerBean.isSelectedDirectory()== null or requestFileManagerBean.isSelectedDirectory() or !requestBean.canView()}"
+                    icon="ui-icon-arrowthick-1-s">
+                    <p:fileDownload value="#{requestFileManagerBean.file}" />
+                </p:commandButton>
+                
+            </h:form>
+        </p:dialog>
+        
+        <p:confirmDialog global="true" widgetVar="confirmDialog">
             <h:form>
-                <p:commandButton value="Yes" type="button"
-                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" update=":menuForm:messages"/>
+                <p:commandButton 
+                                 widgetVar="confirmButton"
+                                 value="Yes" type="button"
+                                 styleClass="ui-confirmdialog-yes" 
+                                 icon="ui-icon-check" 
+                                 update=":menuForm:messages"
+                                 onclick="PF('statusDialog').show()"/>
                 <p:commandButton value="No" type="button"
                                  styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
             </h:form>
@@ -19,7 +83,7 @@
         
         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
             <f:facet name="header">
-                <h:outputText id="uploadDialogHeader" value="#{uploadSampleSheetBean.fileName}"/>
+                <h:outputText id="uploadDialogHeader" value="Sample Annotation Sheet"/>
             </f:facet>
             <h:form id="uploadDialog">
                 <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
@@ -36,14 +100,20 @@
             </h:form>
         </p:dialog>
         
-        <h:form id="requestWizard">
+        <h:form id="requestWizard" style="height: 100%">
             <p:messages id="formMessages" for="informationMessages" showDetail="true"/>
             <p:messages id="submitMessages" for="validationMessages" showDetail="true" closable="true"/>
 
-            <div class="ui-g">
+            <div class="ui-g" style="height:30px">
                 <div class="ui-g-8"/>
                 <div class="ui-g-4">
-
+                    <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
+                                     value="View Files" 
+                                     icon="ui-icon-folder-collapsed"
+                                     rendered="#{requestBean.canView() and requestFileManagerBean.rootFolder != null}"
+                                     onclick ="PF('fileDialog').show()">
+                    </p:commandButton>
+                    
                     <p:commandButton style="float:right;margin:1px;font-size: x-small;" 
                                      value="Upload in LIMS" 
                                      icon="ui-icon-arrow-1-n"
@@ -51,6 +121,7 @@
                                                  and requestBean.editable
                                                  and not requestBean.newRequest}"
                                      action = "#{uploadLIMSRequestBean.submitToLims()}"
+                                     oncomplete ="PF('statusDialog').hide()"
                                      update ="@all">
                             <p:confirm header="Confirmation"
                                        message="Are you sure to save all changes and upload this request to LIMS?"
@@ -63,7 +134,8 @@
                                      action ="#{requestBean.deleteRequest()}"
                                      rendered="#{requestBean.roleManager.hasAnnotationSheetDeletePermission() 
                                                  and requestBean.editable 
-                                                 and not requestBean.newRequest}" >
+                                                 and not requestBean.newRequest}"
+                                     oncomplete ="PF('statusDialog').hide()">
                                <p:confirm header="Confirmation"
                                        message="Are you sure to Delete this request?"
                                        icon="ui-icon-alert" />
@@ -75,7 +147,6 @@
                               icon="ui-icon-arrowrefresh-1-e"
                                rendered="#{requestBean.editable and not requestBean.newRequest}" >
                             <f:param name="rid" value="#{requestBean.request.requestId}" />
-                            <f:param name="activeMenu" value="4" />
                     </p:button>
 
                 </div>
@@ -84,17 +155,17 @@
             <p:separator />
             
             <h:panelGroup id="wizNav">
-                <div class="ui-g">
+                <div class="ui-g" style="height:40px">
                     <div class="ui-g-2"/>
                     <div class="ui-g-2" style="text-align:right">
 
                      <p:fileUpload style="float:left;margin:1px"
-                                   fileUploadListener="#{uploadSampleSheetBean.handleFileUpload}"
+                                   fileUploadListener="#{requestBean.uploadSampleSheet}"
                                    label="Upload Excel" multiple="false" mode="advanced" auto="true"
                                    sizeLimit="100000000" allowTypes="/(\.|\/)(xls|xlsx)$/"
                                    oncomplete="PF('uploadDialog').show()"
                                    update="@this :uploadDialog :uploadDialog:messages :uploadDialogHeader" 
-                                   rendered="#{requestBean.wizStep=='personal' and requestBean.newRequest}"/>
+                                   rendered="#{requestBean.wizStep=='personal' and requestBean.editable and requestBean.newRequest}"/>
                  
                         <p:commandButton 
                             icon="ui-icon-arrow-1-w" 
@@ -105,7 +176,8 @@
                             rendered="#{requestBean.wizStep!='personal'}"/>
                     </div>
                     <div class="ui-g-4" style="text-align: center;">
-                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Request</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='personal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Requestor</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='legal' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Legal</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='samples' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Samples</p:outputPanel>
                         <p:outputPanel styleClass="wizard-custom-title #{requestBean.wizStep=='libraries' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Libraries</p:outputPanel>
                     </div>
@@ -124,7 +196,8 @@
                             value="#{requestBean.newRequest ? 'Submit' : 'Update'}" 
                             action ="#{requestBean.submitAndRedirect()}"
                             update="@all"
-                            rendered="#{requestBean.wizStep=='libraries' and requestBean.editable}">
+                            rendered="#{requestBean.wizStep=='libraries' and requestBean.editable}"
+                            oncomplete ="PF('statusDialog').hide()">
                            <p:confirm header="Confirmation"
                                        message="Are you sure to #{requestBean.newRequest ? 'Submit' : 'Update'} this request?"
                                        icon="ui-icon-alert" />
@@ -134,10 +207,11 @@
                 </div>
             </h:panelGroup>
 
-            <p:wizard widgetVar="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false">
+            <p:wizard widgetVar="theWiz" id="theWiz" flowListener="#{requestBean.onFlowProcess}" showNavBar="false" showStepStatus="false" style="height:calc(100% - 90px)">
 
                 <p:tab id="personal" title="Personal" >
                     <div style="width: 100%; text-align:center" >
+                        <p:messages for="requestMessages" id="requestMessages" showDetail="true" closable="true" />
                         <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
                             
                             <p:outputPanel style="display:inline-block"/>
@@ -157,6 +231,10 @@
                             <h:outputLabel for="requestStatus" value="Request Status: " />
                             <h:outputText style="width:300px;"  id="requestStatus" value="#{requestBean.request.status}"/>
                             <p:message for="requestStatus" />                           
+                            
+                            <h:outputLabel for="requestDate" value="Request Date: " />
+                            <h:outputText style="width:300px;"  id="requestDate" value="#{requestBean.request.dateAsString}"/>
+                            <p:message for="requestDate" />     
 
                             <p:outputPanel style="display:inline-block"/>
                             <p:outputPanel style="display:inline-block"/>
@@ -231,7 +309,80 @@
                         </p:panelGrid>
                     </div>
                 </p:tab>
-                <p:tab id="samples" title="samples">
+                <p:tab id="legal" title="legal">
+                    <div style="width: 100%; text-align:center" >
+
+                        <p:messages for="legalMessage" id="legalMessage" showDetail="true" closable="true" />
+
+                        <p:panelGrid columns="3" styleClass="wizard-panel-grid" >
+
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <p:outputPanel style="display:inline-block">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Billing" />
+                            </p:outputPanel>                       
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+                            <h:outputLabel for="billingContact" value="Billing Contact: " />
+                            <h:inputText style="width:300px;"  
+                                         id="billingContact" 
+                                         required="true" 
+                                         requiredMessage="Billing contact is required"
+                                         disabled ="#{!requestBean.editable}"
+                                         value="#{requestBean.request.billingInfo.contact}"/>
+                            <p:message for="billingContact" />
+
+                            <h:outputLabel for="billingAddress" value="Billing Address " />
+                            <p:inputTextarea  style="width:300px;"
+                                         id="billingAddress" 
+                                         rows="6" cols="33"
+                                         maxlength="198"
+                                         required="true" 
+                                         requiredMessage="Billing address is required"
+                                         disabled ="#{!requestBean.editable}"
+                                         value="#{requestBean.request.billingInfo.address}"/>
+                            <p:message for="billingAddress" />                        
+
+                            <h:outputLabel for="billingCode" value="Billing Code: " />
+                            <h:inputText style="width:300px;"  
+                                         id="billingCode" 
+                                         disabled ="#{!requestBean.editable}"
+                                         value="#{requestBean.request.billingInfo.billingCode}"/>
+                            <p:message for="billingCode" />
+
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+                            <p:outputPanel style="display:inline-block"/>
+
+
+                            <p:outputPanel style="display:inline-block" rendered="#{!requestBean.requestorCemm}">
+                                <h:outputText style="font-family: 'sysbold';color: #40b9d4;font-size:2.1vh" value="Autorization Form" />
+                            </p:outputPanel>                       
+                            <p:separator rendered="#{!requestBean.requestorCemm}"/>
+                            <p:outputPanel style="display:inline-block" rendered="#{!requestBean.requestorCemm}"/>
+
+                            <h:outputLabel for="authorizationFormName" value="Authorization Form File: " rendered="#{!requestBean.requestorCemm}"/>
+                            <h:panelGroup rendered = "#{!requestBean.requestorCemm}">
+                                <h:outputText style="width:300px;"  
+                                              id="authorizationFormName" 
+                                              value="#{requestBean.request.authorizationFileName}"
+                                              />
+                                <p:fileUpload 
+                                    rendered ="#{requestBean.editable}"
+                                    style="float:right;margin-left:2px;font-size:x-small;"
+                                    fileUploadListener="#{requestBean.uploadAuthorizationForm}"
+                                    label="Upload" multiple="false" mode="advanced" auto="true"
+                                    sizeLimit="100000000" allowTypes="/(\.|\/)(pdf|doc|docx)$/" 
+                                    update="@this :filesDialog :filesDialog:files :filesDialog:filesMessage authorizationFormName"/>
+                            </h:panelGroup>                           
+                            <p:message for="authorizationFormName" rendered="#{!requestBean.requestorCemm}"/>
+                        </p:panelGrid>
+                    </div>
+                </p:tab>
+                <p:tab id="samples" title="samples" >
                     <p:inputText id="samplesData" type="hidden" widgetVar="tableData" value="#{requestBean.samples}" >    
                         <p:ajax event="change" update="@this sampleMessage :requestWizard:libraryData" oncomplete="refresh()" partialSubmit="true"/>
                     </p:inputText>
@@ -240,6 +391,7 @@
 
                     <div id="example"/>
                     <script type="text/javascript">
+                         /* <![CDATA[ */
                         var data;
                         var $ = jQuery;
                         var table;
@@ -268,6 +420,7 @@
                         $(document).ready(function () {
                             data = JSON.parse(PF('tableData').getJQ().val());
                             var container = document.getElementById('example');
+                            var tableHeight =$('#example').parent().height()-$('#requestWizard\\:sampleMessage').outerHeight(true);
                             var editable = (PF('editableSamples').getJQ().val() == 'true');
                             var settings = {
                                 data: data,
@@ -289,6 +442,10 @@
                                         data: 'library',
                                         type: 'text'
 
+                                    },
+                                    {
+                                        data: 'applicationName',
+                                        type: 'text'
                                     },
                                     {
                                         data: 'i7Index',
@@ -320,18 +477,29 @@
                                     }
 
                                 ],
+                                height: tableHeight,
                                 rowHeaders: true,
-                                colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
-                                contextMenu: true,
+                                colHeaders: ['Sample Name', 'Sample Description', 'Organism', 'Library Name', 'Application','Barcode Sequence i7', 'Library Adapter i7', 'Barcode Sequence i5', 'Library Adapter i5', 'Sequencing Primer Type', 'Custom Sequencing Primer Name', 'Custom Sequencing Primer Sequence'],
+                                contextMenu: editable,
                                 manualRowResize: true,
-                                minSpareRows: 1,
+                                minSpareRows: editable ? 1:0,
                                 afterChange: dataChangeCallback,
-                                afterRemoveRow: dataChangeCallback
+                                afterRemoveRow: dataChangeCallback,
+                                cells: function(row,col,prop) {
+                                    var cellProperties = {};
+                                    if (col===0 && data[row]['nameEditable']===false && data[row]['nameEditable']!==null){
+                                        cellProperties.readOnly = true;
+                                    }else if (editable){
+                                        cellProperties.readOnly = false;
+                                    }
+                                    
+                                    return cellProperties;
+                                }
                             };
 
-                            table = new Handsontable(container, settings);
+                            table = new Handsontable(container, settings);    
                         });
-
+                    /* ]]> */
                     </script>  
                 </p:tab>
 
@@ -344,6 +512,7 @@
 
                     <div id="exampleLib" />
                     <script type="text/javascript">
+                        /* <![CDATA[ */
                         var dataLib;
                         var $ = jQuery;
                         var tableLib;
@@ -372,6 +541,7 @@
                         $(document).ready(function () {
                             dataLib = JSON.parse(PF('tableDataLib').getJQ().val());
                             var container = document.getElementById('exampleLib');
+                            var tableHeight =$('#exampleLib').parent().height()-$('#requestWizard\\:libraryMessage').outerHeight(true);
                             var editable = (PF('editableLibraries').getJQ().val() == 'true');
                             var settings = {
                                 data: dataLib,
@@ -379,10 +549,6 @@
                                 columns: [
                                     {
                                         data: 'name',
-                                        type: 'text'
-                                    },
-                                    {
-                                        data: 'applicationName',
                                         type: 'text'
                                     },
                                     {
@@ -400,30 +566,47 @@
                                     },
                                     {
                                         data: 'volume',
-                                        type: 'numeric'
+                                        type: 'numeric',
+                                        numericFormat: {
+                                            pattern:'0.0[0000]'
+                                        }
                                     },
                                     {
                                         data: 'dnaConcentration',
-                                        type: 'numeric'
+                                        type: 'numeric',
+                                        numericFormat: {
+                                            pattern:'0.0[0000]'
+                                        }
                                     },
                                     {
                                         data: 'totalSize',
                                         type: 'numeric'
                                     }],
                                 rowHeaders: true,
-                                colHeaders: ['Library Name', 'Application', 'Read Mode', 'Read Length', 'Lanes', 'Volume', 'DNA Concentration', 'Total size'],
+                                colHeaders: ['Library Name', 'Read Mode', 'Read Length', 'Lanes', 'Volume [μL]', 'DNA Concentration [nM]', 'Total size [bp]'],
                                 manualRowResize: true,
+                                height:tableHeight,
                                 minSpareRows: 0,
                                 afterChange: dataChangeCallback,
                                 afterRemoveRow: dataChangeCallback,
                                 afterCreateRow: function (index, numberOfRows) {
                                     dataLib.splice(index, numberOfRows);
+                                },
+                                cells: function(row,col,prop) {
+                                    var cellProperties = {};
+                                    if (col===0 && dataLib[row]['nameEditable']===false && dataLib[row]['nameEditable']!==null){
+                                        cellProperties.readOnly = true;
+                                    }else if (editable) {
+                                        cellProperties.readOnly = false;
+                                    }
+                                    
+                                    return cellProperties;
                                 }
                             };
 
                             tableLib = new Handsontable(container, settings);
                         });
-
+                    /* ]]> */
                     </script>  
                 </p:tab>
 

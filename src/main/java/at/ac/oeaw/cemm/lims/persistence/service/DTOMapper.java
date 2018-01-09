@@ -13,6 +13,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
@@ -172,6 +173,19 @@ public class DTOMapper {
     
     protected LibraryDTO getLibraryDTOFromMinimalEntity(MinimalLibraryEntity libraryEntity) {
         LibraryDTO library = myDTOFactory.getLibraryDTO(libraryEntity.getLibraryName(), libraryEntity.getLibraryId());
+        
+        return library;
+    }
+    
+    protected LibraryToRunDTO getLibraryToRunDTOFromMinimalEntity(MinimalLibraryEntity minimalLibrary, LibraryEntity fullLibraryEntity) {
+        UserDTO user = getUserDTOFromEntity(minimalLibrary.getRequestor());
+        LibraryDTO fullLibrary = getLibraryDTOFromEntity(fullLibraryEntity,true);
+        
+        LibraryToRunDTO library = myDTOFactory.getLibraryToRun(fullLibrary, 
+                user, 
+                minimalLibrary.getRequestId(),
+                minimalLibrary.getReadMode(), 
+                minimalLibrary.getReadLength());
         
         return library;
     }

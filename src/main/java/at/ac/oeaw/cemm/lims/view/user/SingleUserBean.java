@@ -8,6 +8,7 @@ package at.ac.oeaw.cemm.lims.view.user;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
@@ -47,6 +48,9 @@ public class SingleUserBean {
     @ManagedProperty(value="#{orgaBean}")
     OrgaBean orgaBean;
     
+    @ManagedProperty(value="#{externalUserBean}")
+    ExternalUserBean externalUser;
+    
     private boolean isNew = false;
     private UserDTO currentUser;
     private UserDTO currentUserPI;
@@ -82,6 +86,8 @@ public class SingleUserBean {
                         roleManager.getCurrentUser().getId().equals(currentUserPI.getId()) ||
                         roleManager.getCurrentUser().getId().equals(currentUser.getId());
             }
+            externalUser.set(currentUser.getLogin());
+
         }else{
             isNew = true;
             currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null,myDTOFactory.getAffiliationDTO());
@@ -90,7 +96,7 @@ public class SingleUserBean {
             
         } 
         orgaBean.set(currentUser.getAffiliation().getOrganization(),currentUser.getAffiliation().getDepartment());
-            
+        
         List<UserDTO> coll = services.getUserService().getCollaborators(currentUser);
         List<UserDTO> possibleColl = services.getUserService().getAllUsers();
         possibleColl.remove(currentUser);
@@ -100,6 +106,13 @@ public class SingleUserBean {
         communications.setSource(possibleColl);
         communications.setTarget(coll);
         
+    }
+    
+    public void hasViewPermission() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (!isEditable) {
+            context.getApplication().getNavigationHandler().handleNavigation(context, null, "/error401.xhtml");
+        }
     }
 
     public UserDTO getCurrentUser() {
@@ -178,7 +191,8 @@ public class SingleUserBean {
     
     
     public void persist(){
-        
+        AffiliationDTO affiliation = myDTOFactory.getAffiliationDTO(orgaBean.getOrga(), orgaBean.getDept());
+        currentUser.setAffiliation(affiliation);
         UserDTOValidator userValidator = new UserDTOValidator(services);
         try{
             ValidationStatus validation = userValidator.isValid(currentUser);
@@ -212,5 +226,15 @@ public class SingleUserBean {
     public void setOrgaBean(OrgaBean orgaBean) {
         this.orgaBean = orgaBean;
     }
+
+    public ExternalUserBean getExternalUser() {
+        return externalUser;
+    }
+
+    public void setExternalUser(ExternalUserBean externalUser) {
+        this.externalUser = externalUser;
+    }
+    
+    
  
 }

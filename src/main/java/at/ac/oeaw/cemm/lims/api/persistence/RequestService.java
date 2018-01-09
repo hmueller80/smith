@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface RequestService {
     public boolean checkRequestExistence(Integer requestId);
            
     List<RequestDTO> getDeleatableLibrariesInRequests();
+    
+    public List<LibraryToRunDTO> getRunnableLibraries();
 
     public void deleteAllLibrariesInRequest(RequestDTO request) throws Exception;
 
@@ -30,8 +33,6 @@ public interface RequestService {
     public List<LibraryDTO> getEditableLibrariesInRequest(final Integer requestId);
 
     public LibraryDTO getLibraryByName(String libraryName);
-
-    public void deleteLibraryIfEmpty(String oldLibraryName);
 
     public RequestDTO getMinimalRequestByIdAndRequestor(Integer rid, String requestor);
 

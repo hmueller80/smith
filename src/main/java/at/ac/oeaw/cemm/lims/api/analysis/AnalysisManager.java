@@ -14,4 +14,6 @@ public interface AnalysisManager {
     
     public void run();
     
+    public void resetDemux(String runFolder) throws Exception;
+    
 }

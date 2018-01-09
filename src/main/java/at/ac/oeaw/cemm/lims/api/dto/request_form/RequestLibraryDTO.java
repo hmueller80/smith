@@ -5,16 +5,16 @@
  */
 package at.ac.oeaw.cemm.lims.api.dto.request_form;
 
-import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.api.dto.generic.Library;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import at.ac.oeaw.cemm.lims.api.dto.generic.RunRequest;
 
 /**
  *
  * @author dbarreca
  */
-public interface RequestLibraryDTO extends Library, Application{
+public interface RequestLibraryDTO extends Library, RunRequest{
 
     void addSample(RequestSampleDTO sample);
     
@@ -41,12 +41,11 @@ public interface RequestLibraryDTO extends Library, Application{
 
     Double getTotalSize();
 
-    @Override
-    String getApplicationName();
-
     String getUuid();
 
     Double getVolume();
+    
+    Boolean isNameEditable();
 
     void resetSamples();
 
@@ -64,8 +63,6 @@ public interface RequestLibraryDTO extends Library, Application{
     void setReadMode(String readMode);
 
     void setTotalSize(Double totalSize);
-
-    void setApplicationName(String type);
 
     void setVolume(Double volume);
     

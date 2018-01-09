@@ -50,25 +50,51 @@ public class LazySampleService implements SampleService {
    
     @Override
      public SampleDTO getFullSampleById(final int sampleId) {
-        SampleEntity sample = null;
+        SampleDTO sample = null;
 
         try {
             sample = TransactionManager.doInTransaction(
-                    new TransactionManager.TransactionCallable<SampleEntity>() {
+                    new TransactionManager.TransactionCallable<SampleDTO>() {
                 @Override
-                public SampleEntity execute() throws Exception {
+                public SampleDTO execute() throws Exception {
                     SampleEntity sample = sampleDAO.getSampleById(sampleId);
                     Hibernate.initialize(sample.getApplication());
                     Hibernate.initialize(sample.getSequencingIndexes());
-                    return sample;
+                    return myDTOMapper.getSampleDTOfromEntity(sample);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return myDTOMapper.getSampleDTOfromEntity(sample);
+        return sample;
     }
+     
+    @Override
+    public SampleDTO getFullSampleByRequestLibraryName(final Integer submissionId,final String libraryName,final String sampleName) {
+         SampleDTO sample = null;
+
+        try {
+            sample = TransactionManager.doInTransaction(
+                    new TransactionManager.TransactionCallable<SampleDTO>() {
+                @Override
+                public SampleDTO execute() throws Exception {
+                    SampleEntity sample = sampleDAO.getSampleByRequestLibraryName(submissionId,libraryName, sampleName);
+                    if (sample==null){
+                        return null;
+                    }
+                    Hibernate.initialize(sample.getApplication());
+                    Hibernate.initialize(sample.getSequencingIndexes());
+                    return myDTOMapper.getSampleDTOfromEntity(sample);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return sample;
+    }
+
      
     @Override
     public int getSamplesCount(final Map<String, Object> filters) {
@@ -190,13 +216,13 @@ public class LazySampleService implements SampleService {
     }
     
     @Override
-    public PersistedEntityReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception {
+    public PersistedEntityReceipt updateSample(final SampleDTO sample) throws Exception {
         
         PersistedEntityReceipt receipt = TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<PersistedEntityReceipt>() {
             @Override
             public PersistedEntityReceipt execute() throws Exception {
                 UserEntity user = userDAO.getUserByID(sample.getUser().getId());
-                return persistOrUpdateSingleSample(sample,isNew,user);
+                return persistOrUpdateSingleSample(sample,false,user);
             }
         });
         
@@ -253,25 +279,21 @@ public class LazySampleService implements SampleService {
      }
     
     @Override
-    public List<PersistedEntityReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) {
+    public List<PersistedEntityReceipt> bulkUpdateSamples(final List<SampleDTO> samplesToUpdate) throws Exception{
         final List<PersistedEntityReceipt> receipts = new ArrayList<> ();
         
-        try{
-            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-                @Override
-                public Void execute() throws Exception {
-                    for (SampleDTO sample: samplesToUpdate) {
-                        UserEntity user = userDAO.getUserByID(sample.getUser().getId());
-                        receipts.add(persistOrUpdateSingleSample(sample,false,user));
-                    }
-                    
-                    return null;
+        TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+            @Override
+            public Void execute() throws Exception {
+                for (SampleDTO sample : samplesToUpdate) {
+                    UserEntity user = userDAO.getUserByID(sample.getUser().getId());
+                    receipts.add(persistOrUpdateSingleSample(sample, false, user));
                 }
-            });
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        
+
+                return null;
+            }
+        });
+
         return receipts;
     }
     
@@ -282,7 +304,13 @@ public class LazySampleService implements SampleService {
         if (user == null) {
             throw new Exception("Cannot create a sample with null user");
         }
-        SampleEntity sampleEntity = new SampleEntity();
+        SampleEntity sampleEntity;
+        if (isNew){
+            sampleEntity = new SampleEntity();
+        }else{
+           if (sample.getId()==null) throw new Exception("Cannot update sample with null ID");
+           sampleEntity = sampleDAO.getSampleById(sample.getId());
+        }
 
         sampleEntity.setUser(user);
         
@@ -324,11 +352,11 @@ public class LazySampleService implements SampleService {
             if (isNew) {
                 sampleDAO.persistSample(sampleEntity);
             } else {
-                sampleEntity.setId(sample.getId());
                 sampleDAO.updateSample(sampleEntity);
             }
             return new PersistedEntityReceipt(sampleEntity.getId(), sampleEntity.getName());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("Error while persisting sample " + sample.getName(),e);
         }
     }
@@ -448,6 +476,7 @@ public class LazySampleService implements SampleService {
         
         return samples;
     }
+
 
  
   

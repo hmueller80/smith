@@ -175,12 +175,15 @@ public class ConfigurationManagerCEMM {
         //System.out.println(runfolderroot);
         //System.out.println("runfolders " + runfolders.length);
         for (int i = 0; i < runfolders.length; i++) {
-            if (folderPassesCutoff(runfolders[i]) && runFolderHasRTAComplete(runfolders[i])){ //&& hasLibrariesCSV(runfolders[i]) && !hasSamplesCSV(runfolders[i])) {
+            if (isValidFolder(runfolders[i])){ //&& hasLibrariesCSV(runfolders[i]) && !hasSamplesCSV(runfolders[i])) {
                 al.add(runfolders[i]);
             }
         }
         return al;
     }
-
+      
+      public static boolean isValidFolder(String runfolder){
+          return folderPassesCutoff(runfolder) && runFolderHasRTAComplete(runfolder);
+      }
 
 }

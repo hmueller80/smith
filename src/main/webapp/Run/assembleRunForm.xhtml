@@ -1,0 +1,299 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{runAssemblerBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(3)}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        
+         <p:dialog widgetVar="uploadDialog" modal="true" appendTo = "@(body)" resizable="false">
+            <f:facet name="header">
+                <h:outputText id="uploadDialogHeader" value="#{runAssemblerBean.selectedFolder.description}"/>
+            </f:facet>
+            <h:form id="uploadDialog">
+                <p:messages id="messages" for="uploadDialogMsg" showDetail="true" autoUpdate="false" closable="false" />
+                <p:outputLabel value="#{(empty runAssemblerBean.samplesToRun) ? 'Please correct the form and re-try' : 'Do you want to load data in the DB?'}"/>
+                <br /><br/>
+                <p:dataTable id="confirmTable" 
+                             var="sampleLane" 
+                             value="#{runAssemblerBean.samplesToRun}"
+                             style="font-size: x-small;" 
+                             scrollable="true"
+                             scrollHeight="300"
+                             sortBy="#{sampleLane.lane}"
+                             sortOrder="ascending">
+                     <p:column 
+                            id="flowcell"
+                            headerText = "Flowcell">
+                         <h:outputText value="#{sampleLane.sample.flowcell}" />
+                     </p:column>
+                     
+                     <p:column 
+                            id="lane"
+                            headerText = "Lane">
+                         <h:outputText value="#{sampleLane.lane}" />
+                     </p:column>
+                    
+                    <p:column 
+                            id="library"
+                            headerText = "Library">
+                         <h:outputText value="#{sampleLane.sample.sample.libraryName}" />
+                     </p:column>
+                    
+                      <p:column 
+                            id="sampleName"
+                            headerText = "Sample Name">
+                         <h:outputText value="#{sampleLane.sample.sample.name}" />
+                     </p:column>
+                    
+                     <p:column 
+                            id="sampleIndex"
+                            headerText = "Sample Index">
+                         <h:outputText value="#{sampleLane.sample.sample.compoundIndex}" />
+                     </p:column>
+                </p:dataTable>
+
+                <div style="width:100%;text-align: center;">
+                    <p:commandButton
+                        widgetVar='confirmUploadButton'
+                        value="Yes" 
+                        styleClass="ui-confirmdialog-yes" 
+                        icon="ui-icon-check" 
+                        rendered = "#{(not empty runAssemblerBean.samplesToRun)}"
+                        action ="#{runAssemblerBean.submitRequest}"
+                        oncomplete="PF('uploadDialog').hide()"
+                        onclick="PF('confirmUploadButton').disable();PF('cancelUploadButton').disable()"/>
+                    <p:commandButton 
+                        widgetVar='cancelUploadButton'
+                        value="#{(empty runAssemblerBean.samplesToRun) ? 'Back' : 'No'}" 
+                        styleClass="ui-confirmdialog-no" 
+                        icon="ui-icon-close" 
+                        onclick="PF('uploadDialog').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        
+
+        <h:form id="librariesToRunForm" style="height:100%">         
+
+            <h:panelGroup id="wizNav">
+                <div class="ui-g" style="height:40px">
+                    <div class="ui-g-2"/>
+                    <div class="ui-g-2" style="text-align:right">
+
+                        <p:commandButton 
+                            icon="ui-icon-arrow-1-w" 
+                            iconPos="left"
+                            value="Back" 
+                            onclick="PF('theWiz').back();" 
+                            update="wizNav"
+                            rendered="#{runAssemblerBean.wizStep!='librarySelect'}"/>
+                    </div>
+                    <div class="ui-g-4" style="text-align: center;">
+                        <p:outputPanel styleClass="wizard-custom-title #{runAssemblerBean.wizStep=='librarySelect' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Select Library</p:outputPanel>
+                        <p:outputPanel styleClass="wizard-custom-title #{runAssemblerBean.wizStep=='flowcellAssign' ? 'wizard-custom-highlight' : 'wizard-custom-default'}">Assign Flowcell</p:outputPanel>
+                    </div>
+                    <div class="ui-g-2">
+                        <p:commandButton 
+                            icon="ui-icon-arrow-1-e"
+                            iconPos="right"
+                            value="Next" 
+                            onclick="PF('theWiz').next();" 
+                            update="wizNav"
+                            rendered="#{runAssemblerBean.wizStep!='flowcellAssign'}"/>
+                        <p:commandButton
+                            icon="ui-icon-disk"
+                            iconPos="right"
+                            id="wizSubmitButton"
+                            actionListener ="#{runAssemblerBean.prepareSubmission()}"
+                            update =":uploadDialog :uploadDialog:messages :uploadDialog:confirmTable"
+                            oncomplete ="PF('uploadDialog').show()"
+                            value="Save Run" 
+                            rendered="#{runAssemblerBean.wizStep=='flowcellAssign'}" />
+                    </div>
+                    <div class="ui-g-2" />
+                </div>
+            </h:panelGroup>
+
+            <p:wizard 
+                widgetVar="theWiz" 
+                id="theWiz" 
+                flowListener="#{runAssemblerBean.onFlowProcess}" showNavBar="false" showStepStatus="false" style="height:calc(100% - 40px)">
+
+                <p:tab id="librarySelect">
+                    
+                    <p:dataTable id="librariesToRunTable" 
+                                 widgetVar="librariesToRunTable" 
+                                 var="library" 
+                                 value="#{runAssemblerBean.libraries}"
+                                 filteredValue ="#{runAssemblerBean.filteredLibraries}"
+                                 selection="#{runAssemblerBean.selectedLibraries}"
+                                 style="font-size: x-small;" 
+                                 scrollable="true"
+                                 scrollHeight="100%"
+                              
+                                 emptyMessage="#{bundle['runs.emptymessage']}"
+                                 sortBy = "#{library.requestId}"
+                                 rowKey="#{library.library.id}"
+                                 sortOrder="descending">
+
+                        <p:column 
+                            id="requestIdColumn"
+                            headerText = "Request Id"
+                            filterBy = "#{library.requestId}"
+                            sortBy = "#{library.requestId}"
+                            filterMatchMode="exact">
+                            <h:outputText value="#{library.requestId}" />
+                        </p:column>
+
+                        <p:column 
+                            id="requestorColumn"
+                            headerText = "Requestor"
+                            filterBy = "#{library.requestor.login}"
+                            filterMatchMode="contains">
+                            <h:outputText value="#{library.requestor.login}" />
+                        </p:column>
+
+                        <p:column 
+                            id="libraryNameColumn"
+                            headerText = "Library Name"
+                            filterBy = "#{library.library.name}"
+                            filterMatchMode="contains">
+                            <h:outputText value="#{library.library.name}" />
+                        </p:column>
+
+                        <p:column 
+                            id="readLengthColumn"
+                            filterBy = "#{library.readLength}"
+                            filterMatchMode="in">
+                            <f:facet name="filter">
+                                <f:facet name="filter">
+                                    <p:selectCheckboxMenu 
+                                        label="Read Length" 
+                                        onchange="PF('librariesToRunTable').filter()" 
+                                        panelStyle="width:125px" 
+                                        scrollHeight="150"
+                                        converter = "javax.faces.Integer">
+                                        <f:selectItems value="#{runAssemblerBean.readLengths}" />
+                                    </p:selectCheckboxMenu>
+                                </f:facet>
+                            </f:facet>
+
+                            <h:outputText value="#{library.readLength}" />
+                        </p:column>
+
+                        <p:column 
+                            id="readModeColumn"
+                            filterBy = "#{library.readMode}"
+                            filterMatchMode="in">
+                            <f:facet name="filter">
+                                <f:facet name="filter">
+                                    <p:selectCheckboxMenu 
+                                        label="Read Mode" 
+                                        onchange="PF('librariesToRunTable').filter()" 
+                                        panelStyle="width:150px" 
+                                        scrollHeight="150">
+                                        <f:selectItems value="#{runAssemblerBean.readModes}" />
+                                    </p:selectCheckboxMenu>
+                                </f:facet>
+                            </f:facet>
+
+                            <h:outputText value="#{library.readMode}" />
+                        </p:column>
+
+                        <p:column 
+                            selectionMode="multiple" 
+                            headerText = "Select Library"
+                            style="width:150px;text-align:center"/>
+
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="flowcellAssign" >
+                    
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <p:outputLabel for="runSelector" value="Select Run Folder: " />
+                        <p:selectOneMenu id="runSelector"
+                                         converter="#{genericConverter}"
+                                         value="#{runAssemblerBean.selectedFolder}"
+                                         filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItems id="runSelect"
+                                           value="#{runAssemblerBean.runFolders}"
+                                           itemLabel="#{run.description}" itemValue="#{run}"
+                                           var="run" />
+                            <p:ajax update="@this" />
+                        </p:selectOneMenu>
+
+                    </h:panelGrid>
+     
+                    <p:dataTable id="lanesAssignTable" 
+                                 widgetVar="lanesAssignTable" 
+                                 var="library" 
+                                 editable ="true"
+                                 editMode="cell"
+                                 value="#{runAssemblerBean.selectedLibraries}"
+                                 style="font-size: x-small;" 
+                                 scrollable="true"
+                                 scrollHeight="100%"
+                                 emptyMessage="#{bundle['runs.emptymessage']}"
+                                 sortBy = "#{library.requestId}"
+                                 sortOrder="descending">
+
+                        
+                        <p:column 
+                            id="requestIdColumn"
+                            headerText = "Request Id">
+                            <h:outputText value="#{library.requestId}" />
+                        </p:column>
+
+                        <p:column 
+                            id="requestorColumn"
+                            headerText = "Requestor">
+                            <h:outputText value="#{library.requestor.login}" />
+                        </p:column>
+                      
+                        <p:column 
+                            id="libraryNameColumn"
+                            headerText = "Library Name">
+                            <h:outputText value="#{library.library.name}" />
+                        </p:column>
+
+                        <p:column 
+                            id="readLengthColumn"
+                            headerText = "Read Length">
+                            <h:outputText value="#{library.readLength}" />
+                        </p:column>
+
+                        <p:column 
+                            id="readModeColumn"
+                            headerText = "Read Mode">
+                            <h:outputText value="#{library.readMode}" />
+                        </p:column>
+                        
+                        <p:column 
+                            id="lanesColumn"
+                            headerText = "lanes">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{library.lanes}" /></f:facet>
+                                <f:facet name="input"><p:inputText value="#{library.lanes}" style="width:80%"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+
+                    </p:dataTable>
+                </p:tab>
+            </p:wizard>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

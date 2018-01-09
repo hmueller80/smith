@@ -9,10 +9,8 @@ package at.ac.oeaw.cemm.lims.api.dto.generic;
  *
  * @author dbarreca
  */
-public interface Application {
-    
-    String getApplicationName();
-    
+public interface RunRequest {
+        
     Integer getReadLength();
 
     String getReadMode();

@@ -7,14 +7,17 @@ package at.ac.oeaw.cemm.lims.view.request;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.util.RequestIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
+import java.io.File;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -27,6 +30,9 @@ public class DeleteRequestFormBean {
     
     @Inject ServiceFactory services;
     
+    @ManagedProperty(value="#{requestIdBean}")
+    private RequestIdBean requestIdBean;
+   
     @ManagedProperty(value="#{newRoleManager}")
     private NewRoleManager roleManager;
     
@@ -48,6 +54,14 @@ public class DeleteRequestFormBean {
         this.roleManager = roleManager;
     }
 
+    public RequestIdBean getRequestIdBean() {
+        return requestIdBean;
+    }
+
+    public void setRequestIdBean(RequestIdBean requestIdBean) {
+        this.requestIdBean = requestIdBean;
+    }
+
     public List<RequestFormDTO> getDeleatableRequests() {
         return services.getRequestFormService().getDeleatableRequests();
     }
@@ -61,19 +75,43 @@ public class DeleteRequestFormBean {
         this.selectedRequest = selectedRequest;
     }
     
-    public void deleteRequest() {
+     public void deleteRequest(){
+         try{
+            requestIdBean.getLock();
+            deleteRequestInternal(selectedRequest,roleManager,services,null,null);
+         }finally{
+             requestIdBean.unlock();
+         }
+        init();
+     }
+    
+    protected static String deleteRequestInternal(
+            RequestFormDTO request, 
+            NewRoleManager roleManager, 
+            ServiceFactory services, 
+            String messageComponent,
+            String redirectURL) {
         try{
-            if(RequestFormDTO.STATUS_NEW.equals(selectedRequest.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
-                services.getRequestFormService().bulkDeleteRequest(selectedRequest.getRequestId());
-                NgsLimsUtility.setSuccessMessage(null, null, "Success!", "Deleted request with id "+selectedRequest.getRequestId()
-                        +" requested by "+selectedRequest.getRequestor().getUser().getLogin());
-                init();
+            if(RequestFormDTO.STATUS_NEW.equals(request.getStatus()) && roleManager.hasAnnotationSheetDeletePermission()){
+                services.getRequestFormService().bulkDeleteRequest(request.getRequestId());
+                File path = RequestBean.buildSampleAnnotationPath(request);
+
+                if (path.exists()) {
+                    FileUtils.deleteDirectory(path);
+                }
+                
+                NgsLimsUtility.setSuccessMessage(messageComponent, null, "Success!", "Deleted request with id "+request.getRequestId()
+                        +" requested by "+request.getRequestor().getUser().getLogin());
+                
+                return "requestDeleted.jsf?faces-redirect=true&rid="+request.getRequestId();
             }else{
-                NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", "This request cannot be deleted due to status or user role");
+                NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", "This request cannot be deleted due to status or user role");
             }
         }catch(Exception e){
-            NgsLimsUtility.setFailMessage(null, null, "Error in deleting ", e.getMessage());
+            NgsLimsUtility.setFailMessage("validationMessages", null, "Error in deleting ", e.getMessage());
         }
+        
+        return null;
     }
             
 }

@@ -5,7 +5,10 @@
  */
 package at.ac.oeaw.cemm.lims.model.validator.dto.lims;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.validator.AbstractValidator;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
@@ -62,7 +65,30 @@ public class UserDTOValidator extends AbstractValidator<UserDTO> {
         isValid = isValid && stringNotEmpty(objectToValidate.getPhone(), false, ValidatorSeverity.FAIL, "Phone",messages);
         isValid = isValid && validUserName(objectToValidate.getUserName(), ValidatorSeverity.FAIL,messages);
         isValid = isValid && validEmail(objectToValidate.getMailAddress(), ValidatorSeverity.FAIL,messages);
-
+        
+        AffiliationDTO affiliation = objectToValidate.getAffiliation();
+        if (affiliation == null || affiliation.getDepartment()==null || affiliation.getOrganization() == null){
+            isValid = false;
+            messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User AFfiliation","Users must have a valid Affiliation"));
+        }else {
+            OrganizationDTO orgaFromDB = services.getUserService().getOrganizationByName(affiliation.getOrganizationName());
+            if (orgaFromDB == null){
+                isValid = false;
+                messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User AFfiliation","Organization "+affiliation.getOrganizationName()+" not found in DB"));
+            }else{
+                boolean deptFound = false;
+                for (DepartmentDTO dbDept: orgaFromDB.getDepartments()){
+                    if (dbDept.getName().equals(affiliation.getDepartmentName())){
+                        deptFound = true;
+                        break;
+                    }
+                }
+                if (!deptFound){
+                    isValid = false;
+                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User AFfiliation","Department "+affiliation.getDepartmentName()+" not found in DB for orga "+affiliation.getOrganizationName()));
+                }
+            }
+        }
         
         return isValid;
     }

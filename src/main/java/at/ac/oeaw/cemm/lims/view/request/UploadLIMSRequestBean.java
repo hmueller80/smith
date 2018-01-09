@@ -10,16 +10,16 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
+import at.ac.oeaw.cemm.lims.model.parser.sampleCSV.SamplesCSVManager;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.lims.LibraryDTOValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.lims.RequestFormUploadValidator;
-import at.ac.oeaw.cemm.lims.model.validator.dto.lims.SampleDTOValidator;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import at.ac.oeaw.cemm.lims.util.MailBean;
 import at.ac.oeaw.cemm.lims.util.Preferences;
-import at.ac.oeaw.cemm.lims.util.RequestIdBean;
+import at.ac.oeaw.cemm.lims.util.SampleLock;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.UnsupportedEncodingException;
@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.mail.MessagingException;
 
@@ -45,8 +44,8 @@ public class UploadLIMSRequestBean {
     @ManagedProperty(value = "#{requestBean}")
     private RequestBean requestBean;
     
-    @ManagedProperty(value = "#{requestIdBean}")
-    private RequestIdBean requestIdBean;
+    @ManagedProperty(value = "#{sampleLock}")
+    private SampleLock sampleLock;
     
     @Inject
     private ServiceFactory services;
@@ -55,7 +54,7 @@ public class UploadLIMSRequestBean {
     private DTOFactory myDTOFactory;
     
     @Inject private MailBean mailBean;
-
+    
     
     public NewRoleManager getRoleManager() {
         return roleManager;
@@ -73,24 +72,28 @@ public class UploadLIMSRequestBean {
         this.requestBean = requestBean;
     }
 
-    public RequestIdBean getRequestIdBean() {
-        return requestIdBean;
+
+    public SampleLock getSampleLock() {
+        return sampleLock;
     }
 
-    public void setRequestIdBean(RequestIdBean requestIdBean) {
-        this.requestIdBean = requestIdBean;
-    }
+    public void setSampleLock(SampleLock sampleLock) {
+        this.sampleLock = sampleLock;
+    } 
     
     public void submitToLims() {
         if (this.requestBean.submit()) {
             if (roleManager.hasSampleLoadPermission()) {
                 RequestFormDTO requestForm = requestBean.getRequest();
                 RequestDTO requestToLims = myDTOFactory.getRequestDTO(requestForm);
-                RequestFormUploadValidator validator = new RequestFormUploadValidator(new LibraryValidator(new SampleDTOValidator()), services);
+                RequestFormUploadValidator validator = new RequestFormUploadValidator(new LibraryDTOValidator(true), services);
                 ValidationStatus validation = validator.isValid(requestToLims);
 
                 if (validation.isValid()) {
                     try {
+                        sampleLock.lock();
+                        SamplesCSVManager.writeToFile(requestToLims);
+
                         Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestToLims);
                         sendMailWithReceipts(requestToLims.getRequestorUser(), receipts);
                         NgsLimsUtility.setSuccessMessage("validationMessages", null, "Success!", "Samples uploaded correctly");
@@ -102,6 +105,8 @@ public class UploadLIMSRequestBean {
                         System.out.println("Failed upload to DB");
                         e.printStackTrace();
 
+                    }finally{
+                        sampleLock.unlock();
                     }
                 }
                 

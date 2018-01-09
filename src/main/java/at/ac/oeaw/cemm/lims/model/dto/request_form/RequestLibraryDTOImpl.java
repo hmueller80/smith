@@ -5,7 +5,6 @@
  */
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
-import at.ac.oeaw.cemm.lims.api.dto.generic.Application;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.util.NameFilter;
@@ -13,64 +12,78 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import at.ac.oeaw.cemm.lims.api.dto.generic.RunRequest;
 
 /**
  *
  * @author dbarreca
  */
-public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
+public class RequestLibraryDTOImpl implements RequestLibraryDTO, RunRequest {
     
     private final Integer id;
     private final String  uuid;
     private String name;
-    private String applicationName;
     private String readMode;
     private Integer readLength;
     private Integer lanes;
     private Double volume;
     private Double dnaConcentration;
     private Double totalSize;
+    private final Boolean nameEditable;
     
     @JsonIgnore
     private LinkedList<RequestSampleDTO> samples;
 
-    protected RequestLibraryDTOImpl(Integer id) {
+    protected RequestLibraryDTOImpl(Integer id, Boolean nameEditable) {
         this.id = id;
         uuid = UUID.randomUUID().toString();
         samples = new LinkedList<>();
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestLibraryDTOImpl() {
+    protected RequestLibraryDTOImpl(Boolean nameEditable) {
         id = null;
         uuid = UUID.randomUUID().toString();
         samples = new LinkedList<>();
-        applicationName = "WGS";
         readMode = "SR";
         readLength = 50;
         lanes = 1;
         volume = 0.0;
         dnaConcentration = 0.0;
-        totalSize = 0.0;
+        totalSize = 0.0;        
+        this.nameEditable = nameEditable;
     }
     
-    protected RequestLibraryDTOImpl(String uuid){
+    protected RequestLibraryDTOImpl(String uuid, Boolean nameEditable){
         id = null;
         this.uuid = uuid;
         samples = new LinkedList<>();
-        applicationName = "WGS";
         readMode = "SR";
         readLength = 50;
         lanes = 1;
         volume = 0.0;
         dnaConcentration = 0.0;
         totalSize = 0.0;
+        this.nameEditable = nameEditable;
+    }
+    
+     protected RequestLibraryDTOImpl() {
+        id = null;
+        uuid = UUID.randomUUID().toString();
+        samples = new LinkedList<>();
+        readMode = "SR";
+        readLength = 50;
+        lanes = 1;
+        volume = 0.0;
+        dnaConcentration = 0.0;
+        totalSize = 0.0;        
+        this.nameEditable = true;
     }
     
     protected void resetLibraryData(){
         readMode = null;
         readLength = null;
         lanes = null;
-        applicationName = null;
         volume = null;
         dnaConcentration = null;
         totalSize = null;
@@ -92,16 +105,6 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public String getApplicationName() {
-        return applicationName;
-    }
-
-    @Override
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
     }
 
     @Override
@@ -184,14 +187,18 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     public String getUuid() {
         return uuid;
     }
+
+    @Override
+    public Boolean isNameEditable() {
+        return nameEditable;
+    }
     
     
     @JsonIgnore
     @Override
     public RequestLibraryDTO getCopyWithoutSamples() {
-        RequestLibraryDTO copy = new RequestLibraryDTOImpl(uuid);
+        RequestLibraryDTO copy = new RequestLibraryDTOImpl(uuid,nameEditable);
         copy.setName(name);
-        copy.setApplicationName(applicationName);
         copy.setReadMode(readMode);
         copy.setReadLength(readLength);
         copy.setLanes(lanes);
@@ -206,7 +213,6 @@ public class RequestLibraryDTOImpl implements RequestLibraryDTO, Application {
     @Override
     public void setParametersFromCopy(RequestLibraryDTO theCopy) {
         setName(theCopy.getName());
-        applicationName = theCopy.getApplicationName();
         readMode = theCopy.getReadMode();
         readLength = theCopy.getReadLength();
         lanes = theCopy.getLanes();

@@ -67,7 +67,7 @@ public class ExcelParserConstants {
     public static final String Sex                                  = "Sex";	
     public static final String Age                                  = "Age";	
     public static final String Tissue                               = "Tissue";	
-    public static final String CellType                             = "Cell Type";	
+    public static final String BioCellType                             = "Cell Type";	
     public static final String Genotype                             = "Genotype";	
     public static final String FamilyRelations                      = "Family Relations";	
     public static final String Phenotype                            = "Phenotype";	
@@ -189,25 +189,27 @@ public class ExcelParserConstants {
         
         //samples column names
         sampleColumnNames = new ArrayList<ColumnNames>();
+        sampleColumnNames.add(new ColumnNames(Order,true,ColumnNames.DataType.INTEGER, Order));
         sampleColumnNames.add(new ColumnNames(SampleName,true, SampleName));
         sampleColumnNames.add(new ColumnNames(SampleDescription,true, SampleDescription));
         sampleColumnNames.add(new ColumnNames(Organism,true, Organism)); 
         sampleColumnNames.add(new ColumnNames(Sex, Sex));
         sampleColumnNames.add(new ColumnNames(Age, Age));
         sampleColumnNames.add(new ColumnNames(Tissue, Tissue));
-        sampleColumnNames.add(new ColumnNames(CellType, CellType));
+        sampleColumnNames.add(new ColumnNames(BioCellType, BioCellType));
         sampleColumnNames.add(new ColumnNames(Genotype, Genotype));
         sampleColumnNames.add(new ColumnNames(FamilyRelations, FamilyRelations));
         sampleColumnNames.add(new ColumnNames(Phenotype, Phenotype));
         sampleColumnNames.add(new ColumnNames(Disease, Disease));
         sampleColumnNames.add(new ColumnNames(MaterialType, MaterialType));
         sampleColumnNames.add(new ColumnNames(Source, Source));
-        sampleColumnNames.add(new ColumnNames(AcquisitionDate, AcquisitionDate));
+        sampleColumnNames.add(new ColumnNames(AcquisitionDate,false,ColumnNames.DataType.DATE, AcquisitionDate));
         sampleColumnNames.add(new ColumnNames(SampleGroup, SampleGroup));
         sampleColumnNames.add(new ColumnNames(OriginalSampleID, OriginalSampleID));
         
         //library column names
         libraryColumnNames = new ArrayList<ColumnNames>();
+        libraryColumnNames.add(new ColumnNames(Order,true,ColumnNames.DataType.INTEGER, Order));
         libraryColumnNames.add(new ColumnNames(LibraryName,true, LibraryName));
         libraryColumnNames.add(new ColumnNames(LibraryLabel, LibraryLabel));
         libraryColumnNames.add(new ColumnNames(SampleName,true, SampleName));
@@ -222,33 +224,34 @@ public class ExcelParserConstants {
         libraryColumnNames.add(new ColumnNames(LibraryKits, LibraryKits));
         libraryColumnNames.add(new ColumnNames(LibraryDetails, LibraryDetails));
         libraryColumnNames.add(new ColumnNames(LibraryPerson, LibraryPerson));
-        libraryColumnNames.add(new ColumnNames(LibraryDate, LibraryDate));
-        libraryColumnNames.add(new ColumnNames(LibraryVolume, LibraryVolume));
-        libraryColumnNames.add(new ColumnNames(LibraryDNAConcentration, LibraryDNAConcentration));
-        libraryColumnNames.add(new ColumnNames(LibraryTotalSize, LibraryTotalSize, LibraryTotalSizeold));
-        libraryColumnNames.add(new ColumnNames(LibraryInsertSize, LibraryInsertSize));
+        libraryColumnNames.add(new ColumnNames(LibraryDate,false,ColumnNames.DataType.DATE,LibraryDate));
+        libraryColumnNames.add(new ColumnNames(LibraryVolume,false,ColumnNames.DataType.DOUBLE, LibraryVolume));
+        libraryColumnNames.add(new ColumnNames(LibraryDNAConcentration,false,ColumnNames.DataType.DOUBLE, LibraryDNAConcentration));
+        libraryColumnNames.add(new ColumnNames(LibraryTotalSize,false,ColumnNames.DataType.DOUBLE, LibraryTotalSize, LibraryTotalSizeold));
+        libraryColumnNames.add(new ColumnNames(LibraryInsertSize,false,ColumnNames.DataType.DOUBLE, LibraryInsertSize));
         libraryColumnNames.add(new ColumnNames(LibraryComment, LibraryComment));
         libraryColumnNames.add(new ColumnNames(AdditionalComment, AdditionalComment));
         libraryColumnNames.add(new ColumnNames(BioinformaticsProtocol, BioinformaticsProtocol));
         libraryColumnNames.add(new ColumnNames(BioinformaticsGenome, BioinformaticsGenome));
         libraryColumnNames.add(new ColumnNames(BioinformaticsGermlineControl, BioinformaticsGermlineControl));
         libraryColumnNames.add(new ColumnNames(BioinformaticsComment, BioinformaticsComment));
-        libraryColumnNames.add(new ColumnNames(LibraryDNAAmount, LibraryDNAAmount, LibraryDNAAmountng));
+        libraryColumnNames.add(new ColumnNames(LibraryDNAAmount,false,ColumnNames.DataType.DOUBLE, LibraryDNAAmount, LibraryDNAAmountng));
         
         //request column names
         requestColumnNames = new ArrayList<ColumnNames>();
+        requestColumnNames.add(new ColumnNames(Order,true,ColumnNames.DataType.INTEGER, Order));
         requestColumnNames.add(new ColumnNames(libraryName,true, libraryName));
         requestColumnNames.add(new ColumnNames(sequencingType,true, sequencingType));
-        requestColumnNames.add(new ColumnNames(readLength,true, readLength));
+        requestColumnNames.add(new ColumnNames(readLength,true,ColumnNames.DataType.INTEGER, readLength));
         requestColumnNames.add(new ColumnNames(sequencer, sequencer));
-        requestColumnNames.add(new ColumnNames(numberofLanes,true, numberofLanes, numberofHiSeqLanes));
+        requestColumnNames.add(new ColumnNames(numberofLanes,true,ColumnNames.DataType.INTEGER, numberofLanes, numberofHiSeqLanes));
         requestColumnNames.add(new ColumnNames(specialRequirements, specialRequirements));
         requestColumnNames.add(new ColumnNames(AdditionalComment, AdditionalComment));
         requestColumnNames.add(new ColumnNames(receivingPerson, receivingPerson));
-        requestColumnNames.add(new ColumnNames(receivingDate, receivingDate));
+        requestColumnNames.add(new ColumnNames(receivingDate,false,ColumnNames.DataType.DATE, receivingDate));
         requestColumnNames.add(new ColumnNames(receivingComment, receivingComment));
         requestColumnNames.add(new ColumnNames(qualityControlPerson, qualityControlPerson));
-        requestColumnNames.add(new ColumnNames(qualityControlDate, qualityControlDate));
+        requestColumnNames.add(new ColumnNames(qualityControlDate,false,ColumnNames.DataType.DATE, qualityControlDate));
         requestColumnNames.add(new ColumnNames(qualityControlSummary, qualityControlSummary));
         requestColumnNames.add(new ColumnNames(qualityControlFiles, qualityControlFiles));
         requestColumnNames.add(new ColumnNames(qualityControlStatus, qualityControlStatus));

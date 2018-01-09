@@ -363,4 +363,20 @@ public class LazyRunService implements RunService {
 
         return runs;
     }  
+
+    @Override
+    public Integer getMaxRunIdInDB() {
+        try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Integer>() {
+                @Override
+                public Integer execute() throws Exception {
+                    return runDAO.getMaxRunId();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

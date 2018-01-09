@@ -9,7 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
 import at.ac.oeaw.cemm.lims.model.validator.ValidationStatus;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorMessage;
 import at.ac.oeaw.cemm.lims.model.validator.ValidatorSeverity;
-import at.ac.oeaw.cemm.lims.model.validator.dto.generic.ApplicationValidator;
+import at.ac.oeaw.cemm.lims.model.validator.dto.generic.RunRequestValidator;
 import at.ac.oeaw.cemm.lims.model.validator.dto.generic.LibraryValidator;
 import java.util.Set;
 /**
@@ -32,7 +32,7 @@ public class RequestLibraryValidator extends LibraryValidator<RequestLibraryDTO>
 
         boolean isValid = super.validateInternal(objectToValidate, messages);
         
-        ApplicationValidator appValidator  = new ApplicationValidator();
+        RunRequestValidator appValidator  = new RunRequestValidator();
         ValidationStatus appValidation = appValidator.isValid(objectToValidate);
         isValid = isValid && appValidation.isValid();
         messages.addAll(appValidation.getValidationMessages());

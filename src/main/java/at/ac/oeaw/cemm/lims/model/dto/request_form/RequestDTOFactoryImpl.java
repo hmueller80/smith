@@ -6,12 +6,12 @@
 package at.ac.oeaw.cemm.lims.model.dto.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
-import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestorDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestSampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import java.util.Date;
 import javax.faces.bean.ApplicationScoped;
 
@@ -28,41 +28,51 @@ public class RequestDTOFactoryImpl implements RequestDTOFactory {
     }
     
     @Override
-    public RequestFormDTO getRequestFormDTO(RequestorDTO requestor) {
-        return new RequestFormDTOImpl(requestor);
+    public RequestFormDTO getRequestFormDTO(RequestorDTO requestor, BillingInfoDTO billingInfo) {
+        return new RequestFormDTOImpl(requestor,billingInfo);
     }
     
     @Override
-    public RequestLibraryDTO getRequestLibraryDTO() {
-        return new RequestLibraryDTOImpl();
+    public RequestLibraryDTO getRequestLibraryDTO(boolean nameEditabe) {
+        return new RequestLibraryDTOImpl(nameEditabe);
     }
     
     @Override
-    public RequestSampleDTO getRequestSampleDTO() {
-        return new RequestSampleDTOImpl();
+    public RequestSampleDTO getRequestSampleDTO(boolean nameEditabe) {
+        return new RequestSampleDTOImpl(nameEditabe);
     }
     
     @Override
-    public RequestLibraryDTO getRequestLibraryDTO(Integer id) {
-        return new RequestLibraryDTOImpl(id);
+    public RequestLibraryDTO getRequestLibraryDTO(Integer id,boolean nameEditabe) {
+        return new RequestLibraryDTOImpl(id,nameEditabe);
     }
     
     @Override
-    public RequestLibraryDTO getEmptyRequestLibraryDTO() {
-        RequestLibraryDTOImpl theResult = new RequestLibraryDTOImpl();
+    public RequestLibraryDTO getEmptyRequestLibraryDTO(boolean nameEditabe) {
+        RequestLibraryDTOImpl theResult = new RequestLibraryDTOImpl(nameEditabe);
         theResult.resetLibraryData();
         return theResult;
     }
 
     
     @Override
-    public RequestSampleDTO getRequestSampleDTO(Integer id) {
-        return new RequestSampleDTOImpl(id);
+    public RequestSampleDTO getRequestSampleDTO(Integer id, boolean nameEditabe) {
+        return new RequestSampleDTOImpl(id,nameEditabe);
     }
 
     @Override
-    public RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor,Date date, String status) {
-        return new RequestFormDTOImpl(id,requestor,date, status);
+    public RequestFormDTO getRequestFormDTO(Integer id, RequestorDTO requestor,BillingInfoDTO billingInfo,Date date, String status) {
+        return new RequestFormDTOImpl(id,requestor,billingInfo, date, status);
+    }
+
+    @Override
+    public BillingInfoDTO getBillingInfoDTO(String contact, String address, String code) {
+        return new BillingInfoDTOImpl(contact,address,code);
+    }
+
+    @Override
+    public BillingInfoDTO getEmptyBillingInfoDTO() {
+        return new BillingInfoDTOImpl();
     }
 
 }

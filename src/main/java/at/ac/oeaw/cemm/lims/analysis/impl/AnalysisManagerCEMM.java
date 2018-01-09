@@ -20,8 +20,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -37,72 +39,85 @@ public class AnalysisManagerCEMM implements AnalysisManager {
     private DTOFactory dtoFactory;
     @Inject
     private ServiceFactory services;
-
+    
+    private ReentrantLock lock = new ReentrantLock();
+    
     @Override
     public void run() {
-        System.out.println("CEMM Command and samplesheet generation");
+        try{
+            lock.lock();
+            System.out.println("CEMM Command and samplesheet generation");
 
-        List<String> todo = ConfigurationManagerCEMM.runFoldersToAnalyze();
-        for (String beinganalyzed : todo) {
-            String newsBody = "Run " + beinganalyzed + " has finished.";
+            List<String> todo = ConfigurationManagerCEMM.runFoldersToAnalyze();
+            for (String beinganalyzed : todo) {
+                String newsBody = "Run " + beinganalyzed + " has finished.";
 
-            String FCID = ConfigurationManagerCEMM.parseFCID(beinganalyzed);
+                String FCID = ConfigurationManagerCEMM.parseFCID(beinganalyzed);
 
-            System.out.println("runfolder being analyzed " + FCID);
-            List<SampleRunDTO> run = services.getRunService().getRunsByFlowCell(FCID);
-            boolean hasSampleRun = (run.size() > 0);
-            if (beinganalyzed.length() > 0 && hasSampleRun) {
-                ConfigurationManagerCEMM.mkWorkSubdir(beinganalyzed);
+                System.out.println("runfolder being analyzed " + FCID);
+                List<SampleRunDTO> run = services.getRunService().getRunsByFlowCell(FCID);
+                boolean hasSampleRun = (run.size() > 0);
+                if (beinganalyzed.length() > 0 && hasSampleRun) {
+                    ConfigurationManagerCEMM.mkWorkSubdir(beinganalyzed);
 
-                boolean miseq = false;
-                boolean indexreversal = ConfigurationManagerCEMM.getFlowcellNeedsBarcodeI5ReverseComplementing(beinganalyzed);
-                if (FCID.length() != 9) {
-                    //is MiSeq run, no index reversal
-                    indexreversal = false;
-                    miseq = true;
-                }
-                String expName = ConfigurationManagerCEMM.getExperimentName(beinganalyzed);
-                String ssPath = Preferences.getSampleSheetFolder() + expName + "_" + FCID + "_libraries.csv";
+                    boolean miseq = false;
+                    boolean indexreversal = ConfigurationManagerCEMM.getFlowcellNeedsBarcodeI5ReverseComplementing(beinganalyzed);
+                    if (FCID.length() != 9) {
+                        //is MiSeq run, no index reversal
+                        indexreversal = false;
+                        miseq = true;
+                    }
+                    String expName = ConfigurationManagerCEMM.getExperimentName(beinganalyzed);
+                    String ssPath = Preferences.getSampleSheetFolder() + expName + "_" + FCID + "_libraries.csv";
 
-                SampleSheet sampleSheet;
-                if (!(new File(ssPath).exists())) {
-                    sampleSheet = SampleSheetFactory.createSamplesheet(run, indexreversal);
-                    try {
-                        sampleSheet.toFile(ssPath);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("Could not write the sample sheet file!");
+                    SampleSheet sampleSheet;
+                    boolean newFile = false;
+                    if (!(new File(ssPath).exists())) {
+                        sampleSheet = SampleSheetFactory.createSamplesheet(run, indexreversal);
+                        try {
+                            sampleSheet.toFile(ssPath);
+                            newFile = true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("Could not write the sample sheet file!");
+                            return;
+                        }
+                    } else {
+                        sampleSheet = SampleSheetFactory.readSamplesheet(ssPath);
+                    }
+
+                    if (sampleSheet == null) {
+                        System.out.println("Sample sheet is null");
                         return;
                     }
-                } else {
-                    sampleSheet = SampleSheetFactory.readSamplesheet(ssPath);
-                }
 
-                if (sampleSheet == null) {
-                    System.out.println("Sample sheet is null");
-                    return;
-                }
-
-                DemuxAnalysisScript script = new DemuxAnalysisScript(beinganalyzed, miseq);
-                String path = Preferences.getRunfolderroot() + beinganalyzed + File.separator + beinganalyzed + "_submitDemux.sh";
-                if (!(new File(path)).exists()){
-                    try {
-                        script.writeToFile(path);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        System.out.println("Could not write the analysis script!");
-                        return;
+                    DemuxAnalysisScript script = new DemuxAnalysisScript(beinganalyzed, miseq);
+                    String path = Preferences.getRunfolderroot() + beinganalyzed + File.separator + beinganalyzed + "_submitDemux.sh";
+                    if (!(new File(path)).exists()){
+                        try {
+                            script.writeToFile(path);
+                            newFile = true;
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            System.out.println("Could not write the analysis script!");
+                            return;
+                        }
                     }
+
+                    if (newFile){
+                        execute("/scratch/lab_bsf/projects/BSF_runs/chown.sh");
+                    }
+
+                    if(!services.getNewsService().newsExists(newsBody)){
+                        publishNews(beinganalyzed,newsBody);
+                    }
+
+                    triggerAnalysis(beinganalyzed);
                 }
-                
-                if(!services.getNewsService().newsExists(newsBody)){
-                    execute("/scratch/lab_bsf/projects/BSF_runs/chown.sh");
-                    publishNews(beinganalyzed,newsBody);
-                }
-                
-                triggerAnalysis(beinganalyzed);
+
             }
-
+        }finally{
+            lock.unlock();
         }
     }
 
@@ -112,7 +127,6 @@ public class AnalysisManagerCEMM implements AnalysisManager {
         boolean analysisHasBeenPerformed = services.getNewsService().newsExists(newsBody);
         if (!analysisHasBeenPerformed) {
             try {
-                String flowcell = ConfigurationManagerCEMM.parseFCID(folder);
                 URL url = new URL(Preferences.getExecuterPath() + "?workdir=" + Preferences.getWorkdir() + "&flowcell=" + folder);
                 URLConnection conn = url.openConnection();
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -168,6 +182,41 @@ public class AnalysisManagerCEMM implements AnalysisManager {
             output.append(e.getMessage());
         }
         return output.toString();
+    }
+
+    @Override
+    public void resetDemux(String runFolder) throws Exception {
+        try {
+            lock.lock();
+            if (!ConfigurationManagerCEMM.folderPassesCutoff(runFolder)) {
+                throw new Exception("Folder " + runFolder + " is too old! Threshold is " + Preferences.getCutoff());
+            }
+            String FCID = ConfigurationManagerCEMM.parseFCID(runFolder);
+            String expName = ConfigurationManagerCEMM.getExperimentName(runFolder);
+            String ssPath = Preferences.getSampleSheetFolder() + expName + "_" + FCID + "_libraries.csv";
+            File ssPathFile = new File(ssPath);
+            if (ssPathFile.exists()) {
+                String newPath = Preferences.getSampleSheetFolder() + expName + "_" + FCID + "_libraries_OLD" + ".csv";
+                File newFile = new File(newPath);
+                Integer counter = 1;
+                while (newFile.exists()) {
+                    newPath = Preferences.getSampleSheetFolder() + expName + "_" + FCID + "_libraries_OLD" + counter + ".csv";
+                    newFile = new File(newPath);
+                    counter += 1;
+                }
+                Files.move(ssPathFile.toPath(), newFile.toPath());
+            }
+
+            String newsBody = "Fastq analysis for " + runFolder + " has started.";
+
+            if (services.getNewsService().newsExists(newsBody)) {
+                services.getNewsService().removeNewsWithBody(newsBody);
+            }
+        }catch(Exception e){
+            throw new Exception(e);
+        }finally {
+            lock.unlock();
+        }
     }
     
 }

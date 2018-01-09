@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleAnnotationSheet;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
@@ -54,7 +55,8 @@ public class RequestFormBuilder {
             }
             
             RequestorDTO requestor = myDTOFactory.getRequestorDTO(requestorUser, piUser);
-            RequestFormDTO requestDTO = myDTOFactory.getRequestFormDTO(requestor);
+            BillingInfoDTO billingInfo = myDTOFactory.getBillingInfoDTO(parser.getSummary().getBillingContact(), parser.getSummary().getBillingAddress(), parser.getSummary().getBillingCode());
+            RequestFormDTO requestDTO = myDTOFactory.getRequestFormDTO(requestor,billingInfo);
             
             for (SequencingRequestSubmission sequencingRequest: parser.getSequencingRequestSubmission()){
                 RequestLibraryDTO libraryDTO = getLibrary(sequencingRequest);
@@ -111,7 +113,7 @@ public class RequestFormBuilder {
      }
      
     private RequestLibraryDTO getLibrary(SequencingRequestSubmission seqRequest) throws ParsingException {
-        RequestLibraryDTO libraryDTO = myDTOFactory.getEmptyRequestLibraryDTO();
+        RequestLibraryDTO libraryDTO = myDTOFactory.getEmptyRequestLibraryDTO(false);
         libraryDTO.setName(seqRequest.getLibraryName());
         libraryDTO.setReadMode(seqRequest.getSequencingType());
         libraryDTO.setReadLength(
@@ -124,21 +126,9 @@ public class RequestFormBuilder {
     }
 
     private void enrichLibrary(RequestLibraryDTO library, LibrarySubmission libRequest) throws ParsingException {
-        String reqAppName = libRequest.getLibraryType();
         Double reqVolume = getDouble(libRequest.getLibraryVolume(), ExcelParserConstants.LibraryVolume + " for sample " + libRequest.getSampleName(),0.0);
         Double reqDnaConcentration = getDouble(libRequest.getLibraryDNAConcentration(), ExcelParserConstants.LibraryDNAConcentration + " for sample " + libRequest.getSampleName(),0.0);
         Double reqSize = getDouble(libRequest.getLibraryTotalSize(), ExcelParserConstants.LibraryTotalSize + " for sample " + libRequest.getSampleName(),0.0);
-
-        if (library.getApplicationName() == null) {
-            library.setApplicationName(reqAppName);
-        } else if (!library.getApplicationName().equals(reqAppName)) {
-            throw new ParsingException(
-                    "Library Type",
-                    "Inconsistent Library Type for library " + library.getName()
-                    + ". At least two values found: "
-                    + library.getApplicationName()
-                    + " and " + reqAppName);
-        }
 
         if (reqVolume != null) {
             if (library.getVolume() == null) {
@@ -180,8 +170,8 @@ public class RequestFormBuilder {
         }
     }
     
-    private RequestSampleDTO getSample(LibrarySubmission libSubmission){
-        RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO();
+    private RequestSampleDTO getSample(LibrarySubmission libSubmission) throws ParsingException{
+        RequestSampleDTO sampleDTO = myDTOFactory.getRequestSampleDTO(false);
         sampleDTO.setName(libSubmission.getSampleName());
         
         if ((libSubmission.getLibraryLabel()== null || libSubmission.getLibraryLabel().trim().isEmpty())
@@ -197,6 +187,12 @@ public class RequestFormBuilder {
         sampleDTO.setPrimerType(libSubmission.getSequencingPrimerType());
         sampleDTO.setPrimerSequence(libSubmission.getCustomSequencingPrimerSequence());
         sampleDTO.setPrimerName(libSubmission.getCustomSequencingPrimerName());
+        
+        if (libSubmission.getLibraryType()== null || libSubmission.getLibraryType().isEmpty()) {
+            throw new ParsingException( "Library Type", "Empty Library Type for sample "+libSubmission.getSampleName());
+        } else {
+            sampleDTO.setApplicationName(libSubmission.getLibraryType().trim());
+        }
         
         return sampleDTO;
     }

@@ -36,7 +36,7 @@ public class NewRoleManager implements Serializable {
     boolean User;
     boolean GroupLeader;
     boolean Guest;
-
+    
     @PostConstruct
     public void init() {
         System.out.println("NewRoleManager post construct");
@@ -105,10 +105,6 @@ public class NewRoleManager implements Serializable {
         return Guest;
     }
 
-    public boolean hasSampleLoadPermission() {
-        return (Admin || Technician);
-    }
-    
     public boolean hasNewsPermission() {
         return (Admin || Technician);
     }
@@ -120,13 +116,25 @@ public class NewRoleManager implements Serializable {
      public boolean getHasUserAddPermission(){
         return (Admin || Technician );
     }
+     
+    public boolean hasSampleLoadPermission() {
+        return (Admin || Technician);
+    }
+    
                   
     public boolean hasSampleModifyPermission(SampleDTO sample) {
         if (Admin || Technician) {
             return true;
+        }
+        
+        return false;
+    }
+    
+      public boolean hasSampleViewPermission(SampleDTO sample) {
+        if (Admin || Technician) {
+            return true;
         } else if (User || GroupLeader) {
-            if (sample.getStatus().equals(SampleDTO.status_requested) 
-                    && subjectsIds.contains(sample.getUser().getId())) {
+            if ( subjectsIds.contains(sample.getUser().getId())) {
                 return true;
             }
         }
@@ -156,6 +164,6 @@ public class NewRoleManager implements Serializable {
     public Set<Integer> getSubjectsIds() {
         return subjectsIds;
     }
-   
 
-}
+   
+    }

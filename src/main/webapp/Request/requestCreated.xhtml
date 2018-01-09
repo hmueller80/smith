@@ -5,13 +5,19 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="newSampleForm">
+     <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{menuBean.setMenuIndex(1)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
 
         <h:form id="RequestForm">
 
             Request Created: #{param['rid']}
             <p></p>
-            <p:button outcome="requestSearch?activeMenu=4" value="OK"></p:button>
+            <p:button outcome="requestSearch" value="OK"></p:button>
             
         </h:form>
 

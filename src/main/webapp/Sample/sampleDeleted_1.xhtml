@@ -5,7 +5,13 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/template.xhtml">
 
-    <ui:define name="sampleDeleted">
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{menuBean.setMenuIndex(2)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
 
         <h:form id="SampleDeletedForm">
 
@@ -13,7 +19,7 @@
             
             #{bundle['samples.deleted']}: #{param['sid']}
             <p></p>
-            <p:button outcome="samplesSearch_1.jsf?activeMenu=1" value="OK"></p:button>
+            <p:button outcome="samplesSearch_1.jsf" value="OK"></p:button>
             
         </h:form>
 

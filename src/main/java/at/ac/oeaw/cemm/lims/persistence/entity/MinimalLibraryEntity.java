@@ -15,6 +15,8 @@ public class MinimalLibraryEntity {
     private Integer requestId;
     private UserEntity requestor;
     private String libraryName;
+    private String readMode;
+    private Integer readLength;
 
     public Integer getLibraryId() {
         return libraryId;
@@ -46,6 +48,22 @@ public class MinimalLibraryEntity {
 
     public void setLibraryName(String libraryName) {
         this.libraryName = libraryName;
+    }
+
+    public String getReadMode() {
+        return readMode;
+    }
+
+    public void setReadMode(String readMode) {
+        this.readMode = readMode;
+    }
+
+    public Integer getReadLength() {
+        return readLength;
+    }
+
+    public void setReadLength(Integer readLength) {
+        this.readLength = readLength;
     }
     
     

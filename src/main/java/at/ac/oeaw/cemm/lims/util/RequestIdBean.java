@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.util;
 
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.faces.bean.ApplicationScoped;
 import javax.faces.bean.ManagedBean;
@@ -23,18 +22,25 @@ public class RequestIdBean {
     
     private ReentrantLock lock = new ReentrantLock();
 
+    public void getLock(){
+        lock.lock();
+    }
+    
     public Integer getNextId() {
         lock.lock();
-        Integer maxIdinDB = services.getRequestFormService().getMaxRequestId();   
+        Integer maxIdinDB = services.getRequestFormService().getMaxRequestId();    
         System.out.println("Max Id " +maxIdinDB);
+        unlock();
         return maxIdinDB+1;
     }
     
     
     public void unlock(){
-        if (lock.isHeldByCurrentThread() && lock.isLocked()){
-            lock.unlock();
-        }
+        try{
+            if (lock.isHeldByCurrentThread()){
+                lock.unlock();
+            }
+        }catch(Exception e) {}
     } 
     
 }

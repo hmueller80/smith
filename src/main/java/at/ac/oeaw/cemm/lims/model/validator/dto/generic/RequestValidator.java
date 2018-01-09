@@ -24,10 +24,11 @@ import java.util.Set;
 public class RequestValidator<T extends Request> extends AbstractValidator<T> {
     private final ExistingUserValidator userValidator; 
     private final LibraryValidator libraryValidator;
-   
+    protected final ServiceFactory services;
 
     public <T extends LibraryValidator> RequestValidator(T libraryValidator,ServiceFactory services){
         this.libraryValidator = libraryValidator;
+        this.services = services;
         this.userValidator = new ExistingUserValidator(services);
     }
 

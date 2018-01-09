@@ -4,8 +4,10 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingMessage;
 import at.ac.oeaw.cemm.lims.model.parser.ValidatedCSV;
+import at.ac.oeaw.cemm.lims.model.parser.runCSV.RunsCSVManager;
 import at.ac.oeaw.cemm.lims.model.parser.runCSV.SampleRunsBuilder;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
+import at.ac.oeaw.cemm.lims.util.RunIdBean;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.File;
@@ -20,6 +22,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.commons.io.FilenameUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -32,6 +35,9 @@ public class UploadRunFormNewBean implements Serializable {
 
     @Inject private ServiceFactory services;
     @Inject private SampleRunsBuilder runBuilder;
+    
+    @ManagedProperty(value = "#{runIdBean}")
+    private RunIdBean runIdBean;
     
     private String destination;
     private String filename;
@@ -137,14 +143,23 @@ public class UploadRunFormNewBean implements Serializable {
                 Set<SampleRunDTO> sampleRuns = parsedCSV.getRequestObj();
 
                 try {
+                    runIdBean.getLock();
+                    for (SampleRunDTO sampleRun: sampleRuns){
+                        if (sampleRun.getRunId()!= null && services.getRunService().runExists(sampleRun.getRunId())){
+                            throw new Exception ("Run with id "+sampleRun.getRunId()+"already exists");
+                        }
+                    }
+                    RunsCSVManager.writeToFile(sampleRuns, FilenameUtils.getBaseName(filename), sampleRuns.iterator().next().getRunId());
                     Set<PersistedEntityReceipt> receipts = services.getRunService().bulkUploadRuns(sampleRuns,true);
 
-                   NgsLimsUtility.setSuccessMessage(null, null, "Success", "Run form uploaded correctly");
+                    NgsLimsUtility.setSuccessMessage(null, null, "Success", "Run form uploaded correctly");
                            
                 } catch (Exception e) {
                     NgsLimsUtility.setFailMessage(null, null, "Error while persisting request", e.getMessage());
                     System.out.println("Failed upload to DB");
                     e.printStackTrace();
+                }finally{
+                    runIdBean.unlock();
                 }
             }else{
                 NgsLimsUtility.setFailMessage(null, null, "Error while parsing the request", "Malformed CSV");
@@ -163,6 +178,14 @@ public class UploadRunFormNewBean implements Serializable {
         this.roleManager = roleManager;
     }
 
+    public RunIdBean getRunIdBean() {
+        return runIdBean;
+    }
+
+    public void setRunIdBean(RunIdBean runIdBean) {
+        this.runIdBean = runIdBean;
+    }
+    
     public ServiceFactory getServices() {
         return services;
     }

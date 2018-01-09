@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
@@ -25,6 +26,7 @@ import at.ac.oeaw.cemm.lims.api.persistence.RequestService;
 import at.ac.oeaw.cemm.lims.persistence.dao.RequestDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestFormDAO;
+import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestLibraryDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalRequestEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.LinkedHashMap;
@@ -40,6 +42,7 @@ public class RequestServiceImpl implements RequestService {
     
     @Inject RequestDAO requestDAO;
     @Inject RequestFormDAO requestFormDAO;
+    @Inject RequestLibraryDAO requestLibraryDAO;
     @Inject LibraryDAO libraryDAO;
     @Inject SampleDAO sampleDAO;
     @Inject UserDAO userDAO;
@@ -65,7 +68,7 @@ public class RequestServiceImpl implements RequestService {
                         libraryDAO.persistLibrary(libraryEntity);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        throw new Exception("Error while persisting library " + libraryEntity.getLibraryName());
+                        throw new Exception("Error while persisting library " + libraryEntity.getLibraryName()+": "+e.getMessage());
                     }
                     HibernateUtil.getSessionFactory().getCurrentSession().flush();
                     for (SampleDTO sample : library.getSamples()) {
@@ -75,7 +78,7 @@ public class RequestServiceImpl implements RequestService {
                             receipts.add(receipt);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            throw new Exception("Error while persisting sample " + sample.getName());
+                            throw new Exception("Error while persisting sample " + sample.getName()+": "+e.getMessage());
                         }
                     }
                 }
@@ -162,11 +165,10 @@ public class RequestServiceImpl implements RequestService {
                        System.out.println("Considering sample "+sample.getName()+" with id "+sample.getId()+" and submission ID "+sample.getSubmissionId());
 
                         if (Objects.equals(sample.getSubmissionId(), request.getRequestId())) {
-                            if (SampleDTO.status_requested.equals(sample.getStatus())
-                                    || SampleDTO.status_queued.equals(sample.getStatus())) {
+                            if (SampleDTO.status_requested.equals(sample.getStatus())) {
                                 sampleDAO.deleteSample(sample);
                             } else {
-                                throw new Exception("Library with Id " + library.getId() + " contains samples in status different than " + SampleDTO.status_requested + " or " + SampleDTO.status_queued);
+                                throw new Exception("Library with Id " + library.getId() + " contains samples in status different than " + SampleDTO.status_requested);
                             }
                         }
                     }
@@ -202,11 +204,10 @@ public class RequestServiceImpl implements RequestService {
 
                 for (SampleEntity sample : library.getSamples()) {
                     if (Objects.equals(sample.getSubmissionId(), requestId)) {
-                        if (SampleDTO.status_requested.equals(sample.getStatus())
-                                || SampleDTO.status_queued.equals(sample.getStatus())) {
+                        if (SampleDTO.status_requested.equals(sample.getStatus())) {
                             sampleDAO.deleteSample(sample);
                         } else {
-                            throw new Exception("Library with Id " + libraryId + " contains samples in status different than " + SampleDTO.status_requested + " or " + SampleDTO.status_queued);
+                            throw new Exception("Library with Id " + libraryId + " contains samples in status different than " + SampleDTO.status_requested );
                         }
                     }
                 }
@@ -298,26 +299,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void deleteLibraryIfEmpty(final String oldLibraryName) {
-        try {
-            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
-                @Override
-                public Void execute() throws Exception {
-                    LibraryEntity library = libraryDAO.getLibraryByName(oldLibraryName);
-                    
-                    if (library.getSamples().isEmpty()) {
-                        libraryDAO.deleteLibrary(library);
-                    }
-                    
-                    return null;
-                }
-            });
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }    
-    }
-
-    @Override
     public RequestDTO getMinimalRequestByIdAndRequestor(final Integer rid, final String requestor) {
         try {
             return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<RequestDTO >() {
@@ -364,6 +345,39 @@ public class RequestServiceImpl implements RequestService {
             e.printStackTrace();
         }
         
+        return result;
+    }
+    
+    @Override
+    public List<LibraryToRunDTO> getRunnableLibraries(){
+        
+        final List<LibraryToRunDTO> result = new LinkedList<>();
+
+        try {
+            Long currentTime = System.currentTimeMillis();
+            TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Void>() {
+                @Override
+                public Void execute() throws Exception {
+
+                    List<MinimalLibraryEntity> deleatableLibraries = libraryDAO.getRunnableLibraries();
+                    
+                    if (deleatableLibraries != null) {
+                        for (MinimalLibraryEntity entity : deleatableLibraries) {
+                            LibraryEntity fullLibrary = libraryDAO.getLibraryById(entity.getLibraryId());
+                            result.add(myDTOMapper.getLibraryToRunDTOFromMinimalEntity(entity, fullLibrary));
+                        }
+                    }
+
+                    return null;
+                }
+
+            });
+            System.out.println("Runnable libraries retrieval took " + (System.currentTimeMillis() - currentTime));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }       
+
         return result;
     }
 }

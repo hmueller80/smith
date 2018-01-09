@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.service.request_form;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.BillingInfoDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestDTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestLibraryDTO;
@@ -36,7 +37,11 @@ public class RequestDTOMapper {
         UserDTO user = limsMapper.getUserDTOFromEntity(requestorEntity);
         UserDTO pi = limsMapper.getUserDTOFromEntity(piEntity);
         RequestorDTO requestor = dtoFactory.getRequestorDTO(user, pi);
-        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,requestEntity.getReqDate(),requestEntity.getStatus());
+        BillingInfoDTO billingInfo = dtoFactory.getBillingInfoDTO(requestEntity.getBillingContact(), requestEntity.getBillingAddress(), requestEntity.getBillingCode());
+        RequestFormDTO requestForm = dtoFactory.getRequestFormDTO(requestEntity.getId(),requestor,billingInfo,requestEntity.getReqDate(),requestEntity.getStatus());
+        requestForm.setAuthorizationFileName(requestEntity.getAuthFormName());
+        requestForm.setSampleAnnotationFileName(requestEntity.getAnnotationSheetName());
+        
         if (loadLibraries){
             for (RequestLibraryEntity libraryEntity: requestEntity.getRequestLibrarySet()) {
                 RequestLibraryDTO library = getLibraryRequestDTOFromEntity(libraryEntity);
@@ -48,14 +53,13 @@ public class RequestDTOMapper {
     }
 
     private RequestLibraryDTO getLibraryRequestDTOFromEntity(RequestLibraryEntity libraryEntity) {
-        RequestLibraryDTO library = dtoFactory.getRequestLibraryDTO(libraryEntity.getId());
+        RequestLibraryDTO library = dtoFactory.getRequestLibraryDTO(libraryEntity.getId(),false);
         library.setName(libraryEntity.getLibName());
         library.setReadMode(libraryEntity.getReadMode());
         library.setReadLength(libraryEntity.getReadLength().intValue());
-        library.setApplicationName(libraryEntity.getLibType());
         library.setLanes(libraryEntity.getLanes().intValue());
-        library.setVolume(libraryEntity.getVolume());
-        library.setDnaConcentration(libraryEntity.getDnaConcentration());
+        library.setVolume(libraryEntity.getVolumeBulk());
+        library.setDnaConcentration(libraryEntity.getDnaConcentrationBulk());
         library.setTotalSize(libraryEntity.getTotalSize());
         for (RequestSampleEntity sampleEntity: libraryEntity.getRequestSampleSet()){
             RequestSampleDTO sample = getRequestSampleDTOFromEntity(sampleEntity);
@@ -67,8 +71,9 @@ public class RequestDTOMapper {
     }
 
     private RequestSampleDTO getRequestSampleDTOFromEntity(RequestSampleEntity sampleEntity) {
-        RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId());
+        RequestSampleDTO sample = dtoFactory.getRequestSampleDTO(sampleEntity.getId(),false);
         sample.setName(sampleEntity.getName());
+        sample.setApplicationName(sampleEntity.getApplicationType());
         sample.setSampleDescription(sampleEntity.getDescription());
         sample.setOrganism(sampleEntity.getOrganism());
         sample.setI7Index(sampleEntity.getIndexI7());

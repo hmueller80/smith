@@ -6,7 +6,6 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
-import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -32,11 +31,11 @@ public interface SampleService {
 
     int getSamplesCount(final Map<String, Object> filters);
 
-    PersistedEntityReceipt saveOrUpdateSample(final SampleDTO sample, final boolean isNew) throws Exception;
+    PersistedEntityReceipt updateSample(final SampleDTO sample) throws Exception;
     
     Boolean checkIdxExistence(final String sequence);
 
-    List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate);
+    List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate) throws Exception;
     
     List<SampleDTO> getSamplesByStatus(String status);
     
@@ -44,4 +43,6 @@ public interface SampleService {
         
     List<SampleDTO> getAllPooledSamples(SampleDTO sample);
 
+    public SampleDTO getFullSampleByRequestLibraryName(Integer submissionId, String libraryName, String sampleName);
+    
 }

@@ -53,7 +53,7 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
                 messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Library Name", "Library Name " + objectToValidate.getName() + " has a double underscore"));
             }
         }
-        //Check consistency of indexes in library
+        //Check consistency of indexes and applications in library
         isValid = isValid && validateSamples(objectToValidate, messages);
         
         return isValid;
@@ -67,7 +67,7 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
         }
         
         Sample[] samples = objectToValidate.getSamples().toArray(new Sample[objectToValidate.getSamples().size()]);
-
+        
         for (int i = 0; i < samples.length; i++) {
             Sample thisSample = samples[i];
 
@@ -115,7 +115,7 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
             messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index collision", failMessage));
             return false;
             
-        } else {
+        } else if(!RequestFormDTO.NO_DEMUX_INDEX.equals(thisIndex) && !RequestFormDTO.NO_DEMUX_INDEX.equals(otherIndex)) {
             if (thisIndex.length() != otherIndex.length()) {
                 String failMessage
                         = "Indexes in samples " + thisSample.getName()

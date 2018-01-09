@@ -42,6 +42,9 @@ public class SubmissionSummary implements Serializable {
     private String billingContact = "";
     private String billingAddress = "";
     private String billingCode = "";
+    private String purchaseOrderNumber = "";
+    private String billingAccount = "";
+
     private Integer submissionSummaryId = -1;
     private String submissionDateString = "";
 
@@ -68,10 +71,11 @@ public class SubmissionSummary implements Serializable {
         submittingOrganizationAddress = findValueForKey(rows, ExcelParserConstants.SubmittingOrganizationAddress);
         submittingOrganizationURL = findValueForKey(rows, ExcelParserConstants.SubmittingOrganizationURL);
         submittingOrganizationUID = findValueForKey(rows, ExcelParserConstants.SubmittingOrganizationUID);
+        
         billingContact = findValueForKey(rows, ExcelParserConstants.BillingContact);   
         billingAddress = findValueForKey(rows, ExcelParserConstants.BillingAddress);                    
         billingCode = findValueForKey(rows, ExcelParserConstants.BillingCode);                     
-
+        
         labHeadContact = findValueForKey(rows, ExcelParserConstants.LabHeadContact);                     
         labAdministrativeContact = findValueForKey(rows, ExcelParserConstants.LabAdministrativeContact);         
         labExperimentalContact = findValueForKey(rows, ExcelParserConstants.LabExperimentalContact);            

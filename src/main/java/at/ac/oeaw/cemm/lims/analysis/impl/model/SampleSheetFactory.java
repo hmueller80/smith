@@ -2,11 +2,8 @@ package at.ac.oeaw.cemm.lims.analysis.impl.model;
 
 import at.ac.oeaw.cemm.lims.analysis.impl.model.SampleSheet;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
-import at.ac.oeaw.cemm.lims.util.Preferences;
-import java.io.BufferedReader;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -44,7 +41,9 @@ public class SampleSheetFactory {
         SampleSheet sampleSheet = new SampleSheet();        
         
         for (SampleRunDTO run: runs){
-            sampleSheet.addSampleRun(run,indexReversal);
+            if (!RequestFormDTO.NO_DEMUX_INDEX.equalsIgnoreCase(run.getSample().getCompoundIndex())){
+                sampleSheet.addSampleRun(run,indexReversal);
+            }
         }
         
         return sampleSheet;
