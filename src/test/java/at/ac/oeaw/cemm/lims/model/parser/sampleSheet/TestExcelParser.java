@@ -23,7 +23,7 @@ import org.junit.Test;
  */
 public class TestExcelParser {
     
-    @Test
+    @Ignore
     public void testExcelPaser() throws ParsingException {
         File file = new File("/Users/dbarreca/Dev/test_files/1094_sample annotation sheet_AK55pool1-11_Glio_Klughammer.xlsx");
         
