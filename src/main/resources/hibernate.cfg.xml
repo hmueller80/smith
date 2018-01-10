@@ -51,9 +51,9 @@ Contributor(s):
     <property name="hibernate.connection.username">hmueller</property>
     <property name="hibernate.connection.password"></property>
     -->
-    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">hmueller</property>
-    <property name="hibernate.connection.password"></property>
+    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ngslims_dev?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">smith</property>
+    <property name="hibernate.connection.password">smith</property>
     
     <property name="hibernate.show_sql">false</property>
     <property name="hibernate.current_session_context_class">thread</property>
@@ -82,6 +82,9 @@ Contributor(s):
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.CommunicationsEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.OrganizationEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.DepartmentEntity"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.Barcode"/>
+    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.BarcodeKit"/>
+
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestLibraryEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestSampleEntity"/>        

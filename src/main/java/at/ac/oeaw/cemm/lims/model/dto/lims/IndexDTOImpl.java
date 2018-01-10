@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.model.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.util.NameFilter;
 
 /**
@@ -14,10 +15,13 @@ import at.ac.oeaw.cemm.lims.util.NameFilter;
  */
 class IndexDTOImpl implements IndexDTO {
     private String index;
-
+    private IndexType indexType;
+    
     IndexDTOImpl(String index) {
         this.index = NameFilter.legalizeIndex(index);
     }
+    
+    private IndexDTOImpl(){}
 
     @Override
     public String getIndex() {
@@ -27,6 +31,16 @@ class IndexDTOImpl implements IndexDTO {
     @Override
     public void setIndex(String index) {
         this.index = NameFilter.legalizeIndex(index);
+    }
+
+    @Override
+    public IndexType getType() {
+        return indexType;
+    }
+
+    @Override
+    public void setType(IndexType type) {
+        this.indexType = type;
     }
 
 }

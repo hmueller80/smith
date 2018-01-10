@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{indexEditBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(5)}" />
+        </f:metadata>
+    </ui:define>
+   
+    
+    <ui:define name="content">
+        
+        <p:confirmDialog global="true" widgetVar="confirmDialog">
+            <h:form>
+                <p:commandButton 
+                    widgetVar="confirmButton"
+                    value="Yes" type="button"
+                    styleClass="ui-confirmdialog-yes" 
+                    icon="ui-icon-check" 
+                    />
+                <p:commandButton value="No" type="button"
+                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </h:form>
+        </p:confirmDialog>
+        
+        <h:form id ="kitEdit" style="height:95%">
+            <p:separator />
+            <div class="ui-g">
+                <div class="ui-g-8" style="padding-top: 0;padding-bottom: 0">       
+                     <h:panelGrid columns ="2">
+                        <p:outputLabel for="kitName" value="Kit name" />
+                        <p:inputText id ="kitName" widgetVar="kitName" value ="#{indexEditBean.kitName}" disabled="#{!indexEditBean.new}" >
+                            <p:ajax update ="@this nameMessages" partialSubmit="true"/>
+                        </p:inputText>
+                    </h:panelGrid>
+                </div>
+                <div class="ui-g-4" style="padding-top: 0;padding-bottom: 0">
+                    
+                    <p:commandButton style="float:right;margin:1px;" 
+                                     value="Save" 
+                                     icon="ui-icon-disk"
+                                     rendered="#{indexEditBean.roleManager.hasIndexPermission()}"
+                                     action = "#{indexEditBean.submit()}"
+                                     update=":kitEdit:nameMessages :kitEdit:barcodesMessages">
+                            <p:confirm header="Confirmation"
+                                       message="Are you sure to save all changes?"
+                                       icon="ui-icon-alert" />
+                    </p:commandButton>
+                    
+                    <p:button
+                        style="float:right;margin:1px"
+                        value="Reset" 
+                        icon="ui-icon-arrowrefresh-1-e"
+                        rendered ="#{!indexEditBean.new}"
+                        outcome="indexEdit">
+                        <f:param name="kitName" value="#{indexEditBean.kitName}" />
+                    </p:button>
+
+                    <p:commandButton style="float:right;margin:1px;" 
+                                     value="Delete" 
+                                     icon="ui-icon-trash"
+                                     rendered="#{indexEditBean.roleManager.hasIndexPermission() 
+                                                 and !indexEditBean.new }"
+                                     action = "#{indexEditBean.delete()}"
+                                     update=":kitEdit:nameMessages :kitEdit:barcodesMessages">
+                               <p:confirm header="Confirmation"
+                                       message="Are you sure to Delete this kit?"
+                                       icon="ui-icon-alert" />
+                    </p:commandButton>
+                    
+           
+
+                </div>
+            </div>           
+
+            
+            <p:separator />
+            
+            <p:inputText id="indexData" type="hidden" widgetVar="tableData" value="#{indexEditBean.barcodes}" >    
+                <p:ajax event="change" update="@this barcodesMessages" oncomplete="refresh()" partialSubmit="true"/>
+            </p:inputText>
+            <p:messages for="nameMessages" id="nameMessages" showDetail="true" closable="true" />
+            <p:messages for="barcodesMessages" id="barcodesMessages" showDetail="true" closable="true" />
+
+            <div id="handsonTable"/>
+            <script type="text/javascript">
+                 /* <![CDATA[ */
+                var data;
+                var $ = jQuery;
+                var table;
+
+                var refresh = function () {
+                    data = JSON.parse(PF('tableData').getJQ().val());
+                    console.log('AJAX action completed with data ' + JSON.stringify(data));
+                    table.loadData(data);
+                };
+
+                var dataChangeCallback = function (change, source) {
+                    if (source === 'loadData') {
+                        return; //don't save this change
+                    }
+                    console.log('Setting data ' + JSON.stringify(data));
+                    cleanedData = [];
+                    $.each(data, function (rowKey, object) {
+                        if (!table.isEmptyRow(rowKey))
+                            cleanedData.push(object);
+                    });
+                    PF('tableData').getJQ().val(JSON.stringify(cleanedData));
+                    console.log('trigger change');
+                    PF('tableData').getJQ().change();
+                };
+
+                $(document).ready(function () {
+                    data = JSON.parse(PF('tableData').getJQ().val());
+                    var container = document.getElementById('handsonTable');
+                    var tableHeight = $('#handsonTable').parent().height() - 55;
+                    var settings = {
+                        data: data,
+                        columns: [
+                            {
+                                data: 'indexName',
+                                type: 'text'
+                            },
+                            {
+                                data: 'index.type',
+                                type: 'dropdown',
+                                source: ['i7','i5'],
+                                allowInvalid: false
+                            },
+                            {
+                                data: 'index.index',
+                                type: 'text'
+
+                            }
+                        ],
+                        height: tableHeight,
+                        rowHeaders: true,
+                        colHeaders: ['Index Name', 'Index Type', 'Index Sequence'],
+                        manualRowResize: true,
+                        minSpareRows: 1,
+                        afterChange: dataChangeCallback,
+                        afterRemoveRow: dataChangeCallback
+                    };
+
+                    table = new Handsontable(container, settings);
+                });
+                /* ]]> */
+            </script>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

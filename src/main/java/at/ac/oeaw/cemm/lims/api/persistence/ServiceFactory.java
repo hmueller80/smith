@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.api.persistence;
 
+import at.ac.oeaw.cemm.lims.persistence.service.IndexService;
 import at.ac.oeaw.cemm.lims.persistence.service.external_users.ExternalUsersService;
 import at.ac.oeaw.cemm.lims.persistence.service.request_form.RequestFormService;
 
@@ -27,5 +28,7 @@ public interface ServiceFactory {
     RequestFormService getRequestFormService();
     
     ExternalUsersService getExternalUsersService();
+    
+    IndexService getIndexService();
     
 }

@@ -9,14 +9,13 @@ package at.ac.oeaw.cemm.lims.api.dto.lims;
  *
  * @author dbarreca
  */
-public interface IndexDTO {
-
-    String getIndex();
+public interface BarcodeDTO {
     
-    IndexType getType();
-
-    void setIndex(String index);
+    public String getKitName();
+    public String getIndexName();
+    public IndexDTO getIndex();
     
-    void setType(IndexType type);
-    
+    public void setKitName(String kitName);
+    public void setIndexName(String indexName);
+    public void setIndex(IndexDTO index);
 }

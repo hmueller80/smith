@@ -1,0 +1,64 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"    
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+
+    <ui:define name="metadata" >
+        <f:metadata>
+            <f:viewAction action="#{indexesBean.hasViewPermission()}" />
+            <f:viewAction action="#{menuBean.setMenuIndex(5)}" />
+        </f:metadata>
+    </ui:define>
+    
+    <ui:define name="content">
+        
+        <h:form>
+            <div class="ui-g">
+                <div class="ui-g-8" style="padding-top: 0;padding-bottom: 0" />       
+
+                <div class="ui-g-4" style="padding-top: 0;padding-bottom: 0">
+
+                    <p:button style="float:right;margin:1px;" 
+                              value="New kit" 
+                              icon="ui-icon-plus"
+                              rendered="#{indexEditBean.roleManager.hasIndexPermission()}"
+                              outcome = "indexEdit"/>
+
+                </div>
+            </div>  
+            <p:separator />
+
+        </h:form>
+        
+        <h:form style="height:calc(95% - 40px)" id="indexesForm" >
+            <p:treeTable 
+                id="indexes" 
+                value="#{indexesBean.root}" 
+                scrollable ="true"
+                scrollHeight ="100%"
+                var="node" 
+                selectionMode="single" selection="#{indexesBean.selectedNode}">
+
+                <p:column headerText="Label">
+                    <h:outputText value="#{node.label}" />
+                </p:column>
+                <p:column headerText="Sequence">
+                    <h:outputText value="#{node.sequence}" />
+                </p:column>
+                <p:ajax event="select" update="@this" />
+            </p:treeTable>
+            
+            <p:contextMenu for="indexes" id="indexesMenu">
+                <p:menuitem value="Edit" 
+                    icon="ui-icon-search"
+                    action="#{indexesBean.editSample()}" />
+                
+                            
+            </p:contextMenu>
+        </h:form>
+    
+    </ui:define>
+
+</ui:composition>

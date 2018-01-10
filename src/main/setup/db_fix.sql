@@ -1,10 +1,8 @@
 #ADD A COLUMN TO THE SAMPLE TABLE WITH THE LIBRARY REFERENCE
 alter table sample add column library_id int(11) unsigned;
 
-#FIX QUALITY ISSUES
-delete from library where library_id=1479 and libraryName="PGPC15_16_A_L1479";
-delete from library where library_id=1552 and libraryName="PGPC17_20_L1552";
-delete from library where library_id=1603 and libraryName="PGPC2123_L1603";
+#FIX DATA QUALITY ISSUES
+UPDATE `ngslims_dev`.`library` SET `libraryName`='L_002_0131_P45_L2404' WHERE `library_id`='2404' and`sample_id`='32488';
 
 #ADD TO EACH SAMPLE ITS OWN LIBRARY
 SET SQL_SAFE_UPDATES=0;
@@ -55,3 +53,25 @@ rename table table_temp to library;
 
 #ADD FOREIGN KEY IN SAMPLE
 alter table sample add constraint fk_library_id foreign key (library_id) references library(library_id);
+
+ create table barcode (
+	id INT unsigned not null auto_increment,
+    sequence VARCHAR(100),
+    barcode_type VARCHAR(10),
+    primary key(id),
+    unique(sequence,barcode_type)
+ )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+ 
+ create table barcode_kit (
+    kit_name varchar(100),
+    sequence_name varchar(100),
+    barcode_id int unsigned,
+    primary key(kit_name,sequence_name),
+    foreign key(barcode_id) references barcode(id)
+ )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+ 
+ alter table sample 
+ add column barcode_i7 int unsigned, 
+ add column barcode_i5 int unsigned, 
+ add constraint fk_barcode_i7 foreign key (barcode_i7) references barcode(id),
+ add constraint fk_barcode_i5 foreign key (barcode_i5) references barcode(id);

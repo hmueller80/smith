@@ -7,6 +7,7 @@ package at.ac.oeaw.cemm.lims.model.dto.lims;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.BarcodeDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
@@ -219,5 +220,10 @@ public class DTOFactoryImpl implements DTOFactory {
     @Override
     public LibraryToRunDTO getLibraryToRun(LibraryDTO library, UserDTO requestor, Integer requestId, String readMode, Integer readLength ){
         return new LibraryToRunDTOImpl(library, requestor, requestId, readMode, readLength);
+    }
+
+    @Override
+    public BarcodeDTO getBarcodeDTO(String kitName, String indexName, IndexDTO index) {
+        return new BarcodeDTOImpl(kitName, indexName, index);
     }
 }

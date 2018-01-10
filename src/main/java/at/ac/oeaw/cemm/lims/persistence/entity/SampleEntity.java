@@ -102,6 +102,14 @@ public class SampleEntity implements Serializable, EntityWithSettableId {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "library_id", unique=true, nullable = false)
     private LibraryEntity library;
+    
+    @JoinColumn(name = "barcode_i5", referencedColumnName = "id")
+    @ManyToOne
+    private Barcode barcodeI5;
+        
+    @JoinColumn(name = "barcode_i7", referencedColumnName = "id")
+    @ManyToOne
+    private Barcode barcodeI7;
 
     @Override
     public Integer getId() {
@@ -195,7 +203,7 @@ public class SampleEntity implements Serializable, EntityWithSettableId {
     public void setLibrarySynthesisNeeded(Boolean librarysynthesisneeded) {
         this.librarySynthesisNeeded = librarysynthesisneeded;
     }
-    
+
     public boolean getLibrarySynthesisNeeded() {
         if(librarySynthesisNeeded == null){
             return false;
@@ -388,6 +396,23 @@ public class SampleEntity implements Serializable, EntityWithSettableId {
         
      
         System.out.println(sb.toString());
+    }
+
+   
+    public Barcode getBarcodeI5() {
+        return barcodeI5;
+    }
+
+    public void setBarcodeI5(Barcode barcodeI5) {
+        this.barcodeI5 = barcodeI5;
+    }
+
+    public Barcode getBarcodeI7() {
+        return barcodeI7;
+    }
+
+    public void setBarcodeI7(Barcode barcodeI7) {
+        this.barcodeI7 = barcodeI7;
     }
 
 }

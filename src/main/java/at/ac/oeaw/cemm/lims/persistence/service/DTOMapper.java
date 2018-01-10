@@ -6,12 +6,14 @@
 package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.BarcodeDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.OrganizationDTO;
@@ -31,6 +33,8 @@ import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import at.ac.oeaw.cemm.lims.api.dto.lims.RunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.AffiliationDTO;
+import at.ac.oeaw.cemm.lims.persistence.entity.Barcode;
+import at.ac.oeaw.cemm.lims.persistence.entity.BarcodeKit;
 import at.ac.oeaw.cemm.lims.persistence.entity.DepartmentEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.MinimalLibraryEntity;
@@ -211,6 +215,20 @@ public class DTOMapper {
         departmentDTO.setAddress(department.getAddress());
         departmentDTO.setWebPage(department.getUrl());
         return departmentDTO;
+    }
+    
+    public IndexDTO getIndexDTOFromBarcodeEntity(Barcode barcodeEntity) throws Exception{
+        IndexDTO indexDTO = myDTOFactory.getIndexDTO(barcodeEntity.getSequence());
+        indexDTO.setType(IndexType.decode(barcodeEntity.getBarcodeType()));
+        
+        return indexDTO;
+    }
+    
+    public BarcodeDTO getBarcodeFromKitEntity(BarcodeKit kitEntity) throws Exception {
+        IndexDTO index = getIndexDTOFromBarcodeEntity(kitEntity.getBarcodeId());
+        BarcodeDTO barcode = myDTOFactory.getBarcodeDTO(kitEntity.getBarcodeKitPK().getKitName(), kitEntity.getBarcodeKitPK().getSequenceName(), index);
+        
+        return barcode;
     }
 
 }

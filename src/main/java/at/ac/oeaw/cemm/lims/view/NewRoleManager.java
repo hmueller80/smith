@@ -160,6 +160,10 @@ public class NewRoleManager implements Serializable {
     public boolean hasAnnotationSheetDeletePermission() {
         return (Admin || Technician);
     }
+    
+    public boolean hasIndexPermission() {
+        return (Admin || Technician);
+    }
 
     public Set<Integer> getSubjectsIds() {
         return subjectsIds;

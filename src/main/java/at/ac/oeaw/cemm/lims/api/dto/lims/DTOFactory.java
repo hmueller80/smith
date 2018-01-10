@@ -55,4 +55,6 @@ public interface DTOFactory {
     
     public LibraryToRunDTO getLibraryToRun(LibraryDTO library, UserDTO requestor, Integer requestId, String readMode, Integer readLength);
     
+    public BarcodeDTO getBarcodeDTO(String kitName, String indexName, IndexDTO index);
+    
 }
