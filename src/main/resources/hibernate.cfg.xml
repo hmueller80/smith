@@ -51,8 +51,8 @@ Contributor(s):
     <property name="hibernate.connection.username">hmueller</property>
     <property name="hibernate.connection.password"></property>
     -->
-    <property name="hibernate.connection.url">jdbc:mysql://bsfdb.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
-    <property name="hibernate.connection.username">hmueller</property>
+    <property name="hibernate.connection.url">jdbc:mysql://bsfdbdev.int.cemm.at:3306/ngs2?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username"></property>
     <property name="hibernate.connection.password"></property>
     
     <property name="hibernate.show_sql">false</property>

@@ -1,11 +1,6 @@
 #ADD A COLUMN TO THE SAMPLE TABLE WITH THE LIBRARY REFERENCE
 alter table sample add column library_id int(11) unsigned;
 
-#FIX QUALITY ISSUES
-delete from library where library_id=1479 and libraryName="PGPC15_16_A_L1479";
-delete from library where library_id=1552 and libraryName="PGPC17_20_L1552";
-delete from library where library_id=1603 and libraryName="PGPC2123_L1603";
-
 #ADD TO EACH SAMPLE ITS OWN LIBRARY
 SET SQL_SAFE_UPDATES=0;
 update sample s

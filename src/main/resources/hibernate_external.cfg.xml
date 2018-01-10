@@ -44,9 +44,9 @@ Contributor(s):
     <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.ast.ASTQueryTranslatorFactory</property>
-    <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/external_users</property>
-    <property name="hibernate.connection.username">smith_ext</property>
-    <property name="hibernate.connection.password">smith_ext</property>
+    <property name="hibernate.connection.url">jdbc:mysql://bsfdbdev.int.cemm.at:3306/download</property>
+    <property name="hibernate.connection.username"></property>
+    <property name="hibernate.connection.password"></property>
 
     <property name="hibernate.show_sql">false</property>
     <property name="hibernate.current_session_context_class">thread</property>
