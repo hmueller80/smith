@@ -92,7 +92,7 @@ public class AnalysisManagerCEMM implements AnalysisManager {
                     }
 
                     DemuxAnalysisScript script = new DemuxAnalysisScript(beinganalyzed, miseq);
-                    String path = Preferences.getRunfolderroot() + beinganalyzed + File.separator + beinganalyzed + "_submitDemux.sh";
+                    String path = Preferences.getRunfolderroot() + beinganalyzed + File.separator + beinganalyzed + "_submitDemux_test.sh";
                     if (!(new File(path)).exists()){
                         try {
                             script.writeToFile(path);
@@ -104,15 +104,15 @@ public class AnalysisManagerCEMM implements AnalysisManager {
                         }
                     }
 
-                    if (newFile){
+                    /*if (newFile){
                         execute("/scratch/lab_bsf/projects/BSF_runs/chown.sh");
-                    }
+                    }*/
 
                     if(!services.getNewsService().newsExists(newsBody)){
                         publishNews(beinganalyzed,newsBody);
                     }
 
-                    triggerAnalysis(beinganalyzed);
+                    //triggerAnalysis(beinganalyzed);
                 }
 
             }

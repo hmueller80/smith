@@ -1,9 +1,6 @@
 #ADD A COLUMN TO THE SAMPLE TABLE WITH THE LIBRARY REFERENCE
 alter table sample add column library_id int(11) unsigned;
 
-#FIX DATA QUALITY ISSUES
-UPDATE `ngslims_dev`.`library` SET `libraryName`='L_002_0131_P45_L2404' WHERE `library_id`='2404' and`sample_id`='32488';
-
 #ADD TO EACH SAMPLE ITS OWN LIBRARY
 SET SQL_SAFE_UPDATES=0;
 update sample s

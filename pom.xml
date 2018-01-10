@@ -108,6 +108,13 @@
             <version>4.3</version>
         </dependency>
         <dependency>
+            <groupId>at.ac.oeaw.cemm.bsf.barcode</groupId>
+            <artifactId>IlluminaBarcodes</artifactId>
+            <version>1.0</version>
+             <scope>system</scope>
+             <systemPath>${project.basedir}/../other/IlluminaBarcodes-1.0.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
             <version>4.3.1.Final</version>

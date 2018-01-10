@@ -3,3 +3,9 @@ create table external_users(userid varchar(100) not null, password varchar(64) n
 create table external_groups(userid varchar(100) not null, groupid varchar(20) not null, primary key(userid, groupid));
 
 alter table external_groups add constraint FK_USERID foreign key(userid) references external_users(userid);
+
+insert into external_users
+select distinct UserName,password,ucscUrl from user;
+
+insert into external_groups
+select userid,'user' from external_users;
