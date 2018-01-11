@@ -152,9 +152,9 @@
                           headerText="Submission Id"
                           filterBy="#{sample.submissionId}"
                           sortBy="#{sample.submissionId}">
-                    <!--
-                        <h:outputText value="#{sample.submissionId}" />
-                    -->
+                        <ui:remove>
+                            <h:outputText value="#{sample.submissionId}" />
+                        </ui:remove>
                         <h:outputLink  value="../SampleAnnotationSheets/#{sample.submissionId}.xlsx">#{sample.submissionId}
                         </h:outputLink>
  

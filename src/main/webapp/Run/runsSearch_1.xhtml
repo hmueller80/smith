@@ -1,4 +1,4 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+ <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"    
@@ -157,6 +157,12 @@
                         <f:param name="sid" value="#{run.sample.id}"/>
                     </h:link>   
                 </p:column>
+                
+                 <p:column id="libraryColumn"                      
+                          headerText="Library"
+                          filterBy="#{run.sampleLibrary.libraryName}">
+                    <h:outputText value="#{run.sample.libraryName}" />
+                </p:column>
 
                 <p:column id="operatorColumn"                    
                           headerText="#{bundle['runs.operator.header']}"
@@ -169,7 +175,7 @@
                           filterBy="#{run.sampleUser.login}">
                     <h:outputText value="#{run.sample.user.login}" />
                 </p:column>
-
+                
                 <p:column id="flowcellColumn"                  
                           headerText="#{bundle['runs.flowcell']}"
                           filterBy="#{flowcell}">

@@ -52,6 +52,7 @@ public class SampleRunDAO {
             add("flowcell");
             add("sampleIndex.index");
             add("runFolder");
+            add("sampleLibrary.libraryName");
         }
     };
     
@@ -158,6 +159,7 @@ public class SampleRunDAO {
                 .createAlias("sample", "sample", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample.user", "sampleUser", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample.sequencingIndexes", "sampleIndex", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sample.library", "sampleLibrary", JoinType.LEFT_OUTER_JOIN)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if (filters != null) {
