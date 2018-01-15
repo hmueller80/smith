@@ -80,7 +80,10 @@ public class RunAssemblerBean {
         
         runFolders = new ArrayList<>();
         for (File folder: new File(Preferences.getRunfolderroot()).listFiles()){
-            if (folder.isDirectory() && Arrays.asList(folder.list()).contains("RunInfo.xml")){
+            if (folder.isDirectory() 
+                    && folder.canExecute()
+                    && folder.getName().substring(0,6).matches("[0-9]+")
+                    && Arrays.asList(folder.list()).contains("RunInfo.xml")){
                 RunFolder runFolder = new RunFolder(folder.getName());
                 List<SampleRunDTO> existingRuns = services.getRunService().getRunsByFlowCell(runFolder.getFlowCell());
                 if (existingRuns == null || existingRuns.isEmpty()){
