@@ -75,3 +75,12 @@ alter table sample add constraint fk_library_id foreign key (library_id) referen
  add column barcode_i5 int unsigned, 
  add constraint fk_barcode_i7 foreign key (barcode_i7) references barcode(id),
  add constraint fk_barcode_i5 foreign key (barcode_i5) references barcode(id);
+ 
+ insert into barcode (sequence,barcode_type)
+ values ('NONE','i5');
+  insert into barcode (sequence,barcode_type)
+ values ('NONE','i7');
+  insert into barcode (sequence,barcode_type)
+ values ('NO_DEMUX','i5');
+  insert into barcode (sequence,barcode_type)
+ values ('NO_DEMUX','i7');
