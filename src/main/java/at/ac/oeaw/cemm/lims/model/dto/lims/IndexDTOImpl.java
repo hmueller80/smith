@@ -17,8 +17,9 @@ class IndexDTOImpl implements IndexDTO {
     private String index;
     private IndexType indexType;
     
-    IndexDTOImpl(String index) {
+    IndexDTOImpl(String index, IndexType indexType) {
         this.index = NameFilter.legalizeIndex(index);
+        this.indexType= indexType;
     }
     
     private IndexDTOImpl(){}

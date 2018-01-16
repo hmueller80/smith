@@ -9,6 +9,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
+import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.util.NameFilter;
 import java.io.Serializable;
 import java.util.Date;
@@ -22,7 +23,9 @@ class SampleDTOImpl implements SampleDTO, Serializable {
     private final Integer id;
     
     private ApplicationDTO application;
-    private IndexDTO index;
+    private IndexDTO indexI5;
+    private IndexDTO indexI7;
+    
     private UserDTO user;
     private String name;
     
@@ -67,7 +70,8 @@ class SampleDTOImpl implements SampleDTO, Serializable {
             Double bioAnalyzerMolarity, 
             Integer submissionId, 
             String experimentName, 
-            IndexDTO index,
+            IndexDTO indexI7,
+            IndexDTO indexI5,
             UserDTO user) {
         
         this.id = id;
@@ -89,7 +93,8 @@ class SampleDTOImpl implements SampleDTO, Serializable {
         this.bioAnalyzerMolarity = bioAnalyzerMolarity;
         this.submissionId = submissionId;
         this.experimentName = experimentName;
-        this.index = index;
+        this.indexI5 = indexI5;
+        this.indexI7 = indexI7;
         this.user = user;
     }
     
@@ -182,11 +187,27 @@ class SampleDTOImpl implements SampleDTO, Serializable {
     public String getExperimentName() {
         return experimentName;
     }
-    
+
     @Override
-    public IndexDTO getIndex() {
-        return index;
+    public IndexDTO getIndexI5() {
+        return indexI5;
     }
+
+    @Override
+    public void setIndexI5(IndexDTO indexI5) {
+        this.indexI5 = indexI5;
+    }
+
+    @Override
+    public IndexDTO getIndexI7() {
+        return indexI7;
+    }
+
+    @Override
+    public void setIndexI7(IndexDTO indexI7) {
+        this.indexI7 = indexI7;
+    }
+
     
     @Override
     public String getLibraryName() {
@@ -283,11 +304,6 @@ class SampleDTOImpl implements SampleDTO, Serializable {
     public void setExperimentName(String experimentName) {
         this.experimentName = experimentName;
     }
-
-    @Override
-    public void setIndex(IndexDTO index) {
-        this.index = index;
-    }
     
     @Override
     public void setLibraryName(String libraryName) {
@@ -311,7 +327,17 @@ class SampleDTOImpl implements SampleDTO, Serializable {
 
     @Override
     public String getCompoundIndex() {
-        return index.getIndex();
+        if (indexI7.getIndex().equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX) || indexI5.getIndex().equalsIgnoreCase(RequestFormDTO.NO_DEMUX_INDEX)) {
+            return RequestFormDTO.NO_DEMUX_INDEX;
+        } else if (indexI7.getIndex().equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)) {
+            return RequestFormDTO.DEFAULT_INDEX;
+        } else {
+            if (indexI5.getIndex().equalsIgnoreCase(RequestFormDTO.DEFAULT_INDEX)) {
+                return indexI7.getIndex();
+            } else {
+                return (indexI7.getIndex() + indexI5.getIndex()).toUpperCase().trim();
+            }
+        }
     }
 
     @Override

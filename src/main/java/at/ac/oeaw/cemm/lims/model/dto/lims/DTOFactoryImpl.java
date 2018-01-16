@@ -10,6 +10,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.BarcodeDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DepartmentDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.IndexDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.NewsDTO;
@@ -51,8 +52,8 @@ public class DTOFactoryImpl implements DTOFactory {
     
     
     @Override
-    public IndexDTO getIndexDTO(String index){
-        return new IndexDTOImpl(index);
+    public IndexDTO getIndexDTO(String index,IndexType type){
+        return new IndexDTOImpl(index,type);
     }
     
     @Override
@@ -96,7 +97,8 @@ public class DTOFactoryImpl implements DTOFactory {
             Double bioAnalyzerMolarity,
             Integer submissionId, 
             String experimentName,
-            IndexDTO index,
+            IndexDTO indexI7,
+            IndexDTO indexI5,
             UserDTO user){
         
         return new SampleDTOImpl(id,
@@ -118,7 +120,8 @@ public class DTOFactoryImpl implements DTOFactory {
                 bioAnalyzerMolarity, 
                 submissionId, 
                 experimentName, 
-                index,
+                indexI7,
+                indexI5,
                 user);
         
     }
@@ -172,8 +175,10 @@ public class DTOFactoryImpl implements DTOFactory {
 
                 
                 sample.setApplication(application);                
-                sample.setIndex(getIndexDTO(requestSample.getCompoundIndex()));
-                            sample.setName(requestSample.getName());
+                sample.setIndexI5(getIndexDTO(requestSample.getI5Index(),IndexType.i5));
+                sample.setIndexI7(getIndexDTO(requestSample.getI7Index(),IndexType.i7));
+                
+                sample.setName(requestSample.getName());
                             
                 sample.setOrganism(requestSample.getOrganism());
                 sample.setConcentration(requestLibrary.getDnaConcentration());

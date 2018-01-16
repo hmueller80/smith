@@ -14,6 +14,7 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.model.parser.ParsingException;
 import at.ac.oeaw.cemm.lims.model.parser.DTOCSVParser;
@@ -52,7 +53,12 @@ public class RequestBuilder {
         try {
             Reader reader = new FileReader(csvFile);
 
-            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class).withRecordSeparator(SampleRequestCSVHeader.getSeparator()).withSkipHeaderRecord().withIgnoreEmptyLines());
+            CSVParser parser = new CSVParser(reader, CSVFormat.RFC4180.withHeader(SampleRequestCSVHeader.class)
+                    .withRecordSeparator(SampleRequestCSVHeader.getSeparator())
+                    .withSkipHeaderRecord()
+                    .withIgnoreEmptyLines()
+                    .withAllowMissingColumnNames());
+            
             List<CSVRecord> records = parser.getRecords();
             UserDTO requestor = getUserFromCSVRecords(records);
             Integer requestId = getSubmissionIdFromCSVRecords(records);
@@ -63,8 +69,10 @@ public class RequestBuilder {
                 SampleDTO sample = getObject(new SampleCSVParser(record, myDTOFactory,requestId), validationStatus);
                 sample.setUser(requestor);
                 
-                IndexDTO index = getObject(new IndexCSVParser(record, services, myDTOFactory), validationStatus);
-                sample.setIndex(index);
+                IndexDTO indexI5 = getObject(new IndexCSVParser(record, services, myDTOFactory,IndexType.i5), validationStatus);
+                IndexDTO indexI7 = getObject(new IndexCSVParser(record, services, myDTOFactory,IndexType.i7), validationStatus);
+                sample.setIndexI5(indexI5);
+                sample.setIndexI7(indexI7);
 
                 ApplicationDTO application = getObject(new ApplicationCSVParser(record, myDTOFactory), validationStatus);
                 sample.setApplication(application);

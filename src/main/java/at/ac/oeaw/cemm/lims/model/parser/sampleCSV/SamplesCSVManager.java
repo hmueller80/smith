@@ -98,7 +98,7 @@ public class SamplesCSVManager {
         /*03 Institute*/ sb.append(sample.getUser().getAffiliation().getOrganizationName().replace(",", " ")).append(sep);
         /*04 PI*/ sb.append(sample.getCostcenter().replace(",", " ")).append(sep);
         /*05 SampleName*/ sb.append(NameFilter.getSampleNameWithoutSuffix(sample.getName())).append(sep);
-        /*06 BarcodeByName*/ sb.append(sample.getIndex().getIndex()).append(sep);
+        /*06 BarcodeByName*/ sb.append(sample.getCompoundIndex()).append(sep);
         /*07 Application*/ sb.append(sample.getApplication().getApplicationName().replace(",", " ")).append(sep);
         /*08 ReadLength*/ sb.append(sample.getApplication().getReadLength()).append(sep);
         /*09 Receipe*/ sb.append(getRecipeString(sample.getApplication())).append(sep);
@@ -116,8 +116,10 @@ public class SamplesCSVManager {
         /*21 library*/ sb.append(libraryName).append(sep);
         /*22 submissionId*/ sb.append(sample.getSubmissionId()).append(sep);
         /*23 date*/ sb.append(sdf.format(sample.getRequestDate())).append(sep);
-        /*24 volume */ sb.append("");
-
+        /*24 volume */ sb.append("").append(sep);
+        /*25 indexI7 */ sb.append(sample.getIndexI7().getIndex()).append(sep);
+        /*26 indexI5 */ sb.append(sample.getIndexI5().getIndex());
+    
         return sb.toString();
     }
     

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.api.persistence;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.persistence.service.PersistedEntityReceipt;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface SampleService {
 
     void deleteSample(final SampleDTO sample) throws Exception;
 
-    List<String> getAllIndexes();
+    List<String> getAllIndexes(IndexType type);
 
     List<String> getAllLibraries();
 
@@ -33,7 +34,7 @@ public interface SampleService {
 
     PersistedEntityReceipt updateSample(final SampleDTO sample) throws Exception;
     
-    Boolean checkIdxExistence(final String sequence);
+    Boolean checkIdxExistence(final String sequence, IndexType type);
 
     List<PersistedEntityReceipt> bulkUpdateSamples(List<SampleDTO> samplesToUpdate) throws Exception;
     

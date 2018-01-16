@@ -218,21 +218,21 @@
                                            for = "sampleNameValue" position="top"/>
                             </p:column>
 
-                            <p:column id="indexColumn" 
-                                      headerText="#{bundle['samples.sequencing.index']}">
+                            <p:column id="indexI7Column" 
+                                      headerText="Barcode I7">
                                 <p:cellEditor rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id }">
                                     <f:facet name="output">
-                                        <h:outputText value="#{sample.index.index}" />
+                                        <h:outputText value="#{sample.indexI7.index}" />
                                     </f:facet>
                                     <f:facet name="input" >
                                         <p:selectOneMenu  
-                                            value ="#{sample.index.index}"
+                                            value ="#{sample.indexI7.index}"
                                             filter="true" 
                                             filterMatchMode="contains" 
                                             style="width:80%">
                                             <f:selectItems 
-                                                id="indexSelect" 
-                                                value="#{singleSampleBean.possibleIndexes}"
+                                                id="indexSelectI7" 
+                                                value="#{singleSampleBean.possibleIndexesI7}"
                                                 itemLabel="#{index}" itemValue="#{index}"
                                                 var="index" />
                                             <p:ajax listener="#{singleSampleBean.validateLibrary()}" 
@@ -240,7 +240,32 @@
                                         </p:selectOneMenu>     
                                     </f:facet>               
                                 </p:cellEditor>
-                                <h:outputText value="#{sample.index.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
+                                <h:outputText value="#{sample.indexI7.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
+                            </p:column>
+                            
+                            <p:column id="indexI5Column" 
+                                      headerText="Barcode I5">
+                                <p:cellEditor rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id }">
+                                    <f:facet name="output">
+                                        <h:outputText value="#{sample.indexI5.index}" />
+                                    </f:facet>
+                                    <f:facet name="input" >
+                                        <p:selectOneMenu  
+                                            value ="#{sample.indexI5.index}"
+                                            filter="true" 
+                                            filterMatchMode="contains" 
+                                            style="width:80%">
+                                            <f:selectItems 
+                                                id="indexSelectI5" 
+                                                value="#{singleSampleBean.possibleIndexesI5}"
+                                                itemLabel="#{index}" itemValue="#{index}"
+                                                var="index" />
+                                            <p:ajax listener="#{singleSampleBean.validateLibrary()}" 
+                                                    update=":tabMenu:libraryForm"/>
+                                        </p:selectOneMenu>     
+                                    </f:facet>               
+                                </p:cellEditor>
+                                <h:outputText value="#{sample.indexI5.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
                             </p:column>
 
                             <p:column id="applicationColumn" headerText="#{bundle['samples.application']}">                              

@@ -21,7 +21,6 @@ import at.ac.oeaw.cemm.lims.api.dto.lims.RequestDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleRunEntity;
-import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.persistence.entity.LaneEntity;
@@ -51,12 +50,13 @@ public class DTOMapper {
     @Inject
     private DTOFactory myDTOFactory;
 
-    protected SampleDTO getSampleDTOfromEntity(SampleEntity entity) {
+    protected SampleDTO getSampleDTOfromEntity(SampleEntity entity) throws Exception{
         if (entity == null) {
             return null;
         } else {
             ApplicationDTO application = getApplicationDTOfromEntity(entity.getApplication());
-            IndexDTO index = getIndexDTOFromEntity(entity.getSequencingIndexes());
+            IndexDTO indexI7 = getIndexDTOFromEntity(entity.getBarcodeI7());
+            IndexDTO indexI5 = getIndexDTOFromEntity(entity.getBarcodeI5());
             UserDTO user = getUserDTOFromEntity(entity.getUser());
 
             SampleDTO sample = myDTOFactory.getSampleDTO(
@@ -79,7 +79,8 @@ public class DTOMapper {
                     entity.getBionalyzerBiomolarity(),
                     entity.getSubmissionId(),
                     entity.getExperimentName(),
-                    index,
+                    indexI7,
+                    indexI5,
                     user);
             sample.setLibraryName(entity.getLibrary().getLibraryName());
 
@@ -100,11 +101,11 @@ public class DTOMapper {
         }
     }
 
-    protected IndexDTO getIndexDTOFromEntity(SequencingIndexEntity entity) {
+    protected IndexDTO getIndexDTOFromEntity(Barcode entity) throws Exception{
         if (entity == null) {
             return null;
         } else {
-            return myDTOFactory.getIndexDTO(entity.getIndex());
+            return myDTOFactory.getIndexDTO(entity.getSequence(),IndexType.decode(entity.getBarcodeType()));
         }
     }
 
@@ -138,7 +139,7 @@ public class DTOMapper {
     
   
 
-    protected SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) {
+    protected SampleRunDTO getSampleRunDTOFromEntity(SampleRunEntity sampleRun) throws Exception {
         SampleDTO sampleDTO = getSampleDTOfromEntity(sampleRun.getsample());
         UserDTO operatorDTO = getUserDTOFromEntity(sampleRun.getUser());
         Set<String> lanes = new HashSet<>();
@@ -164,7 +165,7 @@ public class DTOMapper {
         return myDTOFactory.getRequestDTO(requestor, requestEntity.getRequestId());
     }
 
-    protected LibraryDTO getLibraryDTOFromEntity(LibraryEntity libraryEntity, boolean loadSamples) {
+    protected LibraryDTO getLibraryDTOFromEntity(LibraryEntity libraryEntity, boolean loadSamples) throws Exception{
         LibraryDTO library = myDTOFactory.getLibraryDTO(libraryEntity.getLibraryName(), libraryEntity.getId());
         if (loadSamples) {
             for (SampleEntity sampleEntity : libraryEntity.getSamples()) {
@@ -181,7 +182,7 @@ public class DTOMapper {
         return library;
     }
     
-    protected LibraryToRunDTO getLibraryToRunDTOFromMinimalEntity(MinimalLibraryEntity minimalLibrary, LibraryEntity fullLibraryEntity) {
+    protected LibraryToRunDTO getLibraryToRunDTOFromMinimalEntity(MinimalLibraryEntity minimalLibrary, LibraryEntity fullLibraryEntity) throws Exception {
         UserDTO user = getUserDTOFromEntity(minimalLibrary.getRequestor());
         LibraryDTO fullLibrary = getLibraryDTOFromEntity(fullLibraryEntity,true);
         
@@ -218,8 +219,7 @@ public class DTOMapper {
     }
     
     public IndexDTO getIndexDTOFromBarcodeEntity(Barcode barcodeEntity) throws Exception{
-        IndexDTO indexDTO = myDTOFactory.getIndexDTO(barcodeEntity.getSequence());
-        indexDTO.setType(IndexType.decode(barcodeEntity.getBarcodeType()));
+        IndexDTO indexDTO = myDTOFactory.getIndexDTO(barcodeEntity.getSequence(),IndexType.decode(barcodeEntity.getBarcodeType()));
         
         return indexDTO;
     }

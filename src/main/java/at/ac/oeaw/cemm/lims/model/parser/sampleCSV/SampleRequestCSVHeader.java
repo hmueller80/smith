@@ -33,7 +33,9 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
     /*21*/ library,
     /*22*/ submissionId,
     /*23*/ date,
-    /*24*/ volume;
+    /*24*/ volume,
+    /*25*/ indexI7,
+    /*26*/ indexI5;
     
     public static char getSeparator(){
         return ',';
@@ -65,7 +67,9 @@ package at.ac.oeaw.cemm.lims.model.parser.sampleCSV;
         sb.append(library).append(getSeparator());
         sb.append(submissionId).append(getSeparator());
         sb.append(date).append(getSeparator());
-        sb.append(volume);
+        sb.append(volume).append(getSeparator());
+        sb.append(indexI7).append(getSeparator());
+        sb.append(indexI5);
  
         return sb.toString();
     }

@@ -190,8 +190,8 @@
 
                 <p:column id="seqindexColumn"                 
                           headerText="#{bundle['runs.sequencing.index']}"
-                          filterBy="#{run.sampleIndex.index}">
-                    <h:outputText value="#{run.sample.index.index}" />
+                          filterBy="#{run.sampleIndex}">
+                    <h:outputText value="#{run.sample.compoundIndex}" />
                 </p:column>
 
                 <p:column id="isControlColumn"                    

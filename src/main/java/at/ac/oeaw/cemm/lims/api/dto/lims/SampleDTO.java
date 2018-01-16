@@ -50,8 +50,10 @@ public interface SampleDTO extends Sample {
 
     Integer getId();
 
-    IndexDTO getIndex();
+    IndexDTO getIndexI5();
 
+    IndexDTO getIndexI7();
+      
     String getOrganism();
 
     Date getRequestDate();
@@ -90,7 +92,9 @@ public interface SampleDTO extends Sample {
 
     void setExperimentName(String experimentName);
 
-    void setIndex(IndexDTO index);
+    void setIndexI5(IndexDTO index);
+    
+    void setIndexI7(IndexDTO index);
 
     void setName(String name);
 

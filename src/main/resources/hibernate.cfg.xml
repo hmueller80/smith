@@ -72,7 +72,6 @@ Contributor(s):
     <property name="hibernate.id.new_generator_mappings">false</property>
     <property name="hibernate.generate_statistics">false</property>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity"/>
-    <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity"/>
     <mapping class="at.ac.oeaw.cemm.lims.persistence.entity.UserEntity"/>

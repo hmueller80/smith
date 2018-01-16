@@ -50,7 +50,7 @@ public class SampleRunDAO {
             add("user.login");
             add("sampleUser.login");
             add("flowcell");
-            add("sampleIndex.index");
+            add("sampleIndex");
             add("runFolder");
             add("sampleLibrary.libraryName");
         }
@@ -158,7 +158,8 @@ public class SampleRunDAO {
                 .createAlias("user", "user", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample", "sample", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample.user", "sampleUser", JoinType.LEFT_OUTER_JOIN)
-                .createAlias("sample.sequencingIndexes", "sampleIndex", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sample.barcodeI5", "indexI5", JoinType.LEFT_OUTER_JOIN)
+                .createAlias("sample.barcodeI7", "indexI7", JoinType.LEFT_OUTER_JOIN)
                 .createAlias("sample.library", "sampleLibrary", JoinType.LEFT_OUTER_JOIN)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
@@ -173,6 +174,13 @@ public class SampleRunDAO {
                             break;
                         case "isControl":
                             singleFiltersCriterion.add(Restrictions.eq(filteredField, Boolean.parseBoolean((String) filters.get(filteredField))));
+                            break;
+                        case "sampleIndex":
+                            Disjunction restriction = Restrictions.disjunction();
+                            restriction.add(Restrictions.like("indexI5.sequence",filters.get(filteredField).toString(), MatchMode.ANYWHERE));
+                            restriction.add(Restrictions.like("indexI7.sequence",filters.get(filteredField).toString(), MatchMode.ANYWHERE));
+                            
+                            singleFiltersCriterion.add(restriction);
                             break;
                         default:
                             singleFiltersCriterion.add(Restrictions.like(filteredField, filters.get(filteredField).toString(), MatchMode.ANYWHERE));
@@ -196,6 +204,13 @@ public class SampleRunDAO {
                                     if (globalFilter.equals("true") || globalFilter.equals("false")){
                                         globalFiltersCriterion.add(Restrictions.eq(filteredField, Boolean.parseBoolean((String)globalFilter)));
                                     }
+                                    break;
+                                case "sampleIndex":
+                                    Disjunction restriction = Restrictions.disjunction();
+                                    restriction.add(Restrictions.like("indexI5.sequence", globalFilter, MatchMode.ANYWHERE));
+                                    restriction.add(Restrictions.like("indexI7.sequence", globalFilter, MatchMode.ANYWHERE));
+
+                                    singleFiltersCriterion.add(restriction);
                                     break;
                                 default:
                                     globalFiltersCriterion.add(Restrictions.like(filteredField,globalFilter, MatchMode.ANYWHERE));

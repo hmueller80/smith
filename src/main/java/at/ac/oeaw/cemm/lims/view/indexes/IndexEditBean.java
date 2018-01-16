@@ -212,7 +212,7 @@ public class IndexEditBean {
                 }
 
                 if (barcode.getIndex() == null) {
-                    barcode.setIndex(myDTOFactory.getIndexDTO("NONE"));
+                    barcode.setIndex(myDTOFactory.getIndexDTO("NONE",IndexType.i7));
                 }
 
                 if (barcode.getIndex().getType() == null) {

@@ -759,7 +759,7 @@ public class Mindex implements Serializable {
             for (int i = 0; i < list.size(); i++) {
                 SampleDTO s = list.get(i);
                 //System.out.println(s.getName());
-                String sidx = s.getIndex().getIndex();
+                String sidx = s.getCompoundIndex();
                 if (sidx != null && sidx.trim().length() == 6) {
                     String idx = sidx.trim().toUpperCase();
                     //System.out.println(idx);

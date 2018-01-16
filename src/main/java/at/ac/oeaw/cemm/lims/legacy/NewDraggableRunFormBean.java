@@ -243,7 +243,7 @@ public class NewDraggableRunFormBean implements Serializable {
     private List<String> findSampleListIndices(List<SampleDTO> samples){
         List<String> result = new ArrayList<>();
         for(SampleDTO sample: samples){
-            result.add(sample.getIndex().getIndex());              
+            result.add(sample.getCompoundIndex());
         }        
         return result;
     }

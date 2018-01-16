@@ -37,10 +37,6 @@ public class SampleEntity implements Serializable, EntityWithSettableId {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "requester_user_id")
     private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sequencingIndexId")
-    private SequencingIndexEntity sequencingIndexes;
     
     @Column(name = "organism")
     private String organism;
@@ -137,41 +133,7 @@ public class SampleEntity implements Serializable, EntityWithSettableId {
     public void setUser(UserEntity user) {
         this.user = user;
     }
-
-    public SequencingIndexEntity getSequencingIndexes() {
-        return this.sequencingIndexes;
-    }
-
-    public void setSequencingIndexes(SequencingIndexEntity sequencingindexes) {
-        this.sequencingIndexes = sequencingindexes;
-    }
     
-    public String getSequencingIndex1(){
-        if(this.sequencingIndexes == null){
-            return "";
-        }
-        if(this.sequencingIndexes.getIndex().length() <= 8){
-            return this.sequencingIndexes.getIndex();
-        }
-        if(this.sequencingIndexes.getIndex().length() > 8){
-            return this.sequencingIndexes.getIndex().substring(0,8);
-        }
-        return "";
-    }
-    
-    public String getSequencingIndex2(){
-        if(this.sequencingIndexes == null){
-            return "";
-        }        
-        if(this.sequencingIndexes.getIndex().length() <= 8){
-            return "";
-        }        
-        if(this.sequencingIndexes.getIndex().length() > 8){
-            return this.sequencingIndexes.getIndex().substring(8);
-        }
-        return "";
-    }
-
     public String getOrganism() {
         return this.organism;
     }

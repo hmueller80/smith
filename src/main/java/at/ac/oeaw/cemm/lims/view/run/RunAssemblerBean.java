@@ -228,7 +228,7 @@ public class RunAssemblerBean {
                             failed = true;
                             break;
                         } else if (!sample.getCompoundIndex().equals(RequestFormDTO.NO_DEMUX_INDEX)) {
-                                indexes.add(sample.getCompoundIndex());
+                            indexes.add(sample.getCompoundIndex());
                         }
                     }
 

@@ -109,7 +109,7 @@ public class SampleRunsBuilder {
                 String laneName = getStringFromField(record,RunFormCSVHeader.Lane);
                 
                 Set<String> indexesInLane = lanesCheck.get(laneName);
-                String sampleIndex = sample.getIndex().getIndex();
+                String sampleIndex = sample.getCompoundIndex();
                 if (indexesInLane==null){
                     indexesInLane = new HashSet<>();
                     lanesCheck.put(laneName, indexesInLane);

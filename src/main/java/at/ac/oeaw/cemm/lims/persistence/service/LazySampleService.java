@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.persistence.service;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.ApplicationDTO;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.SampleService;
@@ -18,9 +19,9 @@ import at.ac.oeaw.cemm.lims.persistence.dao.SampleDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.UserDAO;
 import at.ac.oeaw.cemm.lims.persistence.dao.request_form.RequestFormDAO;
 import at.ac.oeaw.cemm.lims.persistence.entity.ApplicationEntity;
+import at.ac.oeaw.cemm.lims.persistence.entity.Barcode;
 import at.ac.oeaw.cemm.lims.persistence.entity.LibraryEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.SampleEntity;
-import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.UserEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.request_form.RequestEntity;
 import java.util.ArrayList;
@@ -59,7 +60,8 @@ public class LazySampleService implements SampleService {
                 public SampleDTO execute() throws Exception {
                     SampleEntity sample = sampleDAO.getSampleById(sampleId);
                     Hibernate.initialize(sample.getApplication());
-                    Hibernate.initialize(sample.getSequencingIndexes());
+                    Hibernate.initialize(sample.getBarcodeI5());
+                    Hibernate.initialize(sample.getBarcodeI7());
                     return myDTOMapper.getSampleDTOfromEntity(sample);
                 }
             });
@@ -84,7 +86,8 @@ public class LazySampleService implements SampleService {
                         return null;
                     }
                     Hibernate.initialize(sample.getApplication());
-                    Hibernate.initialize(sample.getSequencingIndexes());
+                    Hibernate.initialize(sample.getBarcodeI5());
+                   Hibernate.initialize(sample.getBarcodeI7());
                     return myDTOMapper.getSampleDTOfromEntity(sample);
                 }
             });
@@ -197,14 +200,14 @@ public class LazySampleService implements SampleService {
     }
 
     @Override
-    public List<String> getAllIndexes() {
+    public List<String> getAllIndexes(final IndexType type) {
         List<String> result = new LinkedList<String>();
         try {
             result = TransactionManager.doInTransaction(
                     new TransactionManager.TransactionCallable<List<String>>() {
                 @Override
                 public List<String> execute() throws Exception {
-                    return indexDAO.getAllIndexes();
+                    return indexDAO.getAllIndexes(type);
                 }
             }
             );
@@ -265,12 +268,12 @@ public class LazySampleService implements SampleService {
     }
     
     @Override
-    public Boolean checkIdxExistence(final String sequence) {
+    public Boolean checkIdxExistence(final String sequence, final IndexType type) {
         try {
             return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Boolean>() {
                 @Override
                 public Boolean execute() throws Exception {
-                    return (indexDAO.getIdxBySequence(sequence) != null);
+                    return (indexDAO.getIdxBySequenceAndType(sequence,type) != null);
                 }
             });
         } catch (Exception ex) {
@@ -314,11 +317,18 @@ public class LazySampleService implements SampleService {
 
         sampleEntity.setUser(user);
         
-        SequencingIndexEntity seqIndexEntity = indexDAO.getIdxBySequence(sample.getIndex().getIndex());
-        if (seqIndexEntity == null) {
-            throw new Exception("Index with sequence " + sample.getIndex().getIndex() + " not found in DB");
+        Barcode barcodeI7 = indexDAO.getIdxBySequenceAndType(sample.getIndexI7().getIndex(), sample.getIndexI7().getType());
+        if (barcodeI7 == null) {
+            throw new Exception("I7 Index with sequence " + sample.getIndexI7().getIndex() + " not found in DB");
         }
-        sampleEntity.setSequencingIndexes(seqIndexEntity);
+        
+        Barcode barcodeI5 = indexDAO.getIdxBySequenceAndType(sample.getIndexI5().getIndex(), sample.getIndexI5().getType());
+        if (barcodeI5 == null) {
+            throw new Exception("I5 Index with sequence " + sample.getIndexI5().getIndex() + " not found in DB");
+        }
+        
+        sampleEntity.setBarcodeI7(barcodeI7);
+        sampleEntity.setBarcodeI5(barcodeI5);
         
         LibraryEntity libraryEntity = libraryDAO.getLibraryByName(sample.getLibraryName());
         if (libraryEntity == null){
@@ -403,7 +413,8 @@ public class LazySampleService implements SampleService {
 
                     for (SampleEntity entity : sampleEntities) {
                         Hibernate.initialize(entity.getApplication());
-                        Hibernate.initialize(entity.getSequencingIndexes());
+                        Hibernate.initialize(entity.getBarcodeI5());
+                        Hibernate.initialize(entity.getBarcodeI7());
                         samples.add(myDTOMapper.getSampleDTOfromEntity(entity));
                     }
                     
@@ -459,7 +470,8 @@ public class LazySampleService implements SampleService {
                     for (SampleEntity pooledSample: libraryEntity.getSamples() ){
                             if (pooledSample.getSubmissionId().equals(sampleEntity.getSubmissionId())){
                                 Hibernate.initialize(pooledSample.getApplication());
-                                Hibernate.initialize(pooledSample.getSequencingIndexes());
+                                Hibernate.initialize(pooledSample.getBarcodeI5());
+                                Hibernate.initialize(pooledSample.getBarcodeI7());
                                 samples.add(myDTOMapper.getSampleDTOfromEntity(pooledSample));
                             }
                         }

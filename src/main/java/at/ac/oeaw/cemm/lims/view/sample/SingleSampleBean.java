@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.sample;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryDTO;
@@ -55,14 +56,17 @@ public class SingleSampleBean implements Serializable {
     
     private UserDTO principalInvestigator = null;
     
-    private final List<String> possibleIndexes = new LinkedList<>();
-    
+    private final List<String> possibleIndexesI5 = new LinkedList<>();
+    private final List<String> possibleIndexesI7 = new LinkedList<>();
     
     //SETUP AND INITIALIZATION
     @PostConstruct
     public void init() {
-        for (String index : services.getSampleService().getAllIndexes()) {
-            possibleIndexes.add(index);
+        for (String index : services.getSampleService().getAllIndexes(IndexType.i7)) {
+            possibleIndexesI7.add(index);
+        }
+        for (String index : services.getSampleService().getAllIndexes(IndexType.i5)) {
+            possibleIndexesI5.add(index);
         }
         
         String sid = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("sid");
@@ -147,8 +151,12 @@ public class SingleSampleBean implements Serializable {
 
            
     
-    public List<String> getPossibleIndexes() {
-        return possibleIndexes;
+    public List<String> getPossibleIndexesI7() {
+        return possibleIndexesI7;
+    }
+    
+    public List<String> getPossibleIndexesI5() {
+        return possibleIndexesI5;
     }
 
     //LIBRARY TABLE BEHAVIOUR
@@ -165,10 +173,10 @@ public class SingleSampleBean implements Serializable {
         Integer editDistance;
         if (Objects.equals(sample.getId(), selectedSampleInLibrary.getId())) {
             return null;
-        } else if (getEditDistance(sample.getIndex().getIndex()) == 0) {            
+        } else if (getEditDistance(sample.getCompoundIndex()) == 0) {            
             NgsLimsUtility.setFailMessage("indexCollisionMsg", null, "Index Collision", "The index is equal to another index in the library");
             return "index-collision-red";
-        } else if ((editDistance=getEditDistance(sample.getIndex().getIndex())) < minimumDistanceThreshold) {         
+        } else if ((editDistance=getEditDistance(sample.getCompoundIndex())) < minimumDistanceThreshold) {         
             NgsLimsUtility.setWarningMessage("indexCollisionMsg", null, "Index Collision", "The edit distance with another index in the library is " + editDistance);
             return "index-collision-yellow";
         }
@@ -177,7 +185,7 @@ public class SingleSampleBean implements Serializable {
     
     private Integer getEditDistance(String otherIndex) {
         Integer distance;
-        String currentIndex = selectedSampleInLibrary.getIndex().getIndex();
+        String currentIndex = selectedSampleInLibrary.getCompoundIndex();
         if (otherIndex.equals(currentIndex)) {
             distance = 0;
         } else {

@@ -5,7 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.dao;
 
-import at.ac.oeaw.cemm.lims.persistence.entity.SequencingIndexEntity;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.persistence.HibernateUtil;
 import at.ac.oeaw.cemm.lims.persistence.entity.Barcode;
 import at.ac.oeaw.cemm.lims.persistence.entity.BarcodeKit;
@@ -28,13 +28,15 @@ public class IndexDAO {
         System.out.println("Initializing IndexDAO");
     }
 
-    public SequencingIndexEntity getIdxBySequence(String sequence) throws HibernateException {
+    public Barcode getIdxBySequenceAndType(String sequence, IndexType type) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria libraryCriteria = session.createCriteria(SequencingIndexEntity.class)
-                .add(Restrictions.eq("index", sequence))
+        
+        Criteria indexCriteria = session.createCriteria(Barcode.class)
+                .add(Restrictions.eq("sequence", sequence))
+                .add(Restrictions.eq("barcodeType", type.toString()))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         
-        List<SequencingIndexEntity> seqIndex = (List<SequencingIndexEntity>) libraryCriteria.list();
+        List<Barcode> seqIndex = (List<Barcode>) indexCriteria.list();
         if (seqIndex != null && seqIndex.size() != 0) {
             return seqIndex.get(0);
         } else {
@@ -43,9 +45,11 @@ public class IndexDAO {
 
     }
 
-    public List<String> getAllIndexes() throws HibernateException {
+    public List<String> getAllIndexes(IndexType type) throws HibernateException {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        Criteria indexCriteria = session.createCriteria(SequencingIndexEntity.class).setProjection(Projections.distinct(Projections.property("index")));
+        Criteria indexCriteria = session.createCriteria(Barcode.class)
+                .add(Restrictions.eq("barcodeType", type.toString()))
+                .setProjection(Projections.distinct(Projections.property("sequence")));
         return indexCriteria.list();
     }
     

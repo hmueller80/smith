@@ -34,9 +34,10 @@ public class SampleSheetRow implements java.io.Serializable {
         this.librarySize = String.valueOf(sample.getBulkFragmentSize().intValue());
         this.sampleComment = sample.getComment();
         
-        String idx = 
-                ("none".equalsIgnoreCase(sample.getIndex().getIndex()) ? "": sample.getIndex().getIndex());
-        this.i7 = this.getBarcodeSequence1(idx);
+        String idxI7 = ("none".equalsIgnoreCase(sample.getIndexI7().getIndex()) ? "": sample.getIndexI7().getIndex());
+        String idxI5 = ("none".equalsIgnoreCase(sample.getIndexI5().getIndex()) ? "": sample.getIndexI5().getIndex());
+        
+        this.i7 = idxI7;
         
         if (!i7.isEmpty()){
             this.i7Comment = IlluminaAdapterSequences.getDetailedIndexInfo(i7);
@@ -45,7 +46,7 @@ public class SampleSheetRow implements java.io.Serializable {
         }
 
         if (indexReversal){
-            this.i5 = this.getBarcodeSequence2ReverseComplement(idx);
+            this.i5 = getReverseComplement(idxI5);
             if (!i5.isEmpty()) {
                 this.i5Comment = "reverse complement: "+ IlluminaAdapterSequences.getDetailedIndexInfo(i5);
             } else {
@@ -53,7 +54,7 @@ public class SampleSheetRow implements java.io.Serializable {
             }
             
         }else{
-            this.i5 = this.getBarcodeSequence2(idx);
+            this.i5 = idxI5;
             if (!i5.isEmpty()) {
                 this.i5Comment = IlluminaAdapterSequences.getDetailedIndexInfo(i5);
             } else {
@@ -72,36 +73,6 @@ public class SampleSheetRow implements java.io.Serializable {
         libraryName = record.get(SampleSheetCSVHeader.library_name);
         librarySize = record.get(SampleSheetCSVHeader.library_size);
         sampleComment = record.get(SampleSheetCSVHeader.sample_comment);
-    }
-    
-    private String getBarcodeSequence1(String index) {
-        if (index != null && index.length() <= 8) {
-            return index;
-        }
-        if (index != null && index.length() == 16) {
-            return index.substring(0, 8);
-        }
-        return "";
-    }
-
-    private String getBarcodeSequence2(String index) {
-        if (index != null && index.length() <= 8) {
-            return "";
-        }
-        if (index != null && index.length() == 16) {
-            return index.substring(8, 16);
-        }
-        return "";
-    }
-
-    private String getBarcodeSequence2ReverseComplement(String index) {
-        if (index != null && index.length() <= 8) {
-            return "";
-        }
-        if (index != null && index.length() == 16) {
-            return getReverseComplement(index.substring(8, 16));
-        }
-        return "";
     }
     
     private String getReverseComplement(String sequence){
