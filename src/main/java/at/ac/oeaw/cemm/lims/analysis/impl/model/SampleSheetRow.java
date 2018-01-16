@@ -1,9 +1,10 @@
 package at.ac.oeaw.cemm.lims.analysis.impl.model;
 // Generated Aug 29, 2011 3:51:18 PM by Hibernate Tools 3.2.1.GA
 
-import at.ac.oeaw.cemm.bsf.barcode.IlluminaAdapterSequences;
+import at.ac.oeaw.cemm.lims.api.dto.lims.IndexType;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import org.apache.commons.csv.CSVRecord;
 
 /**
@@ -21,7 +22,7 @@ public class SampleSheetRow implements java.io.Serializable {
     private final String librarySize;
     private final String sampleComment;
     
-    public SampleSheetRow(SampleRunDTO sampleRun, String lane, boolean indexReversal) {
+    public SampleSheetRow(SampleRunDTO sampleRun, String lane, boolean indexReversal, ServiceFactory services) {
         
        
         //Sample Run Data
@@ -40,7 +41,7 @@ public class SampleSheetRow implements java.io.Serializable {
         this.i7 = idxI7;
         
         if (!i7.isEmpty()){
-            this.i7Comment = IlluminaAdapterSequences.getDetailedIndexInfo(i7);
+            this.i7Comment = services.getIndexService().getDetailedIndexInfo(i7,IndexType.i7);
         }else{
             this.i7Comment = "";
         }
@@ -48,7 +49,7 @@ public class SampleSheetRow implements java.io.Serializable {
         if (indexReversal){
             this.i5 = getReverseComplement(idxI5);
             if (!i5.isEmpty()) {
-                this.i5Comment = "reverse complement: "+ IlluminaAdapterSequences.getDetailedIndexInfo(i5);
+                this.i5Comment = "reverse complement: "+ services.getIndexService().getDetailedIndexInfo(idxI5, IndexType.i5);
             } else {
                 this.i5Comment = "";
             }
@@ -56,7 +57,7 @@ public class SampleSheetRow implements java.io.Serializable {
         }else{
             this.i5 = idxI5;
             if (!i5.isEmpty()) {
-                this.i5Comment = IlluminaAdapterSequences.getDetailedIndexInfo(i5);
+                this.i5Comment = services.getIndexService().getDetailedIndexInfo(idxI5,IndexType.i5);
             } else {
                 this.i5Comment = "";
             }

@@ -73,7 +73,7 @@ public class AnalysisManagerCEMM implements AnalysisManager {
                     SampleSheet sampleSheet;
                     boolean newFile = false;
                     if (!(new File(ssPath).exists())) {
-                        sampleSheet = SampleSheetFactory.createSamplesheet(run, indexreversal);
+                        sampleSheet = SampleSheetFactory.createSamplesheet(run, indexreversal,services);
                         try {
                             sampleSheet.toFile(ssPath);
                             newFile = true;

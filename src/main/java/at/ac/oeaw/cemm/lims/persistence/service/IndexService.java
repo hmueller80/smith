@@ -171,4 +171,34 @@ public class IndexService {
             }
         });
     }
+
+    public String getDetailedIndexInfo(final String index, final IndexType type) {
+        final StringBuilder sb = new StringBuilder();
+        
+        try{
+             TransactionManager.doInTransaction(
+                new TransactionManager.TransactionCallable<Void>() {
+            @Override
+            public Void execute() throws Exception {
+                Set<BarcodeKit> kits = indexDAO.getIdxBySequenceAndType(index,type).getBarcodeKitSet();
+                for (BarcodeKit kit: kits){
+                    sb.append(type).append("_");
+                    sb.append(kit.getBarcodeKitPK().getKitName()).append("_");
+                    sb.append(kit.getBarcodeKitPK().getSequenceName()).append(" ");
+                }
+
+                return null;
+
+            }
+        });
+        }catch(Exception e){
+            
+        }
+        
+        if (sb.toString().isEmpty()){
+            return "Unknown";
+        }else{
+            return sb.toString();
+        }
+    }
 }

@@ -3,6 +3,7 @@ package at.ac.oeaw.cemm.lims.analysis.impl.model;
 import at.ac.oeaw.cemm.lims.analysis.impl.model.SampleSheet;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.request_form.RequestFormDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import java.io.File;
 import java.util.List;
 
@@ -36,13 +37,13 @@ public class SampleSheetFactory {
 
     }
     
-    public static SampleSheet createSamplesheet(List<SampleRunDTO> runs, boolean indexReversal){            
+    public static SampleSheet createSamplesheet(List<SampleRunDTO> runs, boolean indexReversal, ServiceFactory services){            
           
         SampleSheet sampleSheet = new SampleSheet();        
         
         for (SampleRunDTO run: runs){
             if (!RequestFormDTO.NO_DEMUX_INDEX.equalsIgnoreCase(run.getSample().getCompoundIndex())){
-                sampleSheet.addSampleRun(run,indexReversal);
+                sampleSheet.addSampleRun(run,indexReversal,services);
             }
         }
         

@@ -6,6 +6,7 @@
 package at.ac.oeaw.cemm.lims.analysis.impl.model;
 
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleRunDTO;
+import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,9 +42,9 @@ public class SampleSheet {
     }
     
   
-    public void addSampleRun(SampleRunDTO sampleRun, boolean indexReversal){
+    public void addSampleRun(SampleRunDTO sampleRun, boolean indexReversal, ServiceFactory services){
         for (String lane: sampleRun.getLanes()){
-            samples.add(new SampleSheetRow(sampleRun,lane,indexReversal));
+            samples.add(new SampleSheetRow(sampleRun,lane,indexReversal, services));
         }
     }
     
