@@ -82,6 +82,7 @@ public class RunAssemblerBean {
         for (File folder: new File(Preferences.getRunfolderroot()).listFiles()){
             if (folder.isDirectory() 
                     && folder.canExecute()
+                    && folder.getName().length()>=6
                     && folder.getName().substring(0,6).matches("[0-9]+")
                     && Arrays.asList(folder.list()).contains("RunInfo.xml")){
                 RunFolder runFolder = new RunFolder(folder.getName());
