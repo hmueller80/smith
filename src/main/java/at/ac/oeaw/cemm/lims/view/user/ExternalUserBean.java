@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.user;
 
+import at.ac.oeaw.cemm.lims.api.dto.lims.UserDTO;
 import at.ac.oeaw.cemm.lims.api.persistence.ServiceFactory;
 import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
@@ -22,32 +23,32 @@ import javax.inject.Inject;
 public class ExternalUserBean {
     private String password;
     private String confirmPassword;
-    private String userId = null;
+    private UserDTO user = null;
     
     @Inject ServiceFactory services;    
     
     @ManagedProperty(value="#{newRoleManager}")
     NewRoleManager roleManager;
     
-    public void set(String userId){
-        this.userId = userId;
+    public void set(UserDTO user){
+        this.user = user;
     }
     
     public boolean canResetPassword(){
-        return userId!=null && roleManager.getHasUserAddPermission();
+        return user!=null && roleManager.getHasUserAddPermission();
     }
     
     public boolean canSetPassword(){
-        return userId!=null && roleManager.getCurrentUser().getLogin().equals(userId) && userExists();
+        return user!=null && roleManager.getCurrentUser().getLogin().equals(user.getLogin()) && userExists();
     }
     
     public boolean userExists() {
-        return userId!=null && services.getExternalUsersService().userExists(userId);
+        return user!=null && services.getExternalUsersService().userExists(user.getLogin());
     }
     
     public String getFirstPassword() {
         if (roleManager.getHasUserAddPermission()){
-            return services.getExternalUsersService().getPasswordForUser(userId);
+            return services.getExternalUsersService().getPasswordForUser(user.getLogin());
         }
         
         return "";
@@ -56,7 +57,7 @@ public class ExternalUserBean {
     public void resetPasswordForUser(){
         if (canResetPassword()) {
             try {
-                services.getExternalUsersService().resetPasswordForUser(userId, null);
+                services.getExternalUsersService().resetPasswordForUser(user, null);
                 NgsLimsUtility.setSuccessMessage("userPersistMessages", null, "Password Reset", null);
             } catch (Exception ex) {
                 NgsLimsUtility.setFailMessage("userPersistMessages", null, "DB Error", ex.getMessage());
@@ -69,7 +70,7 @@ public class ExternalUserBean {
       public void deleteUser(){
         if (canResetPassword()) {
             try {
-                services.getExternalUsersService().deleteUser(userId);
+                services.getExternalUsersService().deleteUser(user.getLogin());
                 NgsLimsUtility.setSuccessMessage("userPersistMessages", null, "Used Deleted", null);
             } catch (Exception ex) {
                 NgsLimsUtility.setFailMessage("userPersistMessages", null, "DB Error", ex.getMessage());
@@ -83,14 +84,14 @@ public class ExternalUserBean {
         if (canSetPassword()) {
             if (isPwdValid()){
                 try {
-                    services.getExternalUsersService().resetPasswordForUser(userId, password);
+                    services.getExternalUsersService().resetPasswordForUser(user, password);
                     NgsLimsUtility.setSuccessMessage("userPersistMessages", null, "Password set", null);
                 } catch (Exception ex) {
                     NgsLimsUtility.setFailMessage("userPersistMessages", null, "DB Error", ex.getMessage());
                 }
             }
         }else{
-            NgsLimsUtility.setFailMessage("userPersistMessages", null, "Permission error", "You don't have permission to set password for user "+userId);
+            NgsLimsUtility.setFailMessage("userPersistMessages", null, "Permission error", "You don't have permission to set password for user "+user.getLogin());
         }
     }
     

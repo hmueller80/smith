@@ -86,7 +86,7 @@ public class SingleUserBean {
                         roleManager.getCurrentUser().getId().equals(currentUserPI.getId()) ||
                         roleManager.getCurrentUser().getId().equals(currentUser.getId());
             }
-            externalUser.set(currentUser.getLogin());
+            externalUser.set(currentUser);
 
         }else{
             isNew = true;

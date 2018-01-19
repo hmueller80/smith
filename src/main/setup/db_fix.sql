@@ -89,8 +89,8 @@ add column last_name varchar(100);
 
 SET SQL_SAFE_UPDATES = 0;
 update user
-SET first_name = SUBSTRING_INDEX(username, ',', 1), 
-last_name = SUBSTRING_INDEX(username, ',', -1);
+SET first_name = TRIM(SUBSTRING_INDEX(username, ',', 1)), 
+last_name = TRIM(SUBSTRING_INDEX(username, ',', -1));
 SET SQL_SAFE_UPDATES = 1;
  
 ALTER TABLE user drop column username;

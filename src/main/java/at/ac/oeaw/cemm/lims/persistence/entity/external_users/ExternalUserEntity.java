@@ -6,13 +6,14 @@
 package at.ac.oeaw.cemm.lims.persistence.entity.external_users;
 
 import java.io.Serializable;
-import java.util.Collection;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -22,46 +23,97 @@ import javax.validation.constraints.Size;
  * @author dbarreca
  */
 @Entity
-@Table(name = "external_users")
+@Table(name = "user")
 public class ExternalUserEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "idUser")
+    private Integer idUser;
+    
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 100)
-    @Column(name = "userid")
-    private String userid;
+    @Size(min = 1, max = 200)
+    @Column(name = "lastName")
+    private String lastName;
+    
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(min = 1, max = 200)
+    @Column(name = "firstName")
+    private String firstName;
+   
+    @Size(max = 500)
+    @Column(name = "email")
+    private String email;
+    
+    @Size(max = 255)
+    @Column(name = "UserName")
+    private String userName;
+    
+    @Size(max = 255)
     @Column(name = "password")
     private String password;
     
-    @Column(name = "first_password")
-    private String firstPassword;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "externalUsers")
-    private Collection<ExternalGroupEntity> externalGroupsCollection;
+    @Size(max = 250)
+    @Column(name = "ucscUrl")
+    private String ucscUrl;
 
     public ExternalUserEntity() {
     }
 
-    public ExternalUserEntity(String userid) {
-        this.userid = userid;
+    public ExternalUserEntity(Integer idUser) {
+        this.idUser = idUser;
     }
 
-    public ExternalUserEntity(String userid, String password) {
-        this.userid = userid;
-        this.password = password;
+    public ExternalUserEntity(Integer idUser, String lastName, String firstName) {
+        this.idUser = idUser;
+        this.lastName = lastName;
+        this.firstName = firstName;
     }
 
-    public String getUserid() {
-        return userid;
+    public Integer getIdUser() {
+        return idUser;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setIdUser(Integer idUser) {
+        this.idUser = idUser;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+ 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -72,28 +124,18 @@ public class ExternalUserEntity implements Serializable {
         this.password = password;
     }
 
-    public Collection<ExternalGroupEntity> getExternalGroupsCollection() {
-        return externalGroupsCollection;
+    public String getUcscUrl() {
+        return ucscUrl;
     }
 
-    public void setExternalGroupsCollection(Collection<ExternalGroupEntity> externalGroupsCollection) {
-        this.externalGroupsCollection = externalGroupsCollection;
+    public void setUcscUrl(String ucscUrl) {
+        this.ucscUrl = ucscUrl;
     }
-
-    public String getFirstPassword() {
-        return firstPassword;
-    }
-
-    public void setFirstPassword(String firstPassword) {
-        this.firstPassword = firstPassword;
-    }
-    
-    
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (userid != null ? userid.hashCode() : 0);
+        hash += (idUser != null ? idUser.hashCode() : 0);
         return hash;
     }
 
@@ -104,7 +146,7 @@ public class ExternalUserEntity implements Serializable {
             return false;
         }
         ExternalUserEntity other = (ExternalUserEntity) object;
-        if ((this.userid == null && other.userid != null) || (this.userid != null && !this.userid.equals(other.userid))) {
+        if ((this.idUser == null && other.idUser != null) || (this.idUser != null && !this.idUser.equals(other.idUser))) {
             return false;
         }
         return true;
@@ -112,7 +154,7 @@ public class ExternalUserEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalUsers[ userid=" + userid + " ]";
+        return "at.ac.oeaw.cemm.lims.persistence.dao.external_users.User[ idUser=" + idUser + " ]";
     }
     
 }

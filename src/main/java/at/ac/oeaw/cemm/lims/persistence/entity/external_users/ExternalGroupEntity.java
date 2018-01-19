@@ -6,58 +6,86 @@
 package at.ac.oeaw.cemm.lims.persistence.entity.external_users;
 
 import java.io.Serializable;
-import javax.persistence.EmbeddedId;
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
  * @author dbarreca
  */
 @Entity
-@Table(name = "external_groups")
+@Table(name = "usergroup")
 public class ExternalGroupEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected ExternalGroupPK externalGroupsPK;
-    @JoinColumn(name = "userid", referencedColumnName = "userid", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private ExternalUserEntity externalUsers;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "idUserGroup")
+    private Integer idUserGroup;
+    
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
+    @Column(name = "name")
+    private String name;
+    
+    @Size(max = 255)
+    @Column(name = "userName")
+    private String userName;
 
     public ExternalGroupEntity() {
     }
 
-    public ExternalGroupEntity(ExternalGroupPK externalGroupsPK) {
-        this.externalGroupsPK = externalGroupsPK;
+    public ExternalGroupEntity(Integer idUserGroup) {
+        this.idUserGroup = idUserGroup;
     }
 
-    public ExternalGroupEntity(String userid, String groupid) {
-        this.externalGroupsPK = new ExternalGroupPK(userid, groupid);
+    public ExternalGroupEntity(Integer idUserGroup, String name) {
+        this.idUserGroup = idUserGroup;
+        this.name = name;
     }
 
-    public ExternalGroupPK getExternalGroupsPK() {
-        return externalGroupsPK;
+    public Integer getIdUserGroup() {
+        return idUserGroup;
     }
 
-    public void setExternalGroupsPK(ExternalGroupPK externalGroupsPK) {
-        this.externalGroupsPK = externalGroupsPK;
+    public void setIdUserGroup(Integer idUserGroup) {
+        this.idUserGroup = idUserGroup;
     }
 
-    public ExternalUserEntity getExternalUsers() {
-        return externalUsers;
+    public String getName() {
+        return name;
     }
 
-    public void setExternalUsers(ExternalUserEntity externalUsers) {
-        this.externalUsers = externalUsers;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+  
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (externalGroupsPK != null ? externalGroupsPK.hashCode() : 0);
+        hash += (idUserGroup != null ? idUserGroup.hashCode() : 0);
         return hash;
     }
 
@@ -68,10 +96,15 @@ public class ExternalGroupEntity implements Serializable {
             return false;
         }
         ExternalGroupEntity other = (ExternalGroupEntity) object;
-        if ((this.externalGroupsPK == null && other.externalGroupsPK != null) || (this.externalGroupsPK != null && !this.externalGroupsPK.equals(other.externalGroupsPK))) {
+        if ((this.idUserGroup == null && other.idUserGroup != null) || (this.idUserGroup != null && !this.idUserGroup.equals(other.idUserGroup))) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "at.ac.oeaw.cemm.lims.persistence.dao.external_users.Usergroup[ idUserGroup=" + idUserGroup + " ]";
     }
     
 }

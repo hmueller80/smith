@@ -5,8 +5,9 @@
  */
 package at.ac.oeaw.cemm.lims.persistence.dao.external_users;
 
-import at.ac.oeaw.cemm.lims.persistence.HibernateUtilExternal;
+import at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalGroupEntity;
 import at.ac.oeaw.cemm.lims.persistence.entity.external_users.ExternalUserEntity;
+import at.ac.oeaw.cemm.lims.persistence.HibernateUtilExternal;
 import javax.enterprise.context.ApplicationScoped;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -22,7 +23,7 @@ public class ExternalUserDAO {
     public ExternalUserEntity getUserById(String login){
         Session session = HibernateUtilExternal.getSessionFactory().getCurrentSession();
         Criteria query = session.createCriteria(ExternalUserEntity.class);
-        query.add(Restrictions.eq("userid", login));
+        query.add(Restrictions.eq("userName", login));
                 
         return (ExternalUserEntity) query.uniqueResult();
     }
@@ -35,5 +36,23 @@ public class ExternalUserDAO {
     public void deleteUser(ExternalUserEntity user) {
         Session session = HibernateUtilExternal.getSessionFactory().getCurrentSession();
         session.delete(user);
+    }
+
+    public void saveGroup(ExternalGroupEntity group) {
+        Session session = HibernateUtilExternal.getSessionFactory().getCurrentSession();
+        session.saveOrUpdate(group);
+    }
+
+    public ExternalGroupEntity getGroupByUser(String userId) {
+        Session session = HibernateUtilExternal.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(ExternalGroupEntity.class);
+        query.add(Restrictions.eq("userName", userId));
+                
+        return (ExternalGroupEntity) query.uniqueResult();
+    }
+
+    public void deleteGroup(ExternalGroupEntity group) {
+        Session session = HibernateUtilExternal.getSessionFactory().getCurrentSession();
+        session.delete(group);
     }
 }
