@@ -44,8 +44,18 @@ public class RequestFormBuilder {
             if (requestorUser!=null){
                 piUser = services.getUserService().getUserByID(requestorUser.getPi());
             }else{
+                String contactPersonName =parser.getSummary().getContactPersonName();
+                String firstName = "";
+                String lastName = "";
+                if (contactPersonName.contains(",")){
+                    firstName = contactPersonName.split(",")[0].trim();
+                    lastName = contactPersonName.split(",")[1].trim();
+                }else {
+                    lastName = contactPersonName;
+                }
                 requestorUser = limsDTOFactory.getUserDTO(null, 
-                        parser.getSummary().getContactPersonName(), 
+                        firstName,
+                        lastName,
                         null, 
                         parser.getSummary().getContactPersonPhone(), 
                         parser.getSummary().getContactPersonEmail(), 

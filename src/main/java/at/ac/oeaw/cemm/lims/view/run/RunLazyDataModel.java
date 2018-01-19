@@ -28,11 +28,6 @@ public class RunLazyDataModel extends LazyDataModel<SampleRunDTO>{
  
     @Override
     public List<SampleRunDTO> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {
-        if (roleManager==null){
-            System.out.println("RoleManager is null in RunDataModel");
-        }else{
-            System.out.println("Role is "+roleManager.getCurrentUser().getUserName());
-        }
 
         if (roleManager!=null && !roleManager.isGuest()){
             if (roleManager.isGroupLeader() || roleManager.isUser()){ 

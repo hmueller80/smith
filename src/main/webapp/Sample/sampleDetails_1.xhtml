@@ -82,7 +82,7 @@
                         <h:outputText  style="width:300px;" id="userLogin" value="#{singleSampleBean.currentSample.user.login}"/>
 
                         <h:outputLabel for="userName" value="#{bundle['user.name']}:  " />
-                        <h:outputText  style="width:300px;" id="userName" value="#{singleSampleBean.currentSample.user.userName}"/>
+                        <h:outputText  style="width:300px;" id="userName" value="#{singleSampleBean.currentSample.user.firstName} #{singleSampleBean.currentSample.user.lastName}"/>
 
                         <h:outputLabel for="userEmail" value="#{bundle['user.email']}:  " />
                         <h:outputText  style="width:300px;" id="userEmail" value="#{singleSampleBean.currentSample.user.mailAddress}"/>

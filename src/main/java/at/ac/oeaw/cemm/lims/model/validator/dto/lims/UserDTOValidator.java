@@ -56,14 +56,14 @@ public class UserDTOValidator extends AbstractValidator<UserDTO> {
                 if (pi == null) {
                     messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","PI with ID "+pi.getId()+" not found in the user DB"));
                 }else if (!Preferences.ROLE_ADMIN.equals(pi.getUserRole()) && !Preferences.ROLE_GROUPLEADER.equals(pi.getUserRole())){
-                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","PI with name "+pi.getUserName()+" has role not allowed for PI: "+pi.getUserRole()));
+                    messages.add(new ValidatorMessage(ValidatorSeverity.FAIL,"User PI","PI with name "+pi.getFirstName()+" "+pi.getLastName()+" has role not allowed for PI: "+pi.getUserRole()));
                 }
             }  
         }
                 
         isValid = isValid && stringNotEmpty(objectToValidate.getLogin(), false, ValidatorSeverity.FAIL, "Login",messages);
         isValid = isValid && stringNotEmpty(objectToValidate.getPhone(), false, ValidatorSeverity.FAIL, "Phone",messages);
-        isValid = isValid && validUserName(objectToValidate.getUserName(), ValidatorSeverity.FAIL,messages);
+        isValid = isValid && validUserName(objectToValidate.getFirstName(),objectToValidate.getLastName(), ValidatorSeverity.FAIL,messages);
         isValid = isValid && validEmail(objectToValidate.getMailAddress(), ValidatorSeverity.FAIL,messages);
         
         AffiliationDTO affiliation = objectToValidate.getAffiliation();
@@ -93,15 +93,16 @@ public class UserDTOValidator extends AbstractValidator<UserDTO> {
         return isValid;
     }
 
-    private boolean validUserName(String userName, ValidatorSeverity severity, Set<ValidatorMessage> messages) {
-        String fieldName = "User Name";
-        if (!stringNotEmpty(userName, false, severity, fieldName, messages)) {
+    private boolean validUserName(String firstName, String lastName, ValidatorSeverity severity, Set<ValidatorMessage> messages) {
+        
+        if (!stringNotEmpty(firstName, false, severity, "First Name", messages)) {
             return false;
         }
-        if (!userName.contains(",")) {
-            messages.add(new ValidatorMessage(severity, fieldName, "UserName not valid"));
+        
+        if (!stringNotEmpty(lastName, false, severity, "Last Name", messages)) {
             return false;
         }
+        
         return true;
     }
 

@@ -81,3 +81,16 @@ alter table sample add constraint fk_library_id foreign key (library_id) referen
  values ('NO_DEMUX','i5');
   insert into barcode (sequence,barcode_type)
  values ('NO_DEMUX','i7');
+
+
+ALTER TABLE user 
+add column first_name varchar(100),
+add column last_name varchar(100);
+
+SET SQL_SAFE_UPDATES = 0;
+update user
+SET first_name = SUBSTRING_INDEX(username, ',', 1), 
+last_name = SUBSTRING_INDEX(username, ',', -1);
+SET SQL_SAFE_UPDATES = 1;
+ 
+ALTER TABLE user drop column username;

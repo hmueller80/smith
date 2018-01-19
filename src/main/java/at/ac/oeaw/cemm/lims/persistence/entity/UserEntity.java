@@ -26,9 +26,12 @@ public class UserEntity implements java.io.Serializable {
     @Column(name = "user_id")
     private Integer id;
 
-    @Column(name = "username")
-    private String userName;
+    @Column(name = "first_name")
+    private String firstName;
 
+    @Column(name = "last_name")
+    private String lastName;
+    
     @Column(name = "login")
     private String login;
 
@@ -62,25 +65,6 @@ public class UserEntity implements java.io.Serializable {
     public UserEntity() {
     }
 
-    public UserEntity(String username, String login, Integer pi, String userRole) {
-        this.userName = username;
-        this.login = login;
-        this.pi = pi;
-        this.userRole = userRole;
-    }
-
-    public UserEntity(String username, String login, String phone, String mailadress,
-            Integer pi, String userRole,Set<SampleRunEntity> sampleruns,
-            Set<SampleEntity> samples) {
-        this.userName = username;
-        this.login = login;
-        this.phone = phone;
-        this.mailAddress = mailadress;
-        this.pi = pi;
-        this.userRole = userRole;
-        this.sampleruns = sampleruns;
-        this.samples = samples;
-    }
 
     public Integer getId() {
         return this.id;
@@ -90,22 +74,20 @@ public class UserEntity implements java.io.Serializable {
         this.id = userId;
     }
 
-    public String getUserName() {
-        return this.userName;
-    }
-    
-    public String getUserSurname() {
-        String res = "";
-        String fullName = getUserName();
-        int idx = fullName.indexOf(",");
-        if(idx != -1){
-            res = fullName.substring(idx+1);
-        }
-        return res.trim();
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUserName(String username) {
-        this.userName = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getLogin() {
@@ -158,18 +140,7 @@ public class UserEntity implements java.io.Serializable {
         this.samples = samples;
     }
     
-    public String getFirstName(){
-        String firstName = "";
-        if(userName != null){
-            if(userName.indexOf(",") > -1){
-                firstName = userName.split(",")[0];
-            }else{
-                firstName = userName;
-            }
-        }
-        return firstName;
-    }
-
+    
     public int getPi() {
         return pi;
     }

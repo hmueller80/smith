@@ -56,10 +56,10 @@
                     </h:link>
                 </p:column>
 
-                <p:column id="nameColumn" filterBy="#{user.userName}" 
+                <p:column id="nameColumn" filterBy="#{user.firstName} #{user.lastName}" 
                           headerText="#{bundle['user.user.name']}"
                           filterMatchMode="contains">
-                    <h:outputText value="#{user.userName}" />
+                    <h:outputText value="#{user.firstName} #{user.lastName}" />
                 </p:column>
 
                 <p:column id="loginColumn" filterBy="#{user.login}" 

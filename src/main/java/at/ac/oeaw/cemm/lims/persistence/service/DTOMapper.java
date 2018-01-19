@@ -127,7 +127,8 @@ public class DTOMapper {
                 
             return myDTOFactory.getUserDTO(
                     entity.getId(),
-                    entity.getUserName(),
+                    entity.getFirstName(),
+                    entity.getLastName(),
                     entity.getLogin(),
                     entity.getPhone(),
                     entity.getMailAddress(),

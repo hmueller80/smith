@@ -39,7 +39,7 @@ public interface DTOFactory {
 
     SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder, Boolean isControl);
 
-    UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation);
+    UserDTO getUserDTO(Integer id, String firstName, String lastName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation);
      
     AffiliationDTO getAffiliationDTO(OrganizationDTO organization, DepartmentDTO department);
     

@@ -90,7 +90,7 @@ public class SingleUserBean {
 
         }else{
             isNew = true;
-            currentUser = myDTOFactory.getUserDTO(null, "User, New", "newUser", null, null, null, null,myDTOFactory.getAffiliationDTO());
+            currentUser = myDTOFactory.getUserDTO(null, "", "", "", null, null, null, null,myDTOFactory.getAffiliationDTO());
             currentUserPI = services.getUserService().getUsersByRole(Preferences.ROLE_GROUPLEADER).get(0);
             isEditable = roleManager.getHasUserAddPermission();
             

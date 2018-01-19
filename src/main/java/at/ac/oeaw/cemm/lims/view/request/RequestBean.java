@@ -396,7 +396,7 @@ public class RequestBean {
                             }
 
                             if (requestForm.getBillingInfo().getContact() == null || requestForm.getBillingInfo().getContact().isEmpty()) {
-                                requestForm.getBillingInfo().setContact(requestForm.getRequestor().getPi().getUserName());
+                                requestForm.getBillingInfo().setContact(requestForm.getRequestor().getPi().getFirstName()+", "+requestForm.getRequestor().getPi().getLastName());
                             }
                         }
                                               

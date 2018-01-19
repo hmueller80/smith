@@ -259,7 +259,7 @@ public class SampleAnnotationWriter extends ExcelParser {
          UserDTO requestor = requestForm.getRequestor().getUser();
          for (ArrayList<String>row : summarySheet){
             if (row.contains(ExcelParserConstants.ContactPersonName)){
-                row.set(1, requestor.getUserName());
+                row.set(1, (requestor.getFirstName()+", "+requestor.getLastName()));
             } else if (row.contains(ExcelParserConstants.ContactPersonEmail)){
                 row.set(1, requestor.getMailAddress());
             } else if (row.contains(ExcelParserConstants.ContactPersonPhone)){

@@ -92,7 +92,7 @@ public class SamplesCSVManager {
 
         StringBuilder sb = new StringBuilder();
 
-        /*00 UserName,*/ sb.append(sample.getUser().getUserName().replace(",", " ")).append(sep);
+        /*00 UserName,*/ sb.append(sample.getUser().getFirstName()).append(" ").append(sample.getUser().getLastName()).append(sep);
         /*01 UserLogin*/ sb.append(sample.getUser().getLogin().replace(",", " ")).append(sep);
         /*02 UserTel*/ sb.append(sample.getUser().getPhone().replace(",", " ")).append(sep);
         /*03 Institute*/ sb.append(sample.getUser().getAffiliation().getOrganizationName().replace(",", " ")).append(sep);

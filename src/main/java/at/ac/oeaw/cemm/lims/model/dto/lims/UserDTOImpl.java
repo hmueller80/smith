@@ -17,7 +17,8 @@ import java.util.Objects;
 public class UserDTOImpl implements UserDTO, Serializable {
 
     private Integer id;
-    private String userName;
+    private String firstName;
+    private String lastName;
     private String login;
     private String phone;
     private String mailAddress;
@@ -25,9 +26,10 @@ public class UserDTOImpl implements UserDTO, Serializable {
     private String userRole; 
     private AffiliationDTO affiliation = null;
     
-    public UserDTOImpl(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation) {
+    public UserDTOImpl(Integer id, String firstName, String lastName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation) {
         this.id = id;
-        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.login = login;
         this.phone = phone;
         this.mailAddress = mailAddress;
@@ -37,13 +39,23 @@ public class UserDTOImpl implements UserDTO, Serializable {
     }
 
     @Override
-    public String getUserName() {
-        return userName;
+    public String getFirstName() {
+        return firstName;
     }
 
     @Override
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
+    public String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override
@@ -105,24 +117,15 @@ public class UserDTOImpl implements UserDTO, Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-    
-    @Override
-    public String getFirstName() {
-        String firstName = "";
-        if (userName != null) {
-            if (userName.indexOf(",") > -1) {
-                firstName = userName.split(",")[0];
-            } else {
-                firstName = userName;
-            }
-        }
-        return firstName;
-    }
+
     
     @Override
     public boolean equals(Object other){
-        if (other instanceof UserDTO ){
-            if (this.id == ((UserDTO) other).getId() ){
+        if (other instanceof UserDTOImpl ){
+            if (this.id == null){
+                return ((UserDTOImpl) other).getId()==null;
+            }
+            if (this.id.equals(((UserDTOImpl) other).getId())){
                 return true;
             }
         }
@@ -133,10 +136,14 @@ public class UserDTOImpl implements UserDTO, Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + Objects.hashCode(this.id);
-        return hash;
+        if (this.id == null) {
+            return 23*Objects.hashCode(this.login);
+        }else{
+            return 23 * hash + Objects.hashCode(this.id);
+        }
     }
 
+   
     @Override
     public AffiliationDTO getAffiliation() {
         return affiliation;

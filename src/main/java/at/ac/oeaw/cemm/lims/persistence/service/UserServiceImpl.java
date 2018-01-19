@@ -246,7 +246,8 @@ public class UserServiceImpl implements UserService {
             }
             userEntity.setLogin(user.getLogin());
         }
-        userEntity.setUserName(user.getUserName());
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
         userEntity.setPhone(user.getPhone());
         userEntity.setMailAddress(user.getMailAddress());
         if (user.getPi()==null){

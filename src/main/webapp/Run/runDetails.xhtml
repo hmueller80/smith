@@ -150,7 +150,7 @@
                     <h:outputText value="#{sampleRun.sample.name}" />
                 </p:column>
                 <p:column headerText="Requestor">
-                    <h:outputText value="#{sampleRun.sample.user.userName}" />
+                    <h:outputText value="#{sampleRun.sample.user.firstName} #{sampleRun.sample.user.lastName}" />
                 </p:column>
             </p:dataTable>
         </h:form>

@@ -52,7 +52,8 @@ public class UserDAO {
     public List<UserEntity> getAllUsers() {
         Session session = HibernateUtil.getSessionFactory().getCurrentSession();
         Criteria userCriteria = session.createCriteria(UserEntity.class);
-        userCriteria.addOrder(Order.asc("userName"));
+        userCriteria.addOrder(Order.asc("lastName"));
+        userCriteria.addOrder(Order.asc("firstName"));
         return userCriteria.list();
     }
 

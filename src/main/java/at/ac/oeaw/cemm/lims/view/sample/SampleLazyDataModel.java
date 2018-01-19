@@ -37,12 +37,7 @@ public class SampleLazyDataModel extends LazyDataModel<SampleDTO>{
  
     @Override
     public List<SampleDTO> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {
-        if (roleManager==null){
-            System.out.println("RoleManager is null in RunDataModel");
-        }else{
-            System.out.println("Role is "+roleManager.getCurrentUser().getUserName());
-        }
-
+       
         if (roleManager!=null && !roleManager.isGuest()){
             if (roleManager.isGroupLeader() || roleManager.isUser()){ 
                 filters.put("restrictToUsers",  roleManager.getSubjectsIds());

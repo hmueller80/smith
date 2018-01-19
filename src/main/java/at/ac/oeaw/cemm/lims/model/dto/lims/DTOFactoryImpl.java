@@ -72,8 +72,8 @@ public class DTOFactoryImpl implements DTOFactory {
     }
     
     @Override
-    public UserDTO getUserDTO(Integer id, String userName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation){
-        return new UserDTOImpl(id, userName, login, phone, mailAddress, pi, userRole, affiliation);
+    public UserDTO getUserDTO(Integer id, String firstName, String lastName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation){
+        return new UserDTOImpl(id, firstName,lastName, login, phone, mailAddress, pi, userRole, affiliation);
     }
     
     @Override
@@ -171,7 +171,7 @@ public class DTOFactoryImpl implements DTOFactory {
                 sample.setStatus(SampleDTO.status_requested);
                 
                 sample.setUser(requestToLims.getRequestorUser());
-                sample.setCostcenter(requestForm.getRequestor().getPi().getUserName().replace(",", ""));
+                sample.setCostcenter(requestForm.getRequestor().getPi().getFirstName()+" "+requestForm.getRequestor().getPi().getLastName());
 
                 
                 sample.setApplication(application);                

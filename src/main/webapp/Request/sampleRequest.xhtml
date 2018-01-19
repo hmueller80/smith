@@ -247,7 +247,7 @@
                             <p:outputPanel style="display:inline-block"/>
 
                             <h:outputLabel for="userName" value="User Name: " />
-                            <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.userName}"/>
+                            <h:outputText style="width:300px;"  id="userName" value="#{requestBean.request.requestor.user.firstName} #{requestBean.request.requestor.user.lastName}"/>
                             <p:message for="userName" />
 
                             <h:outputLabel for="userEmail" value="User Email: " />
@@ -269,7 +269,7 @@
                             <p:outputPanel style="display:inline-block"/>
 
                             <h:outputLabel for="userPiName" value="Principal Investigator: " />
-                            <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.userName}"/>
+                            <h:outputText style="width:300px;"  id="userPiName" value="#{requestBean.request.requestor.pi.firstName} #{requestBean.request.requestor.pi.lastName}"/>
                             <p:message for="userPiName" />
 
                             <h:outputLabel for="userPiEmail" value="Principal Investigator Email: " />

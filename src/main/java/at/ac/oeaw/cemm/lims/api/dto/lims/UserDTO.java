@@ -24,13 +24,13 @@ public interface UserDTO extends User {
 
     Integer getPi();
 
-    String getUserName();
+    String getFirstName();
+    
+    String getLastName();
 
     String getUserRole();
     
     AffiliationDTO getAffiliation();
-
-    public String getFirstName();
             
     void setLogin(String login);
 
@@ -40,7 +40,9 @@ public interface UserDTO extends User {
 
     void setPi(Integer pi);
 
-    void setUserName(String userName);
+    void setFirstName(String firstName);
+    
+    void setLastName(String lastName);
 
     void setUserRole(String userRole);
     
