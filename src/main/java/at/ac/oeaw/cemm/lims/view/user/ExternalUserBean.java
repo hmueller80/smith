@@ -47,8 +47,10 @@ public class ExternalUserBean {
     }
     
     public String getFirstPassword() {
-        if (roleManager.getHasUserAddPermission()){
-            return services.getExternalUsersService().getPasswordForUser(user.getLogin());
+        if (user!=null){
+            if (roleManager.getHasUserAddPermission()){
+                return services.getExternalUsersService().getPasswordForUser(user.getLogin());
+            }
         }
         
         return "";
