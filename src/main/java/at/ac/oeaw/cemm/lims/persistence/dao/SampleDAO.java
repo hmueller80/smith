@@ -73,9 +73,9 @@ public class SampleDAO {
         
         query.add(Restrictions.eq("submissionId", submissionId));
         query.createCriteria("library",JoinType.LEFT_OUTER_JOIN)
-                .add(Restrictions.sqlRestriction("{alias}.libraryName REGEXP '"+ libraryName+"_L[0-9]+$"+"'"));
+                .add(Restrictions.sqlRestriction("{alias}.libraryName REGEXP '^"+ libraryName+"_L[0-9]+$"+"'"));
         
-        query.add(Restrictions.sqlRestriction("name REGEXP '"+ sampleName+"_S[0-9]+$"+"'"));
+        query.add(Restrictions.sqlRestriction("name REGEXP '^"+ sampleName+"_S[0-9]+$"+"'"));
         return (SampleEntity) query.uniqueResult();
 
     }
