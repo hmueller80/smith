@@ -194,7 +194,7 @@ public class SampleAnnotationWriter extends ExcelParser {
                         case DOUBLE:                            
                             if (!value.isEmpty()){
                                currentCell.setCellType(CellType.NUMERIC);
-                               currentCell.setCellValue(Double.parseDouble(value));
+                               currentCell.setCellValue(Double.parseDouble(ExcelParserUtils.removeUnits(value)));
                             }else{
                                 currentCell.setCellType(CellType.BLANK);
                             }
@@ -202,7 +202,7 @@ public class SampleAnnotationWriter extends ExcelParser {
                         case INTEGER:
                              if (!value.isEmpty()){
                                 currentCell.setCellType(CellType.NUMERIC);
-                                currentCell.setCellValue(new Double(value).intValue());
+                                currentCell.setCellValue(new Double(ExcelParserUtils.removeUnits(value)).intValue());
                             }else{
                                 currentCell.setCellType(CellType.BLANK);
                             }

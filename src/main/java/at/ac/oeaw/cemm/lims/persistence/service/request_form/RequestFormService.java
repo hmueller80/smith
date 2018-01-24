@@ -329,5 +329,18 @@ public class RequestFormService {
         return null;
     }
     
+    public boolean checkRequestExistence(final Integer id) {
+        try {
+            return TransactionManager.doInTransaction(new TransactionManager.TransactionCallable<Boolean>() {
+                @Override
+                public Boolean execute() throws Exception {
+                    return (requestFormDAO.checkRequestExistence(id));
+                }
+            });
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+    
 
 }

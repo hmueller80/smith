@@ -218,4 +218,18 @@ public class RequestFormDAO {
         return id;
     }
 
+    public Boolean checkRequestExistence(Integer id) {
+        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        Criteria query = session.createCriteria(RequestEntity.class)
+                .add(Restrictions.eq("id", id))
+                .setProjection(Projections.rowCount());
+        
+        long count = (Long) query.uniqueResult();
+        if(count != 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

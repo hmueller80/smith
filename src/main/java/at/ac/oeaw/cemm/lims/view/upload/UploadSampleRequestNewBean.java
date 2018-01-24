@@ -125,7 +125,8 @@ public class UploadSampleRequestNewBean implements Serializable {
                 
                 try {
                     sampleLock.lock();
-                    if (requestObj.getRequestId() >= sampleLock.getRequestIdLock().getNextId()){
+                    if (!services.getRequestService().checkRequestExistence(requestObj.getRequestId()) &&
+                        ! services.getRequestFormService().checkRequestExistence(requestObj.getRequestId())){
                         SamplesCSVManager.writeToFile(requestObj);
                         Set<PersistedEntityReceipt> receipts = services.getRequestService().uploadRequest(requestObj);
                         sendMailWithReceipts(requestObj.getRequestorUser(), receipts);

@@ -29,7 +29,8 @@ public class RequestCSVUploadValidator extends RequestValidator<RequestDTO> {
     protected boolean validateInternal(RequestDTO objectToValidate, Set<ValidatorMessage> messages) {
         boolean isValid = super.validateInternal(objectToValidate, messages);
 
-        if (objectToValidate.getRequestId() < services.getRequestFormService().getMaxRequestId()) {
+        if (services.getRequestService().checkRequestExistence(objectToValidate.getRequestId()) ||
+            services.getRequestFormService().checkRequestExistence(objectToValidate.getRequestId())) {
             isValid = false;
             messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Submission Id", "Samples or requests with this ID already exists"));
         }
