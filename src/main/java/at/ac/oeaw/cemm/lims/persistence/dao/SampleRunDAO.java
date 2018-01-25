@@ -53,6 +53,7 @@ public class SampleRunDAO {
             add("sampleIndex");
             add("runFolder");
             add("sampleLibrary.libraryName");
+            add("experimentName");
         }
     };
     

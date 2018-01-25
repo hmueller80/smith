@@ -41,6 +41,8 @@ public class SampleRunEntity implements Serializable {
     @Column(name = "iscontrol")
     private boolean isControl;
 
+    @Column(name = "experiment_name")
+    private String experimentName;
    
     @OneToMany(mappedBy = "samplerun", fetch = FetchType.EAGER)
     private Set<LaneEntity> lanes = new HashSet<LaneEntity>(0);
@@ -161,6 +163,14 @@ public class SampleRunEntity implements Serializable {
 
     public void setControl(boolean iscontrol) {
         this.isControl = iscontrol;
+    }
+
+    public String getExperimentName() {
+        return experimentName;
+    }
+
+    public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
     }
 
     /**

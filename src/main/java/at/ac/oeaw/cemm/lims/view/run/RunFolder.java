@@ -17,29 +17,23 @@ import java.util.Objects;
  */
 public class RunFolder {
     private DateFormat outputDF = new SimpleDateFormat("dd.MM.yyyy");
+    
     private final String flowCell;
     private final String runFolderName;
-    private Date runDate;
+    private final String experimentName;
+    private final Date runDate;
 
-    public RunFolder(String runFolderName) {
-        String[] splittedName = runFolderName.split("_");
-        String flowCellName = splittedName [splittedName.length - 1];
-        boolean hasSlot = flowCellName.matches("^(A|B).*");
-        
-        DateFormat df = new SimpleDateFormat("yyMMdd");
-
-        this.flowCell = hasSlot ? flowCellName.substring(1) : flowCellName;
-        try {
-            this.runDate = df.parse(splittedName[0]);
-        } catch (ParseException ex) {
-            this.runDate = new Date();
-        }
-        
+    public RunFolder(String flowCell, String runFolderName, String experimentName, Date runDate) {
+        this.flowCell = flowCell;
         this.runFolderName = runFolderName;
+        this.experimentName = experimentName;
+        this.runDate = runDate;
     }
+
+    
     
     public String getDescription(){
-        return flowCell+" run on: "+outputDF.format(runDate);
+        return experimentName+"-"+flowCell+" run on: "+outputDF.format(runDate);
     }
 
     
@@ -54,6 +48,12 @@ public class RunFolder {
     public String getRunFolderName() {
         return runFolderName;
     }
+
+    public String getExperimentName() {
+        return experimentName;
+    }
+    
+    
 
     @Override
     public int hashCode() {

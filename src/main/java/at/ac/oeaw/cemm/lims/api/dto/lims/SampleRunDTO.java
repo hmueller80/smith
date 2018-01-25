@@ -22,6 +22,7 @@ public interface SampleRunDTO {
     public Boolean getIsControl();
     public String getRunFolder();
     public Set<String> getLanes();
+    public String getExperimentName();
     
     public void setFlowcell(String flowCell);
     public void addLane(String lane);
@@ -29,4 +30,5 @@ public interface SampleRunDTO {
     public void setRunId(Integer id);
     public void setRunFolder(String runFolder);
     public void setLanes(Set<String> lanes);      
+    public void setExperimentName(String experimentName);
 }

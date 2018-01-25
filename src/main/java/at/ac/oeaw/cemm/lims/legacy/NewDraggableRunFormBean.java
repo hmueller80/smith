@@ -164,7 +164,7 @@ public class NewDraggableRunFormBean implements Serializable {
                 SampleRunDTO sampleRun = dtoFactory.getSampleRunDTO(null, 
                         sampleToRun, 
                         roleManager.getCurrentUser(),
-                        flowcell, null, flowcell, false);
+                        flowcell, null, flowcell, false,"");
                 sampleRun.addLane(String.valueOf(lane));
                 toAdd.add(sampleRun);                
             }

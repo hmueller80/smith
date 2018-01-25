@@ -37,7 +37,7 @@ public interface DTOFactory {
 
     SampleDTO getSampleDTO(Integer id, ApplicationDTO application, String organism, String type, String antibody, Boolean syntehsisNeeded, Double concentration, Double totalAmount, Double bulkFragmentSize, String costcenter, String status, String name, String comment, String description, Date requestDate, Date bioanalyzerDate, Double bioAnalyzerMolarity, Integer submissionId, String experimentName, IndexDTO indexI7, IndexDTO indexI5, UserDTO user);
 
-    SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder, Boolean isControl);
+    SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder, Boolean isControl, String experimentName);
 
     UserDTO getUserDTO(Integer id, String firstName, String lastName, String login, String phone, String mailAddress, Integer pi, String userRole, AffiliationDTO affiliation);
      

@@ -23,6 +23,7 @@ public class SampleRunDTOImpl implements SampleRunDTO {
     private Set<String> lanes;
     private boolean isControl = false;
     private String runFolder;
+    private String experimentName;
 
     public SampleRunDTOImpl(
             Integer id, 
@@ -31,7 +32,8 @@ public class SampleRunDTOImpl implements SampleRunDTO {
             String flowCell, 
             Set<String> lanes, 
             String runFolder,
-            Boolean isControl
+            Boolean isControl,
+            String experimentName
     ) {
         this.id = id;
         this.sample = sample;
@@ -44,6 +46,7 @@ public class SampleRunDTOImpl implements SampleRunDTO {
         }
         this.runFolder = runFolder;
         this.isControl = isControl;
+        this.experimentName = experimentName;
     }
     
     @Override
@@ -127,6 +130,16 @@ public class SampleRunDTOImpl implements SampleRunDTO {
     @Override
     public void setRunId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public String getExperimentName() {
+        return experimentName;
+    }
+
+    @Override
+    public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
     }
     
 }

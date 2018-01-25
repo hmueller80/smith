@@ -149,6 +149,12 @@
                     </h:link>
                     <h:outputText value="#{run.runId}" rendered ="#{!runsSearchBeanLazy.roleManager.hasRunAddPermission}" />
                 </p:column>
+                
+                 <p:column id="experimentNameColumn"                 
+                          headerText="Experiment Name"
+                          filterBy="#{run.experimentName}">
+                    <h:outputText value="#{run.experimentName}" />
+                </p:column>
 
                 <p:column id="idSamColumn"                      
                           headerText="#{bundle['runs.sample.id']}"

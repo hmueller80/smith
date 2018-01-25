@@ -5,6 +5,7 @@
  */
 package at.ac.oeaw.cemm.lims.view.run;
 
+import at.ac.oeaw.cemm.lims.api.analysis.RunParameters;
 import at.ac.oeaw.cemm.lims.api.dto.lims.DTOFactory;
 import at.ac.oeaw.cemm.lims.api.dto.lims.LibraryToRunDTO;
 import at.ac.oeaw.cemm.lims.api.dto.lims.SampleDTO;
@@ -19,7 +20,6 @@ import at.ac.oeaw.cemm.lims.view.NewRoleManager;
 import at.ac.oeaw.cemm.lims.view.NgsLimsUtility;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,6 +49,9 @@ public class RunAssemblerBean {
 
     @Inject
     private DTOFactory myDTOFactory;
+    
+    @Inject
+    private RunParameters runParams;
     
     @ManagedProperty(value = "#{runIdBean}")
     private RunIdBean runIdBean;
@@ -80,12 +83,13 @@ public class RunAssemblerBean {
         
         runFolders = new ArrayList<>();
         for (File folder: new File(Preferences.getRunfolderroot()).listFiles()){
-            if (folder.isDirectory() 
-                    && folder.canExecute()
-                    && folder.getName().length()>=6
-                    && folder.getName().substring(0,6).matches("[0-9]+")
-                    && Arrays.asList(folder.list()).contains("RunInfo.xml")){
-                RunFolder runFolder = new RunFolder(folder.getName());
+            if (runParams.isValidRunFolder(folder)){
+                RunFolder runFolder = new RunFolder(
+                        runParams.getFlowcellName(folder),
+                        folder.getName(),
+                        runParams.getExperimentName(folder),
+                        runParams.getRunDate(folder));
+                
                 List<SampleRunDTO> existingRuns = services.getRunService().getRunsByFlowCell(runFolder.getFlowCell());
                 if (existingRuns == null || existingRuns.isEmpty()){
                     runFolders.add(runFolder);
@@ -244,7 +248,8 @@ public class RunAssemblerBean {
                             selectedFolder.getFlowCell(),
                             lanes,
                             selectedFolder.getRunFolderName(),
-                            false);
+                            false,
+                            selectedFolder.getExperimentName());
 
                     for (String lane : newSampleRun.getLanes()) {
                         samplesToRun.add(new LaneSampleRow(newSampleRun, lane));

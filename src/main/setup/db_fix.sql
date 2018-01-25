@@ -94,3 +94,11 @@ last_name = TRIM(SUBSTRING_INDEX(username, ',', -1));
 SET SQL_SAFE_UPDATES = 1;
  
 ALTER TABLE user drop column username;
+
+ALTER TABLE samplerun
+add column experiment_name varchar(100);
+
+SET SQL_SAFE_UPDATES = 0;
+update samplerun
+SET experiment_name = CONCAT('BSF_',LPAD(CAST(run_id as CHAR),4,'0'));
+SET SQL_SAFE_UPDATES = 1;

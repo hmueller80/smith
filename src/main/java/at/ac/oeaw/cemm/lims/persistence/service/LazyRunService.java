@@ -294,6 +294,7 @@ public class LazyRunService implements RunService {
         sampleRunEntity.setControl(sampleRun.getIsControl());
         sampleRunEntity.setFlowcell(sampleRun.getFlowcell());
         sampleRunEntity.setRunFolder(sampleRun.getRunFolder());
+        sampleRunEntity.setExperimentName(sampleRun.getExperimentName());
         
         //UPDATE SAMPLE ENTITY
         sampleEntity.setStatus(SampleDTO.status_running);

@@ -136,6 +136,7 @@ public class SampleRunsBuilder {
                     break;
                 }
                 
+                String experimentName = String.format("BSF_%04d", runId);
                 if (!samples.containsKey(sample.getId())){
                     SampleRunDTO newSampleRun = myDTOFactory.getSampleRunDTO(
                             runId, 
@@ -144,7 +145,8 @@ public class SampleRunsBuilder {
                             previousFlowcell, 
                             null, 
                             runFolder,
-                            false);
+                            false,
+                            experimentName);
                     samples.put(sample.getId(),newSampleRun);
                 }
                     

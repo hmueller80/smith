@@ -53,6 +53,7 @@ public class SingleRunBean {
     private List<SingleRunTableRow> allSamples = new LinkedList<>();
     private String flowcell;
     private String runFolder;
+    private String experimentName;
     private UserDTO operator;
 
     @PostConstruct
@@ -69,6 +70,7 @@ public class SingleRunBean {
                     this.flowcell = sampleRun.getFlowcell();
                     this.runFolder = sampleRun.getRunFolder();
                     this.operator = sampleRun.getOperator();
+                    this.experimentName = sampleRun.getExperimentName();
                     firstResult = false;
                 }
                 for (String lane : sampleRun.getLanes()) {
@@ -113,9 +115,11 @@ public class SingleRunBean {
     public void setFileManager(RunFileManagerBean fileManager) {
         this.fileManager = fileManager;
     }
-    
-    
 
+    public String getExperimentName() {
+        return experimentName;
+    }
+    
     public RunIdBean getRunIdBean() {
         return runIdBean;
     }

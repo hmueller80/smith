@@ -127,8 +127,8 @@ public class DTOFactoryImpl implements DTOFactory {
     }
     
     @Override
-    public SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder,Boolean isControl){     
-        return new SampleRunDTOImpl(id, sample,operator, flowCell, lanes, runFolder,isControl);
+    public SampleRunDTO getSampleRunDTO(Integer id, SampleDTO sample, UserDTO operator, String flowCell, Set<String> lanes, String runFolder,Boolean isControl, String experimentName){     
+        return new SampleRunDTOImpl(id, sample,operator, flowCell, lanes, runFolder,isControl, experimentName);
     }
     
     @Override
