@@ -43,7 +43,8 @@ public class ConfigurationManagerCEMM {
     }
 
     public static String getRunReadMode(String runfolder) {
-        String mode = XMLParser.getReadMode(Preferences.getRunfolderroot() + runfolder + File.separator + "RunInfo.xml");
+        XMLParser parser = new XMLParser();
+        String mode = parser.getReadMode(Preferences.getRunfolderroot() + runfolder + File.separator + "RunInfo.xml");
         String result = "configuration error";
         if (mode.startsWith("single end")) {
             return "SR";
@@ -98,8 +99,9 @@ public class ConfigurationManagerCEMM {
     
     public static boolean getFlowcellNeedsBarcodeI5ReverseComplementing(String folder){
         File dir = new File(Preferences.getRunfolderroot() + folder + File.separator + "runParameters.xml");
-        String flowcell = XMLParser.getFlowcell(dir.getAbsolutePath());
-        String readmode = XMLParser.getReadMode(Preferences.getRunfolderroot() + folder + File.separator + "RunInfo.xml");
+        XMLParser parser = new XMLParser();
+        String flowcell = parser.getFlowcell(dir.getAbsolutePath());
+        String readmode = parser.getReadMode(Preferences.getRunfolderroot() + folder + File.separator + "RunInfo.xml");
         //System.out.println(folder + " " + readmode);
         if((flowcell.contains("3000") || flowcell.contains("4000")) && readmode.equals("PE")){
             return true;
@@ -108,8 +110,9 @@ public class ConfigurationManagerCEMM {
     }
     
     public static String getExperimentName(String folder){
-        File file = new File(Preferences.getRunfolderroot() + folder + File.separator + "runParameters.xml");        
-        return XMLParser.getExperimentName(file.getAbsolutePath());
+        File file = new File(Preferences.getRunfolderroot() + folder + File.separator + "runParameters.xml");     
+        XMLParser parser = new XMLParser();
+        return parser.getExperimentName(file.getAbsolutePath());
     }
 
     public static String[] listFolders(String root) {

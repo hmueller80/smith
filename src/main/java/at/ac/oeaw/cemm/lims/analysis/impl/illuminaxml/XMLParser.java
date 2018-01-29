@@ -19,15 +19,15 @@ import org.w3c.dom.NamedNodeMap;
  */
 public class XMLParser {
     
-    static int Ncount = 0;
-    static int Ycount = 0;
+    int Ncount = 0;
+    int Ycount = 0;
     
-    static String Flowcell = "";
-    static String ApplicationName = "";
-    static String ExperimentName = "";
+    String Flowcell = "";
+    String ApplicationName = "";
+    String ExperimentName = "";
     
     //parse read mode
-    public static String getReadMode(String runinfoxml_file) {
+    public String getReadMode(String runinfoxml_file) {
         if(!runinfoxml_file.endsWith("RunInfo.xml")){
             return "";
         }
@@ -74,7 +74,7 @@ public class XMLParser {
         return result;
     }
     
-    private static void parseReadMode(Node n, String target) {
+    private void parseReadMode(Node n, String target) {
         if (n.hasChildNodes() && n.getChildNodes().getLength() > 1) {
             NodeList l = n.getChildNodes();
             for (int i = 0; i < l.getLength(); i++) {
@@ -109,7 +109,7 @@ public class XMLParser {
     
     
     //parse flowcell
-    public static String getFlowcell(String runParametersxml_file) {
+    public String getFlowcell(String runParametersxml_file) {
         if(!runParametersxml_file.endsWith("runParameters.xml")){
             return "";
         }
@@ -135,7 +135,7 @@ public class XMLParser {
         return Flowcell;
     }
     
-    private static void parseFlowcell(Node n, String target) {        
+    private void parseFlowcell(Node n, String target) {        
         if (n.hasChildNodes() && n.getChildNodes().getLength() > 1) {
             NodeList l = n.getChildNodes();
             for (int i = 0; i < l.getLength(); i++) {
@@ -162,7 +162,7 @@ public class XMLParser {
     
     
     //parse ApplicationName
-    public static String getApplicationName(String runParametersxml_file) {
+    public String getApplicationName(String runParametersxml_file) {
         if(!runParametersxml_file.endsWith("runParameters.xml")){
             return "";
         }
@@ -188,7 +188,7 @@ public class XMLParser {
         return ApplicationName;
     }
     
-    private static void parseApplicationName(Node n, String target) {        
+    private void parseApplicationName(Node n, String target) {        
         if (n.hasChildNodes() && n.getChildNodes().getLength() > 1) {
             NodeList l = n.getChildNodes();
             for (int i = 0; i < l.getLength(); i++) {
@@ -214,7 +214,7 @@ public class XMLParser {
     }
     
     //parse ApplicationName
-    public static String getExperimentName(String runParametersxml_file) {
+    public String getExperimentName(String runParametersxml_file) {
         if(!runParametersxml_file.endsWith("runParameters.xml")){
             return "";
         }
@@ -240,7 +240,7 @@ public class XMLParser {
         return ExperimentName;
     }
     
-    private static void parseExperimentName(Node n, String target) {        
+    private void parseExperimentName(Node n, String target) {        
         if (n.hasChildNodes() && n.getChildNodes().getLength() > 1) {
             NodeList l = n.getChildNodes();
             for (int i = 0; i < l.getLength(); i++) {
@@ -260,26 +260,6 @@ public class XMLParser {
                     if (n.getNodeName().equals(target)) {
                         ExperimentName = n.getTextContent();                        
                     }
-                }
-            }
-        }
-    }
-    
-    
-    
-    public static void main(String argv[]) {
-
-        File f = new File("C:\\Temp\\Runs");
-        File[] fa = f.listFiles();
-        for (int i = 0; i < fa.length; i++) {
-            File[] files = fa[i].listFiles();
-            for (int j = 0; j < files.length; j++) {
-                if(files[j].getName().endsWith(".xml")){
-                    //System.out.println(files[j].getName());
-                    System.out.println(getReadMode(files[j].getAbsolutePath()));
-                    System.out.println(getFlowcell(files[j].getAbsolutePath()));
-                    System.out.println(getApplicationName(files[j].getAbsolutePath()));
-                    System.out.println(getExperimentName(files[j].getAbsolutePath()));
                 }
             }
         }

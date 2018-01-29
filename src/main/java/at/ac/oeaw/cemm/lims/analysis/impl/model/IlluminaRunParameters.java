@@ -30,7 +30,7 @@ public class IlluminaRunParameters implements RunParameters{
             return "";
         }
 
-       return XMLParser.getExperimentName(runParametersXML.getAbsolutePath());
+       return (new XMLParser()).getExperimentName(runParametersXML.getAbsolutePath());
     }
 
     @Override
