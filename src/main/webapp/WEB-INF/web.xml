@@ -28,7 +28,7 @@
     </context-param>
     <context-param>
         <param-name>remotesamplesheetfolder</param-name>
-        <param-value>/scratch/lab_bsf/projects/BSF_runs/libraries_test/</param-value>
+        <param-value>/scratch/lab_bsf/projects/BSF_runs/libraries/</param-value>
     </context-param>
     <context-param>
         <param-name>remoteworkdir</param-name>
@@ -40,7 +40,7 @@
     </context-param>
     <context-param>
         <param-name>remoteexecuterpath</param-name>
-        <param-value>none</param-value>
+        <param-value>http://login.hpc.cemm.at:9092/TimerServlet</param-value>
     </context-param>
     <context-param>
         <param-name>remotesampleannotationfolder</param-name>
@@ -152,8 +152,8 @@
         <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
         <init-param>
             <param-name>uploadDirectory</param-name>
-            <param-value>/home/glassfish/glassfish4/glassfish/domains/bsfdb/applications</param-value>
-            <!--param-value>/C:/temp/work/</param-value-->
+            <param-value>/opt/glassfish4/glassfish/domains/bsfdb/applications/smith/upload/</param-value>
+            <!--param-value>/Users/dbarreca/Dev/temp/upload</param-value-->
             <!--
         <param-value>/opt/glassfish4/glassfish/domains/bsfdb/applications/smith/upload/</param-value>
         <param-value>/C:/temp/work/</param-value>
