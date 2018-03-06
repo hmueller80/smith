@@ -44,4 +44,24 @@ class IndexDTOImpl implements IndexDTO {
         this.indexType = type;
     }
 
+    @Override
+    public void reverseComplementIndex() {
+        this.index = getReverseComplement(this.index);
+    }
+
+     private String getReverseComplement(String sequence){
+        sequence = sequence.toUpperCase();
+        StringBuilder sb = new StringBuilder();
+        for(int i = sequence.length() - 1; i >= 0; i--){
+            char letter = sequence.charAt(i);
+            switch(letter){
+                case 'A': sb.append('T'); break;
+                case 'C': sb.append('G'); break;
+                case 'G': sb.append('C'); break;
+                case 'T': sb.append('A'); break;
+                default: sb.append(letter); break; 
+            }
+        }
+        return sb.toString();
+    }
 }

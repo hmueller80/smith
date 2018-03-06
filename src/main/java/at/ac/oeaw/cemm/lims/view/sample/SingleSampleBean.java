@@ -279,5 +279,22 @@ public class SingleSampleBean implements Serializable {
             }
         }
     }
+    
+    public void reverseComplementIndexI5(){
+        
+        for (SampleDTO sample: currentLibrary.getSamples()){
+            sample.getIndexI5().reverseComplementIndex();
+        }
+        
+        validateLibrary();
+    }
+    
+    public void reverseComplementIndexI7(){
+         for (SampleDTO sample: currentLibrary.getSamples()){
+            sample.getIndexI7().reverseComplementIndex();
+        }
+        
+        validateLibrary();
+    }
 
 }

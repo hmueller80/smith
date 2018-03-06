@@ -104,7 +104,7 @@ public class LibraryValidator<T extends Library> extends AbstractValidator<T> {
             messages.add(new ValidatorMessage(ValidatorSeverity.FAIL, "Index error", "Sample "+otherSample.getName()+" has i5 index but not i7"));
             return false;
         }
-        System.out.println("Checking sample "+thisSample.getName()+" and "+otherSample.getName());
+        //System.out.println("Checking sample "+thisSample.getName()+" and "+otherSample.getName());
         if (RequestFormDTO.DEFAULT_INDEX.equals(thisIndex)
                 || RequestFormDTO.DEFAULT_INDEX.equals(otherIndex)) {
             String failMessage

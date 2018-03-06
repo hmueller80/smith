@@ -167,7 +167,7 @@
                             <h:outputText  style="width:300px;" id="libraryName" value="#{singleSampleBean.currentLibrary.name}"/>
 
                             <p:messages for="libraryName" id="libraryPermissionsMessages"
-                                        showDetail="true" autoUpdate="false" />
+                                        showDetail="true" autoUpdate="false" closable="true"/>
 
                         </h:panelGrid>
 
@@ -219,7 +219,8 @@
                             </p:column>
 
                             <p:column id="indexI7Column" 
-                                      headerText="Barcode I7">
+                                      headerText="Barcode I7"
+                                      style='border-right: none!important'>
                                 <p:cellEditor rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id }">
                                     <f:facet name="output">
                                         <h:outputText value="#{sample.indexI7.index}" />
@@ -235,16 +236,31 @@
                                                 value="#{singleSampleBean.possibleIndexesI7}"
                                                 itemLabel="#{index}" itemValue="#{index}"
                                                 var="index" />
-                                            <p:ajax listener="#{singleSampleBean.validateLibrary()}" 
+                                            <p:ajax listener="#{singleSampleBean.validateLibrary}" 
                                                     update=":tabMenu:libraryForm"/>
-                                        </p:selectOneMenu>     
+                                        </p:selectOneMenu>
+
                                     </f:facet>               
                                 </p:cellEditor>
                                 <h:outputText value="#{sample.indexI7.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
                             </p:column>
                             
+                            <p:column width="26" style='border-left: none!important'>
+                                <f:facet name="header">
+                                    <p:commandButton 
+                                        actionListener="#{singleSampleBean.reverseComplementIndexI7}"
+                                        icon="ui-icon-transfer-e-w"
+                                        update=":tabMenu:libraryForm"/>
+                                </f:facet>
+                                <p:commandButton 
+                                    icon="ui-icon-transfer-e-w"
+                                    actionListener="#{sample.indexI7.reverseComplementIndex}"
+                                    update=":tabMenu:libraryForm"/>
+                            </p:column>
+                            
                             <p:column id="indexI5Column" 
-                                      headerText="Barcode I5">
+                                      headerText="Barcode I5"
+                                      style='border-right: none!important'>
                                 <p:cellEditor rendered="#{sample.id==singleSampleBean.selectedSampleInLibrary.id }">
                                     <f:facet name="output">
                                         <h:outputText value="#{sample.indexI5.index}" />
@@ -262,10 +278,23 @@
                                                 var="index" />
                                             <p:ajax listener="#{singleSampleBean.validateLibrary()}" 
                                                     update=":tabMenu:libraryForm"/>
-                                        </p:selectOneMenu>     
+                                        </p:selectOneMenu>
                                     </f:facet>               
                                 </p:cellEditor>
                                 <h:outputText value="#{sample.indexI5.index}" rendered="#{sample.id!=singleSampleBean.selectedSampleInLibrary.id }"/>
+                            </p:column>
+
+                             <p:column width="26" style='border-left: none!important'>
+                                <f:facet name="header">
+                                    <p:commandButton 
+                                        actionListener="#{singleSampleBean.reverseComplementIndexI5}"
+                                        icon="ui-icon-transfer-e-w"
+                                        update=":tabMenu:libraryForm"/>
+                                </f:facet>
+                                <p:commandButton 
+                                    icon="ui-icon-transfer-e-w"
+                                    actionListener="#{sample.indexI5.reverseComplementIndex}"
+                                    update=":tabMenu:libraryForm"/>
                             </p:column>
 
                             <p:column id="applicationColumn" headerText="#{bundle['samples.application']}">                              

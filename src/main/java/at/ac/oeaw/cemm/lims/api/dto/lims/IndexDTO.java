@@ -19,4 +19,6 @@ public interface IndexDTO {
     
     void setType(IndexType type);
     
+    void reverseComplementIndex();
+    
 }
